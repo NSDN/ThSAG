@@ -1,0 +1,14 @@
+﻿def.scene 1
+	set.back DATAs\Image\back01.png
+	set.bgm DATAs\Music\bgm01.mp3
+	def.cg 1
+		set.path DATAs\Image\cg01.png
+		set.pos 800
+	end.cg
+	def.word type.comm
+		set.word Hello Gensokyo!
+		set.jump 2
+		set.word Emm...
+		set.jump 1
+	end.word
+end.scene

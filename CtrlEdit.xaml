@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="CtrlEdit"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="373" d:DesignWidth="780" FontFamily="Segoe UI" FontSize="14">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.CheckBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ListBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.RadioButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/MaterialDesignColor.Teal.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <SolidColorBrush x:Key="PrimaryHueLightBrush" Color="{StaticResource Primary100}"/>
+            <SolidColorBrush x:Key="PrimaryHueLightForegroundBrush" Color="{StaticResource Primary100Foreground}"/>
+            <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="{StaticResource Primary500}"/>
+            <SolidColorBrush x:Key="PrimaryHueMidForegroundBrush" Color="{StaticResource Primary500Foreground}"/>
+            <SolidColorBrush x:Key="PrimaryHueDarkBrush" Color="{StaticResource Primary700}"/>
+            <SolidColorBrush x:Key="PrimaryHueDarkForegroundBrush" Color="{StaticResource Primary700Foreground}"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Choose Resolution" Margin="110,10,544,0" VerticalAlignment="Top" Height="30" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+            <RadioButton x:Name="DMode8" Content="800 × 450" Height="25" Margin="187,135,468,0" VerticalAlignment="Top" Style="{StaticResource MaterialDesignRadioButton}" VerticalContentAlignment="Center" />
+            <RadioButton x:Name="DMode7" Content="3840 × 2160" Height="25" Margin="187,105,468,0" VerticalAlignment="Top" Style="{StaticResource MaterialDesignRadioButton}" VerticalContentAlignment="Center" />
+            <RadioButton x:Name="DMode6" Content="2160 × 1440" Height="25" Margin="187,75,468,0" VerticalAlignment="Top" Style="{StaticResource MaterialDesignRadioButton}" VerticalContentAlignment="Center" />
+            <RadioButton x:Name="DMode5" Content="1920 × 1080" Height="25" Margin="187,45,468,0" VerticalAlignment="Top" Style="{StaticResource MaterialDesignRadioButton}" VerticalContentAlignment="Center" />
+            <RadioButton x:Name="DMode4" Content="1680 × 1050" Height="25" Margin="57,135,598,0" VerticalAlignment="Top" Style="{StaticResource MaterialDesignRadioButton}" VerticalContentAlignment="Center" />
+            <RadioButton x:Name="DMode3" Content="1600 × 900" Height="25" Margin="57,105,598,0" VerticalAlignment="Top" Style="{StaticResource MaterialDesignRadioButton}" VerticalContentAlignment="Center" />
+            <RadioButton x:Name="DMode2" Content="1440 × 900" Height="25" Margin="57,75,598,0" VerticalAlignment="Top" Style="{StaticResource MaterialDesignRadioButton}" VerticalContentAlignment="Center" />
+            <RadioButton x:Name="DMode1" Content="1280 × 720" Height="25" Margin="57,45,598,0" VerticalAlignment="Top" Style="{StaticResource MaterialDesignRadioButton}" IsChecked="True" VerticalContentAlignment="Center" />
+            <CheckBox x:Name="IsFullScreen" Content="FullScreen" Margin="128,165,550,0" VerticalAlignment="Top" Height="20" Style="{StaticResource MaterialDesignCheckBox}" VerticalContentAlignment="Center" />
+        </Grid>
+        <Button x:Name="BtnStart" Content="Start" Margin="10,0,0,10" Width="128" Style="{StaticResource MaterialDesignFloatingActionLightButton}" Height="128" VerticalAlignment="Bottom" FontFamily="Segoe UI Semibold" FontSize="22" 
+                Background="{DynamicResource PrimaryHueMidBrush}" BorderBrush="{DynamicResource PrimaryHueMidBrush}" Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" HorizontalAlignment="Left" Click="Launch_Click"/>
+        <Label Content="Set Volume" Margin="10,200,670,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="30" />
+        <Slider x:Name="CtrlVol" Margin="115,206,485,0" VerticalAlignment="Top" Height="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" LargeChange="10" Maximum="100" SmallChange="1"/>
+        <Button Content="New Config" Margin="157,255,513,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+        <Button x:Name="BtnLoadConfig" Content="Load Config" Margin="157,292,513,0" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueMidBrush}" BorderBrush="{x:Null}" Background="{x:Null}" Click="BtnLoadConfig_Click"/>
+        <Button Content="Config Help" Margin="157,329,513,0" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueMidBrush}" BorderBrush="{x:Null}" Background="{x:Null}"/>
+        <Button Content="New Script" Margin="255,255,415,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+        <Button x:Name="BtnLaodScript" Content="Load Script" Margin="255,292,415,0" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueMidBrush}" BorderBrush="{x:Null}" Background="{x:Null}" Click="BtnLoadScript_Click"/>
+        <Button x:Name="BtnScriptHelp" Content="Script Help" Margin="255,329,415,0" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueMidBrush}" BorderBrush="{x:Null}" Background="{x:Null}" Click="BtnScriptHelp_Click"/>
+        <TextBox Margin="0,10,10,10" TextWrapping="Wrap" HorizontalAlignment="Right" Width="400" AcceptsReturn="True" SelectionBrush="{DynamicResource PrimaryHueLightBrush}"/>
+        <TextBox HorizontalAlignment="Left" Height="30" Margin="274,75,0,0" TextWrapping="Wrap" Text="FileName" VerticalAlignment="Top" Width="160" RenderTransformOrigin="0.5,0.5" IsReadOnly="True" SelectionBrush="{DynamicResource PrimaryHueLightBrush}">
+            <TextBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-90"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </TextBox.RenderTransform>
+        </TextBox>
+    </Grid>
+</UserControl>
