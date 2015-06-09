@@ -387,6 +387,7 @@ Public Class EngineCore
             DX.SetOutApplicationLogValidFlag(0)
             'DX.SetUse3DFlag(1)
             'DX.SetWaitVSyncFlag(0)
+            DX.SetAlwaysRunFlag(1)
             DX.SetWindowText(Title)
             DX.SetFullSceneAntiAliasingMode(Samples, Quality) 'NOTICE: Only in 3D Scene
             DX.SetCreateDrawValidGraphMultiSample(Samples, Quality)
@@ -430,10 +431,14 @@ Public Class EngineCore
             DX.DrawLine3D(DX.VGet(100, 100, 100), DX.VGet(0, 0, 1000), DX.GetColor(0, 0, 255))
         End Sub
 
+        Public Shared Sub DxTitle(ByVal Title As String)
+            DX.SetWindowText(Title)
+        End Sub
+
         Public Shared Sub Dx3DCamera()
-            DX.SetCameraPositionAndAngle(DxVBDLL.DX.VGet(960.0F, 1035.0F, -150.0F), Math.PI / 4.0F, 0, 0)
-            DX.SetGlobalAmbientLight(DxVBDLL.DX.GetColorF(1.0F, 1.0F, 1.0F, 1.0F))
-            DX.SetLightDirection(DxVBDLL.DX.VGet(0.0F, 1.0F, -1.0F))
+            DX.SetCameraPositionAndAngle(DX.VGet(960.0F, 1035.0F, -150.0F), Math.PI / 4.0F, 0, 0)
+            DX.SetGlobalAmbientLight(DX.GetColorF(1.0F, 1.0F, 1.0F, 1.0F))
+            DX.SetLightDirection(DX.VGet(0.0F, 1.0F, -1.0F))
         End Sub
 
         Public Shared Sub DxAlpha(ByVal R As Integer, ByVal G As Integer, ByVal B As Integer)
@@ -455,12 +460,31 @@ Public Class EngineCore
         End Sub
 
         Public Shared Sub PlaySE(ByVal Path As String)
-            DxVBDLL.DX.PlaySoundFile(Path, DX.DX_PLAYTYPE_BACK)
+            DX.PlaySoundFile(Path, DX.DX_PLAYTYPE_BACK)
         End Sub
 
         Public Shared Sub PlayMusic(ByVal Handle As Integer)
-            DxVBDLL.DX.PlayMusicMem(Handle, DX.DX_PLAYTYPE_LOOP)
+            DX.PlayMusicMem(Handle, DX.DX_PLAYTYPE_LOOP)
         End Sub
+
+        Public Shared Sub PlayMusic(ByVal Path As String)
+            DX.PlayMusic(Path, DX.DX_PLAYTYPE_LOOP)
+        End Sub
+
+        Public Shared Function LoadTexture(ByRef Path As String) As DxImage
+            ' 这里的路径是相对路径
+            ' 不带头部的斜杠
+            ' 注意处理返回值
+
+            Dim Image As DxImage
+            Image.Handle = DX.LoadGraph(Path)
+            DX.GetGraphSize(Image.Handle, Image.Width, Image.Height)
+            If Image.Handle = -1 Then
+                Return Nothing
+            Else
+                Return Image
+            End If
+        End Function
 
         Public Shared Function LoadTexture(ByRef Path As String, ByRef Image As DxImage) As Boolean
             ' 这里的路径是相对路径
@@ -529,6 +553,20 @@ Public Class EngineCore
                 DX.DrawSphere3DD(DX.VGetD(x, y, z), r, DivNum, DX.GetColor(DifColorR, DifColorG, DifColorB), DX.GetColor(SpcColorR, SpcColorG, SpcColorB), 0)
             End If
         End Sub
+
+        Public Shared Function LoadString(ByRef Context As String, ByRef Brush As System.Drawing.Brush, ByVal Size As Integer, _
+                                                  Optional ByVal Width As Integer = 1600, Optional ByVal Height As Integer = 64) As DxImage
+            Dim Image As System.Drawing.Bitmap = New System.Drawing.Bitmap(Width, Height)
+            Dim GDI As System.Drawing.Graphics = System.Drawing.Graphics.FromImage(Image)
+            Dim FontFamily As System.Drawing.FontFamily = New System.Drawing.FontFamily("华文中宋")
+            Dim Font As System.Drawing.Font = New System.Drawing.Font(FontFamily, Size, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel)
+            GDI.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias
+            GDI.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High
+            GDI.DrawString(Context, Font, Brush, 0, 0)
+            Image.Save("String.dat", System.Drawing.Imaging.ImageFormat.Png)
+            GDI.Dispose() : Image.Dispose() : Font.Dispose() : FontFamily.Dispose()
+            Return LoadTexture("String.dat")
+        End Function
 
         Public Shared Sub DrawString(ByRef Context As String, ByVal x As Single, ByVal y As Single)
             ' 采用默认字体的字符绘制
@@ -951,20 +989,8 @@ Public Class EngineCore
         ' 关于对话相关都在这里了
         ' 其实主要是字符的绘制
 
-        Private Shared FontHandle As Integer
-        Private Shared AVGControl As Integer
-        Private Shared ImageArray(3, 10240) As DxVB.DxImage
-
-        Public Sub New(ByRef FontPath As String, ByVal FontSize As String, ByVal FontThick As Integer)
-            FontHandle = DX.CreateFontToHandle(FontPath, FontSize, FontThick)
-            Stop
-        End Sub
-
-        Public Sub DrawString(ByRef Context As String, ByVal x As Single, ByVal y As Single, ByVal Color As Integer)
-            DX.DrawStringFToHandle(x, y, Context, Color, FontHandle)
-        End Sub
-
         Public Structure Image
+            Public Texture As DxVB.DxImage
             Public Path As String
             Public Index As Integer
         End Structure
@@ -973,17 +999,38 @@ Public Class EngineCore
             Public IMG As Image
         End Structure
         Public Structure Selection
-            Public Handle As Integer
+            Public Texture As DxVB.DxImage
             Public Context As String
             Public JumpSceneIndex As Integer
         End Structure
-
         Public Structure Config
             Public GameName As String
             Public ScriptPath() As String
             Public SavePath As String
         End Structure
-
+        Public Enum WordType
+            Comment
+            Script
+            Title
+            GameRun
+            Saving
+            Loading
+        End Enum
+        Private Enum ScriptHead
+            NULL
+            StartSceneDim
+            EndSceneDim
+            Background
+            BGM
+            StartCGDim
+            EndCGDim
+            CGPath
+            CGLocation
+            StartWordDim
+            Choice
+            Jump
+            EndWordDim
+        End Enum
         Public Class Scene
             Public SceneIndex As Integer
             Public BG As Image
@@ -1002,32 +1049,200 @@ Public Class EngineCore
                 ReDim CG(10)
                 ReDim Choices(100)
             End Sub
+
+            Public Sub Build()
+                If Not Me Is Nothing Then
+                    If Not BG.Texture.Handle = -1 Then
+                        DxVB.DrawPic(BG.Texture, 960, 540)
+                    End If
+                    For i = 0 To CG.GetUpperBound(0) Step 1
+                        If Not CG(i).IMG.Texture.Handle = -1 Then
+                            DxVB.DrawPic(CG(i).IMG.Texture, CG(i).Location, 800)
+                        End If
+                    Next i
+                    Select Case WordType
+                        Case WordType.Comment
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    DxVB.DrawPic(Choices(i).Texture, 960, 500 + i * 50)
+                                    DxVB.DrawPic(AVGCore.Cursor, 120, 490 + AVGCore.AVGControl * 50)
+                                End If
+                            Next i
+                        Case WordType.GameRun
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    DxVB.DrawPic(Choices(i).Texture, 960, 400 + i * 100)
+                                End If
+                            Next i
+                        Case WordType.Loading
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    DxVB.DrawPic(Choices(i).Texture, 960, 100 + i * 50)
+                                    DxVB.DrawPic(AVGCore.Cursor, 120, 90 + AVGCore.AVGControl * 50)
+                                End If
+                            Next i
+                        Case WordType.Saving
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    DxVB.DrawPic(Choices(i).Texture, 960, 100 + i * 100)
+                                    DxVB.DrawPic(AVGCore.Cursor, 120, 90 + AVGCore.AVGControl * 50)
+                                End If
+                            Next i
+                        Case WordType.Script
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 = Nothing Then
+                                    DxVB.DrawPic(Choices(i).Texture, 960, 600 + i * 50)
+                                End If
+                            Next i
+                        Case WordType.Title
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 = Nothing Then
+                                    DxVB.DrawPic(Choices(i).Texture, 960, 100 + i * 100)
+                                    DxVB.DrawPic(AVGCore.Cursor, 120, 90 + AVGCore.AVGControl * 50)
+                                End If
+                            Next i
+                    End Select
+
+                    If Not BGM = Nothing Then
+                        DxVB.PlayMusic(BGM)
+                    End If
+
+                    IsBuilt = True
+                End If
+            End Sub
+
         End Class
 
-        Public Enum WordType
-            Comment
-            Script
-            Title
-            GameRun
-            Saving
-            Loading
-        End Enum
+        Public Class AVGCore
+            ' AVG的核心类
+            ' 有些成员函数只能在AVG类
 
-        Private Enum ScriptHead
-            NULL
-            StartSceneDim
-            EndSceneDim
-            Background
-            BGM
-            StartCGDim
-            EndCGDim
-            CGPath
-            CGLocation
-            StartWordDim
-            Choice
-            Jump
-            EndWordDim
-        End Enum
+            Public Shared AVGControl As Integer
+            Private SceneStep As Integer
+            Public Shared Cursor As DxVB.DxImage
+            Private Scenes() As Scene
+
+            Public Sub New(ByVal CursorPath As String)
+                Cursor = DxVB.LoadTexture(CursorPath)
+                AVGControl = SceneStep = 0
+            End Sub
+
+            Public Sub LoadScenes(ByRef Scene() As Scene)
+                Scenes = Scene
+            End Sub
+
+            Public Function ResourcesLoad() As Boolean
+                Dim FlagTmp As Boolean = True
+                For i = 0 To Scenes.GetUpperBound(0) Step 1
+                    If Not Scenes(i) Is Nothing Then
+                        FlagTmp = FlagTmp And DxVB.LoadTexture(Scenes(i).BG.Path, Scenes(i).BG.Texture)
+                        If FlagTmp = False Then Return False
+                        For j = 0 To Scenes(i).CG.GetUpperBound(0) Step 1
+                            If Not Scenes(i).CG(j).IMG.Path = Nothing Then
+                                FlagTmp = FlagTmp And DxVB.LoadTexture(Scenes(i).CG(j).IMG.Path, Scenes(i).CG(j).IMG.Texture)
+                                If FlagTmp = False Then Return False
+                            End If
+                        Next j
+                    End If
+                Next i
+                LoadString()
+                Return True
+            End Function
+
+            Private Sub LoadString()
+                For i = 0 To Scenes.GetUpperBound(0) Step 1
+                    If Not Scenes(i) Is Nothing Then
+                        Select Case Scenes(i).WordType
+                            Case AVG.WordType.Comment
+                                For k = 0 To Scenes(i).Choices.GetUpperBound(0) Step 1
+                                    If Not Scenes(i).Choices(k).Context = Nothing Then
+                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40)
+                                    End If
+                                Next k
+                            Case AVG.WordType.GameRun
+                                For k = 0 To Scenes(i).Choices.GetUpperBound(0) Step 1
+                                    If Not Scenes(i).Choices(k).Context = Nothing Then
+                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.Cyan, 40)
+                                    End If
+                                Next k
+                            Case AVG.WordType.Loading
+                                For k = 0 To Scenes(i).Choices.GetUpperBound(0) Step 1
+                                    If Not Scenes(i).Choices(k).Context = Nothing Then
+                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40)
+                                    End If
+                                Next k
+                            Case AVG.WordType.Saving
+                                For k = 0 To Scenes(i).Choices.GetUpperBound(0) Step 1
+                                    If Not Scenes(i).Choices(k).Context = Nothing Then
+                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40)
+                                    End If
+                                Next k
+                            Case AVG.WordType.Script
+                                For k = 0 To Scenes(i).Choices.GetUpperBound(0) Step 1
+                                    If Not Scenes(i).Choices(k).Context = Nothing Then
+                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40)
+                                    End If
+                                Next k
+                            Case AVG.WordType.Title
+                                For k = 0 To Scenes(i).Choices.GetUpperBound(0) Step 1
+                                    If Not Scenes(i).Choices(k).Context = Nothing Then
+                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40)
+                                    End If
+                                Next k
+                        End Select
+                    End If
+                Next i
+            End Sub
+
+            Public Sub Work()
+                Scenes(SceneStep).Build()
+                Control()
+            End Sub
+
+            Private Sub Control()
+                If Not Scenes(SceneStep) Is Nothing Then
+                    If Scenes(SceneStep).WordType = AVG.WordType.Loading Or Scenes(SceneStep).WordType = AVG.WordType.Saving Or _
+                        Scenes(SceneStep).WordType = AVG.WordType.Comment Or Scenes(SceneStep).WordType = AVG.WordType.Title Then
+                        If GetKey(Keys.KeyUP) Then
+                            AVGControl = AVGControl - 1
+                            DxVBDLL.DX.WaitTimer(200)
+                        End If
+                        If GetKey(Keys.KeyDOWN) Then
+                            AVGControl = AVGControl + 1
+                            DxVBDLL.DX.WaitTimer(200)
+                        End If
+                        If GetKey(Keys.KeyLEFT) Then
+                            AVGControl = AVGControl - 1
+                            DxVBDLL.DX.WaitTimer(200)
+                        End If
+                        If GetKey(Keys.KeyRIGHT) Then
+                            AVGControl = AVGControl + 1
+                            DxVBDLL.DX.WaitTimer(200)
+                        End If
+
+                        If AVGControl < 0 Then AVGControl = 0
+                        Dim UpTmp As Integer = 0
+                        Do
+                            UpTmp = UpTmp + 1
+                        Loop Until Scenes(SceneStep).Choices(UpTmp).Context = Nothing
+                        UpTmp = UpTmp - 1
+                        If AVGControl > UpTmp Then AVGControl = UpTmp
+
+                        If GetKey(Keys.KeyZ) Then
+                            SceneStep = Scenes(SceneStep).Choices(AVGControl).JumpSceneIndex
+                            DxVBDLL.DX.WaitTimer(200)
+                        End If
+                    Else
+                        If GetKey(Keys.KeyZ) Then
+                            SceneStep = SceneStep + 1
+                            DxVBDLL.DX.WaitTimer(200)
+                        End If
+                    End If
+                End If
+
+            End Sub
+
+        End Class
 
         Public Shared Function LoadConfig(ByVal Path As String) As Config
             Return LoadConfig(False, Path)
@@ -1052,7 +1267,7 @@ Public Class EngineCore
                     End While
                 Catch ex As Exception
                     GoTo Bottom
-                End Try       
+                End Try
 
                 Select Case TmpString(TmpHead)
                     Case "def.name"
@@ -1079,7 +1294,7 @@ Bottom:
         End Function
 
         Public Shared Function LoadScript(ByVal Path As String) As Scene()
-            Dim SceneTmp(4096) As Scene
+            Dim Scenes() As Scene
             Dim SceneIndexTmp, CGIndexTmp, ChoiceAutoIndexTmp As Integer
             Dim FullPath As String = Environment.CurrentDirectory & "\" & Path
             Dim Reader As IO.StreamReader
@@ -1093,6 +1308,7 @@ Bottom:
             End Try
 
             Dim TmpString() As String : Dim TmpHead As Integer
+            ReDim Scenes(4096)
 
             While Not Reader.EndOfStream
                 TmpString = Reader.ReadLine.Split({CChar(Space(1)), CChar(vbCr), CChar(vbTab)})
@@ -1108,50 +1324,50 @@ Bottom:
                 Select Case TmpString(TmpHead)
                     Case "开始定义场景", "defsc", "def.scene"
                         SceneIndexTmp = CInt(TmpString(TmpHead + 1))
-                        SceneTmp(SceneIndexTmp) = New Scene
-                        SceneTmp(SceneIndexTmp).SceneIndex = SceneIndexTmp
+                        Scenes(SceneIndexTmp) = New Scene
+                        Scenes(SceneIndexTmp).SceneIndex = SceneIndexTmp
                     Case "结束定义场景", "endsc", "end.scene"
                         SceneIndexTmp = -1
                     Case "背景", "backg", "set.back"
-                        SceneTmp(SceneIndexTmp).BG.Path = TmpString(TmpHead + 1)
-                        SceneTmp(SceneIndexTmp).BG.Index = SceneIndexTmp
+                        Scenes(SceneIndexTmp).BG.Path = TmpString(TmpHead + 1)
+                        Scenes(SceneIndexTmp).BG.Index = SceneIndexTmp
                     Case "音乐", "music", "set.bgm"
-                        SceneTmp(SceneIndexTmp).BGM = TmpString(TmpHead + 1)
+                        Scenes(SceneIndexTmp).BGM = TmpString(TmpHead + 1)
                     Case "开始定义立绘", "defcg", "def.cg"
                         CGIndexTmp = CInt(TmpString(TmpHead + 1))
-                        SceneTmp(SceneIndexTmp).CG(CGIndexTmp).IMG.Index = CGIndexTmp
+                        Scenes(SceneIndexTmp).CG(CGIndexTmp).IMG.Index = CGIndexTmp
                     Case "结束定义立绘", "endcg", "end.cg"
                         CGIndexTmp = -1
                     Case "立绘地址", "cgloc", "set.path"
-                        SceneTmp(SceneIndexTmp).CG(CGIndexTmp).IMG.Path = TmpString(TmpHead + 1)
+                        Scenes(SceneIndexTmp).CG(CGIndexTmp).IMG.Path = TmpString(TmpHead + 1)
                     Case "立绘位置", "cgpos", "set.pos"
-                        SceneTmp(SceneIndexTmp).CG(CGIndexTmp).Location = CSng(TmpString(TmpHead + 1))
+                        Scenes(SceneIndexTmp).CG(CGIndexTmp).Location = CSng(TmpString(TmpHead + 1))
                     Case "开始定义文字", "defwd", "def.word"
                         ChoiceAutoIndexTmp = 0
                         Select Case TmpString(TmpHead + 1)
                             Case "对话", "comm", "type.comm"
-                                SceneTmp(SceneIndexTmp).WordType = WordType.Comment
+                                Scenes(SceneIndexTmp).WordType = WordType.Comment
                             Case "读档", "read", "type.read"
-                                SceneTmp(SceneIndexTmp).WordType = WordType.Loading
+                                Scenes(SceneIndexTmp).WordType = WordType.Loading
                             Case "存档", "save", "type.save"
-                                SceneTmp(SceneIndexTmp).WordType = WordType.Saving
+                                Scenes(SceneIndexTmp).WordType = WordType.Saving
                             Case "旁白", "scpt", "type.script"
-                                SceneTmp(SceneIndexTmp).WordType = WordType.Script
+                                Scenes(SceneIndexTmp).WordType = WordType.Script
                             Case "标题", "titl", "type.title"
-                                SceneTmp(SceneIndexTmp).WordType = WordType.Title
+                                Scenes(SceneIndexTmp).WordType = WordType.Title
                             Case "启动", "stup", "type.start"
-                                SceneTmp(SceneIndexTmp).WordType = WordType.GameRun
+                                Scenes(SceneIndexTmp).WordType = WordType.GameRun
                         End Select
                     Case "选择", "cword", "set.word"
                         For i = TmpHead + 1 To TmpString.Length - 1
                             If i < TmpString.Length - 1 Then
-                                SceneTmp(SceneIndexTmp).Choices(ChoiceAutoIndexTmp).Context += TmpString(i) & " "
+                                Scenes(SceneIndexTmp).Choices(ChoiceAutoIndexTmp).Context += TmpString(i) & " "
                             Else
-                                SceneTmp(SceneIndexTmp).Choices(ChoiceAutoIndexTmp).Context += TmpString(i)
+                                Scenes(SceneIndexTmp).Choices(ChoiceAutoIndexTmp).Context += TmpString(i)
                             End If
                         Next i
                     Case "跳转", "jmpto", "set.jump"
-                        SceneTmp(SceneIndexTmp).Choices(ChoiceAutoIndexTmp).JumpSceneIndex = CInt(TmpString(TmpHead + 1))
+                        Scenes(SceneIndexTmp).Choices(ChoiceAutoIndexTmp).JumpSceneIndex = CInt(TmpString(TmpHead + 1))
                         ChoiceAutoIndexTmp = ChoiceAutoIndexTmp + 1
                     Case "结束定义文字", "endwd", "end.word"
                         ChoiceAutoIndexTmp = -1
@@ -1160,210 +1376,210 @@ Bottom:
 Bottom:
             End While
 
-            Return SceneTmp
+            Return Scenes
         End Function
 
-        Public Shared Function LoadScript(ByVal IsFullPath As Boolean, ByVal ScriptPath As String) As Scene()
-            Dim SceneTmp(4096) As Scene
-            Dim SceneIndexTmp As Integer = Nothing
-            Dim CGIndexTmp As Integer = Nothing
-            Dim ChoiceAutoIndexTmp As Integer = Nothing
-            Dim ScriptFullPath As String = ""
-            Dim AppStartPath As String = Environment.CurrentDirectory & "\"        '获取当前位置
+        '        Public Shared Function LoadScript(ByVal IsFullPath As Boolean, ByVal ScriptPath As String) As Scene()
+        '            Dim SceneTmp(4096) As Scene
+        '            Dim SceneIndexTmp As Integer = Nothing
+        '            Dim CGIndexTmp As Integer = Nothing
+        '            Dim ChoiceAutoIndexTmp As Integer = Nothing
+        '            Dim ScriptFullPath As String = ""
+        '            Dim AppStartPath As String = Environment.CurrentDirectory & "\"        '获取当前位置
 
-            If IsFullPath Then        '确定脚本是在程序目录下被代码自动调用，还是手动选择调用
-                ScriptFullPath = ScriptPath
-            Else
-                ScriptFullPath = AppStartPath & ScriptPath
-            End If
+        '            If IsFullPath Then        '确定脚本是在程序目录下被代码自动调用，还是手动选择调用
+        '                ScriptFullPath = ScriptPath
+        '            Else
+        '                ScriptFullPath = AppStartPath & ScriptPath
+        '            End If
 
-            Dim Head As ScriptHead = ScriptHead.NULL        '定义脚本头
-            Dim LineBreak As Integer = 10        '设定换行符
-            Dim Size As Long = Microsoft.VisualBasic.FileIO.FileSystem.GetFileInfo(ScriptFullPath).Length     '获取文件大小
-            Dim CookedString As String = ""     '定义已处理字符串变量
-            Dim WordTmp As String = ""        '定义选择文字临时变量
-            Dim Strings As String = Microsoft.VisualBasic.FileIO.FileSystem.ReadAllText(ScriptFullPath, System.Text.Encoding.UTF8)     '读取文件
-            Dim Steps As Integer = Strings.Length     '获取字符串长度
-            Dim x As Integer = 0, y As Integer = 0      '定义循环控制变量
+        '            Dim Head As ScriptHead = ScriptHead.NULL        '定义脚本头
+        '            Dim LineBreak As Integer = 10        '设定换行符
+        '            Dim Size As Long = Microsoft.VisualBasic.FileIO.FileSystem.GetFileInfo(ScriptFullPath).Length     '获取文件大小
+        '            Dim CookedString As String = ""     '定义已处理字符串变量
+        '            Dim WordTmp As String = ""        '定义选择文字临时变量
+        '            Dim Strings As String = Microsoft.VisualBasic.FileIO.FileSystem.ReadAllText(ScriptFullPath, System.Text.Encoding.UTF8)     '读取文件
+        '            Dim Steps As Integer = Strings.Length     '获取字符串长度
+        '            Dim x As Integer = 0, y As Integer = 0      '定义循环控制变量
 
-            Do Until x >= Steps     '检测是否读到文件结尾
-                Do Until Strings.Chars(x) = " " Or Strings.Chars(x) = Chr(LineBreak)    '检测是否读到空格或行结尾,并避开回车符
-                    CookedString = CookedString & Strings.Chars(x)     '存入已处理字符串变量数组
-                    x = x + 1     '下一个字符
-                    If x = Steps Then                '这个String的编号（String.Chars(Integer)）是从0开始的，这里防止数组越界。
-                        GoTo EndFlag                 '即字符数为Num的字符串其编号为0到Num-1，上面的+1实际已经超出界限，这里检
-                    End If                           '测并跳出。
-                Loop
-                Select Case Head
-                    Case ScriptHead.NULL
-                        Select Case CookedString
-                            Case "开始定义场景", "defsc", "def.scene"
-                                Head = ScriptHead.StartSceneDim
-                            Case "结束定义场景", "endsc", "end.scene"
-                                Head = ScriptHead.EndSceneDim
-                            Case "背景", "backg", "set.back"
-                                Head = ScriptHead.Background
-                            Case "音乐", "music", "set.bgm"
-                                Head = ScriptHead.BGM
-                            Case "开始定义立绘", "defcg", "def.cg"
-                                Head = ScriptHead.StartCGDim
-                            Case "结束定义立绘", "endcg", "end.cg"
-                                Head = ScriptHead.EndCGDim
-                            Case "立绘地址", "cgloc", "set.path"
-                                Head = ScriptHead.CGPath
-                            Case "立绘位置", "cgpos", "set.pos"
-                                Head = ScriptHead.CGLocation
-                            Case "开始定义文字", "defwd", "def.word"
-                                Head = ScriptHead.StartWordDim
-                            Case "选择", "cword", "set.word"
-                                Head = ScriptHead.Choice
-                            Case "跳转", "jmpto", "set.jump"
-                                Head = ScriptHead.Jump
-                            Case "结束定义文字", "endwd", "end.word"
-                                Head = ScriptHead.EndWordDim
-                        End Select
-                    Case ScriptHead.StartSceneDim
-                        SceneIndexTmp = CInt(CookedString)
-                        SceneTmp(SceneIndexTmp) = New Scene
-                        SceneTmp(SceneIndexTmp).SceneIndex = SceneIndexTmp
-                        Head = ScriptHead.NULL
-                    Case ScriptHead.EndSceneDim
-                        SceneTmp = Nothing
-                        Head = ScriptHead.NULL
-                    Case ScriptHead.Background
-                        SceneTmp(SceneIndexTmp).BG.Path = AppStartPath & CookedString
-                        SceneTmp(SceneIndexTmp).BG.Index = SceneIndexTmp
-                        Head = ScriptHead.NULL
-                    Case ScriptHead.BGM
-                        SceneTmp(SceneIndexTmp).BGM = AppStartPath & CookedString
-                        Head = ScriptHead.NULL
-                    Case ScriptHead.StartCGDim
-                        CGIndexTmp = CInt(CookedString)
-                        SceneTmp(SceneIndexTmp).CG(CGIndexTmp).IMG.Index = CGIndexTmp
-                        Head = ScriptHead.NULL
-                    Case ScriptHead.EndCGDim
-                        CGIndexTmp = Nothing
-                        Head = ScriptHead.NULL
-                    Case ScriptHead.CGPath
-                        SceneTmp(SceneIndexTmp).CG(CGIndexTmp).IMG.Path = AppStartPath & CookedString
-                        Head = ScriptHead.NULL
-                    Case ScriptHead.CGLocation
-                        SceneTmp(SceneIndexTmp).CG(CGIndexTmp).Location = CSng(CookedString)
-                        Head = ScriptHead.NULL
-                    Case ScriptHead.StartWordDim
-                        ChoiceAutoIndexTmp = 0
-                        Select Case CookedString
-                            Case "对话" & vbCr, "comm" & vbCr, "type.comm" & vbCr
-                                SceneTmp(SceneIndexTmp).WordType = WordType.Comment
-                            Case "读档" & vbCr, "read" & vbCr, "type.read" & vbCr
-                                SceneTmp(SceneIndexTmp).WordType = WordType.Loading
-                            Case "存档" & vbCr, "save" & vbCr, "type.save" & vbCr
-                                SceneTmp(SceneIndexTmp).WordType = WordType.Saving
-                            Case "旁白" & vbCr, "scpt" & vbCr, "type.script" & vbCr
-                                SceneTmp(SceneIndexTmp).WordType = WordType.Script
-                            Case "标题" & vbCr, "titl" & vbCr, "type.title" & vbCr
-                                SceneTmp(SceneIndexTmp).WordType = WordType.Title
-                            Case "启动" & vbCr, "stup" & vbCr, "type.start" & vbCr
-                                SceneTmp(SceneIndexTmp).WordType = WordType.GameRun
-                        End Select
-                        Head = ScriptHead.NULL
-                    Case ScriptHead.Choice
-                        WordTmp = WordTmp & CookedString & " "
-                        If Strings.Chars(x) = Chr(LineBreak) Then
-                            SceneTmp(SceneIndexTmp).Choices(ChoiceAutoIndexTmp).Context = WordTmp
-                            WordTmp = ""
-                            Head = ScriptHead.NULL
-                        End If
-                    Case ScriptHead.Jump
-                        SceneTmp(SceneIndexTmp).Choices(ChoiceAutoIndexTmp).JumpSceneIndex = CInt(CookedString)
-                        ChoiceAutoIndexTmp = ChoiceAutoIndexTmp + 1
-                        Head = ScriptHead.NULL
-                    Case ScriptHead.EndWordDim
-                        ChoiceAutoIndexTmp = 0
-                        Head = ScriptHead.NULL
-                End Select
+        '            Do Until x >= Steps     '检测是否读到文件结尾
+        '                Do Until Strings.Chars(x) = " " Or Strings.Chars(x) = Chr(LineBreak)    '检测是否读到空格或行结尾,并避开回车符
+        '                    CookedString = CookedString & Strings.Chars(x)     '存入已处理字符串变量数组
+        '                    x = x + 1     '下一个字符
+        '                    If x = Steps Then                '这个String的编号（String.Chars(Integer)）是从0开始的，这里防止数组越界。
+        '                        GoTo EndFlag                 '即字符数为Num的字符串其编号为0到Num-1，上面的+1实际已经超出界限，这里检
+        '                    End If                           '测并跳出。
+        '                Loop
+        '                Select Case Head
+        '                    Case ScriptHead.NULL
+        '                        Select Case CookedString
+        '                            Case "开始定义场景", "defsc", "def.scene"
+        '                                Head = ScriptHead.StartSceneDim
+        '                            Case "结束定义场景", "endsc", "end.scene"
+        '                                Head = ScriptHead.EndSceneDim
+        '                            Case "背景", "backg", "set.back"
+        '                                Head = ScriptHead.Background
+        '                            Case "音乐", "music", "set.bgm"
+        '                                Head = ScriptHead.BGM
+        '                            Case "开始定义立绘", "defcg", "def.cg"
+        '                                Head = ScriptHead.StartCGDim
+        '                            Case "结束定义立绘", "endcg", "end.cg"
+        '                                Head = ScriptHead.EndCGDim
+        '                            Case "立绘地址", "cgloc", "set.path"
+        '                                Head = ScriptHead.CGPath
+        '                            Case "立绘位置", "cgpos", "set.pos"
+        '                                Head = ScriptHead.CGLocation
+        '                            Case "开始定义文字", "defwd", "def.word"
+        '                                Head = ScriptHead.StartWordDim
+        '                            Case "选择", "cword", "set.word"
+        '                                Head = ScriptHead.Choice
+        '                            Case "跳转", "jmpto", "set.jump"
+        '                                Head = ScriptHead.Jump
+        '                            Case "结束定义文字", "endwd", "end.word"
+        '                                Head = ScriptHead.EndWordDim
+        '                        End Select
+        '                    Case ScriptHead.StartSceneDim
+        '                        SceneIndexTmp = CInt(CookedString)
+        '                        SceneTmp(SceneIndexTmp) = New Scene
+        '                        SceneTmp(SceneIndexTmp).SceneIndex = SceneIndexTmp
+        '                        Head = ScriptHead.NULL
+        '                    Case ScriptHead.EndSceneDim
+        '                        SceneTmp = Nothing
+        '                        Head = ScriptHead.NULL
+        '                    Case ScriptHead.Background
+        '                        SceneTmp(SceneIndexTmp).BG.Path = AppStartPath & CookedString
+        '                        SceneTmp(SceneIndexTmp).BG.Index = SceneIndexTmp
+        '                        Head = ScriptHead.NULL
+        '                    Case ScriptHead.BGM
+        '                        SceneTmp(SceneIndexTmp).BGM = AppStartPath & CookedString
+        '                        Head = ScriptHead.NULL
+        '                    Case ScriptHead.StartCGDim
+        '                        CGIndexTmp = CInt(CookedString)
+        '                        SceneTmp(SceneIndexTmp).CG(CGIndexTmp).IMG.Index = CGIndexTmp
+        '                        Head = ScriptHead.NULL
+        '                    Case ScriptHead.EndCGDim
+        '                        CGIndexTmp = Nothing
+        '                        Head = ScriptHead.NULL
+        '                    Case ScriptHead.CGPath
+        '                        SceneTmp(SceneIndexTmp).CG(CGIndexTmp).IMG.Path = AppStartPath & CookedString
+        '                        Head = ScriptHead.NULL
+        '                    Case ScriptHead.CGLocation
+        '                        SceneTmp(SceneIndexTmp).CG(CGIndexTmp).Location = CSng(CookedString)
+        '                        Head = ScriptHead.NULL
+        '                    Case ScriptHead.StartWordDim
+        '                        ChoiceAutoIndexTmp = 0
+        '                        Select Case CookedString
+        '                            Case "对话" & vbCr, "comm" & vbCr, "type.comm" & vbCr
+        '                                SceneTmp(SceneIndexTmp).WordType = WordType.Comment
+        '                            Case "读档" & vbCr, "read" & vbCr, "type.read" & vbCr
+        '                                SceneTmp(SceneIndexTmp).WordType = WordType.Loading
+        '                            Case "存档" & vbCr, "save" & vbCr, "type.save" & vbCr
+        '                                SceneTmp(SceneIndexTmp).WordType = WordType.Saving
+        '                            Case "旁白" & vbCr, "scpt" & vbCr, "type.script" & vbCr
+        '                                SceneTmp(SceneIndexTmp).WordType = WordType.Script
+        '                            Case "标题" & vbCr, "titl" & vbCr, "type.title" & vbCr
+        '                                SceneTmp(SceneIndexTmp).WordType = WordType.Title
+        '                            Case "启动" & vbCr, "stup" & vbCr, "type.start" & vbCr
+        '                                SceneTmp(SceneIndexTmp).WordType = WordType.GameRun
+        '                        End Select
+        '                        Head = ScriptHead.NULL
+        '                    Case ScriptHead.Choice
+        '                        WordTmp = WordTmp & CookedString & " "
+        '                        If Strings.Chars(x) = Chr(LineBreak) Then
+        '                            SceneTmp(SceneIndexTmp).Choices(ChoiceAutoIndexTmp).Context = WordTmp
+        '                            WordTmp = ""
+        '                            Head = ScriptHead.NULL
+        '                        End If
+        '                    Case ScriptHead.Jump
+        '                        SceneTmp(SceneIndexTmp).Choices(ChoiceAutoIndexTmp).JumpSceneIndex = CInt(CookedString)
+        '                        ChoiceAutoIndexTmp = ChoiceAutoIndexTmp + 1
+        '                        Head = ScriptHead.NULL
+        '                    Case ScriptHead.EndWordDim
+        '                        ChoiceAutoIndexTmp = 0
+        '                        Head = ScriptHead.NULL
+        '                End Select
 
-                CookedString = ""
+        '                CookedString = ""
 
-                If Strings.Chars(x) = " " Or Strings.Chars(x) = Chr(LineBreak) Then     '检测是否读到行结尾
-                    x = x + 1
-                End If
+        '                If Strings.Chars(x) = " " Or Strings.Chars(x) = Chr(LineBreak) Then     '检测是否读到行结尾
+        '                    x = x + 1
+        '                End If
 
-            Loop
-EndFlag:
-            Return SceneTmp
-        End Function
+        '            Loop
+        'EndFlag:
+        '            Return SceneTmp
+        '        End Function
 
-        Public Shared Sub BuildScene(ByVal Scene As Scene)
-            If Not Scene Is Nothing Then
-                If Not Scene.BG.Path = Nothing Or Not Scene.BG.Path = "" Then
-                    DxVB.DrawPic(ImageArray(IMAGE_BG, Scene.BG.Index), 960, 540)
-                End If
-                For i = 0 To Scene.CG.GetUpperBound(0) Step 1
-                    If Not Scene.CG(i).IMG.Path = Nothing Or Not Scene.CG(i).IMG.Path = "" Then
-                        DxVB.DrawPic(ImageArray(IMAGE_CG, Scene.CG(i).IMG.Index), Scene.CG(i).Location, 800)
-                    End If
-                Next i
-                Select Case Scene.WordType
-                    Case WordType.Comment
-                        For i = 0 To Scene.Choices.GetUpperBound(0) Step 1
-                            If Not Scene.Choices(i).Handle = Nothing Then
-                                'DxLibDLL.DX.DrawString(100, 900 + i * 20, Scene.Choices(i).Handle, 16777215)
-                                DxVB.DrawString(100, 500 + i * 100, Scene.Choices(i).Handle)
-                                'DxLibDLL.DX.DrawString(100, 900 + AVGControl * 20, Scene.Choices(AVGControl).Context, 65535)
-                                DxVB.DrawPic(ImageArray(IMAGE_BULLET, 0), 100, 550 + AVGControl * 100)
-                            End If
-                        Next i
-                    Case WordType.GameRun
-                        For i = 0 To Scene.Choices.GetUpperBound(0) Step 1
-                            If Not Scene.Choices(i).Handle = Nothing Then
-                                'DxLibDLL.DX.DrawString(100, 400 + i * 20, Scene.Choices(i).Handle, 16777215)
-                                DxVB.DrawString(100, 400 + i * 200, Scene.Choices(i).Handle)
-                            End If
-                        Next i
-                    Case WordType.Loading
-                        For i = 0 To Scene.Choices.GetUpperBound(0) Step 1
-                            If Not Scene.Choices(i).Handle = Nothing Then
-                                'DxLibDLL.DX.DrawString(100, 100 + i * 20, Scene.Choices(i).Handle, 16777215)
-                                DxVB.DrawString(100, 100 + i * 100, Scene.Choices(i).Handle)
-                                'DxLibDLL.DX.DrawString(100, 100 + AVGControl * 20, Scene.Choices(AVGControl).Context, 65535)
-                                DxVB.DrawPic(ImageArray(IMAGE_BULLET, 0), 100, 150 + AVGControl * 100)
-                            End If
-                        Next i
-                    Case WordType.Saving
-                        For i = 0 To Scene.Choices.GetUpperBound(0) Step 1
-                            If Not Scene.Choices(i).Handle = Nothing Then
-                                'DxLibDLL.DX.DrawString(100, 100 + i * 20, Scene.Choices(i).Handle, 16777215)
-                                DxVB.DrawString(100, 100 + i * 100, Scene.Choices(i).Handle)
-                                'DxLibDLL.DX.DrawString(100, 100 + AVGControl * 20, Scene.Choices(AVGControl).Context, 65535)
-                                DxVB.DrawPic(ImageArray(IMAGE_BULLET, 0), 100, 150 + AVGControl * 100)
-                            End If
-                        Next i
-                    Case WordType.Script
-                        For i = 0 To Scene.Choices.GetUpperBound(0) Step 1
-                            If Not Scene.Choices(i).Handle = Nothing Then
-                                'DxLibDLL.DX.DrawString(100, 900 + i * 20, Scene.Choices(i).Handle, 16777215)
-                                DxVB.DrawString(100, 600 + i * 100, Scene.Choices(i).Handle)
-                            End If
-                        Next i
-                    Case WordType.Title
-                        For i = 0 To Scene.Choices.GetUpperBound(0) Step 1
-                            If Not Scene.Choices(i).Handle = Nothing Then
-                                'DxLibDLL.DX.DrawString(920, 100 + i * 20, Scene.Choices(i).Handle, 16777215)
-                                DxVB.DrawString(800, 100 + i * 100, Scene.Choices(i).Handle)
-                                'DxLibDLL.DX.DrawString(920, 100 + AVGControl * 20, Scene.Choices(AVGControl).Context, 65535)
-                                DxVB.DrawPic(ImageArray(IMAGE_BULLET, 0), 800, 150 + AVGControl * 100)
-                            End If
-                        Next i
-                End Select
+        'Public Shared Sub BuildScene(ByVal Scene As Scene)
+        '    If Not Scene Is Nothing Then
+        '        If Not Scene.BG.Path = Nothing Or Not Scene.BG.Path = "" Then
+        '            DxVB.DrawPic(ImageArray(IMAGE_BG, Scene.BG.Index), 960, 540)
+        '        End If
+        '        For i = 0 To Scene.CG.GetUpperBound(0) Step 1
+        '            If Not Scene.CG(i).IMG.Path = Nothing Or Not Scene.CG(i).IMG.Path = "" Then
+        '                DxVB.DrawPic(ImageArray(IMAGE_CG, Scene.CG(i).IMG.Index), Scene.CG(i).Location, 800)
+        '            End If
+        '        Next i
+        '        Select Case Scene.WordType
+        '            Case WordType.Comment
+        '                For i = 0 To Scene.Choices.GetUpperBound(0) Step 1
+        '                    If Not Scene.Choices(i).Handle = Nothing Then
+        '                        'DxLibDLL.DX.DrawString(100, 900 + i * 20, Scene.Choices(i).Handle, 16777215)
+        '                        DxVB.DrawString(100, 500 + i * 100, Scene.Choices(i).Handle)
+        '                        'DxLibDLL.DX.DrawString(100, 900 + AVGControl * 20, Scene.Choices(AVGControl).Context, 65535)
+        '                        DxVB.DrawPic(ImageArray(IMAGE_BULLET, 0), 100, 550 + AVGControl * 100)
+        '                    End If
+        '                Next i
+        '            Case WordType.GameRun
+        '                For i = 0 To Scene.Choices.GetUpperBound(0) Step 1
+        '                    If Not Scene.Choices(i).Handle = Nothing Then
+        '                        'DxLibDLL.DX.DrawString(100, 400 + i * 20, Scene.Choices(i).Handle, 16777215)
+        '                        DxVB.DrawString(100, 400 + i * 200, Scene.Choices(i).Handle)
+        '                    End If
+        '                Next i
+        '            Case WordType.Loading
+        '                For i = 0 To Scene.Choices.GetUpperBound(0) Step 1
+        '                    If Not Scene.Choices(i).Handle = Nothing Then
+        '                        'DxLibDLL.DX.DrawString(100, 100 + i * 20, Scene.Choices(i).Handle, 16777215)
+        '                        DxVB.DrawString(100, 100 + i * 100, Scene.Choices(i).Handle)
+        '                        'DxLibDLL.DX.DrawString(100, 100 + AVGControl * 20, Scene.Choices(AVGControl).Context, 65535)
+        '                        DxVB.DrawPic(ImageArray(IMAGE_BULLET, 0), 100, 150 + AVGControl * 100)
+        '                    End If
+        '                Next i
+        '            Case WordType.Saving
+        '                For i = 0 To Scene.Choices.GetUpperBound(0) Step 1
+        '                    If Not Scene.Choices(i).Handle = Nothing Then
+        '                        'DxLibDLL.DX.DrawString(100, 100 + i * 20, Scene.Choices(i).Handle, 16777215)
+        '                        DxVB.DrawString(100, 100 + i * 100, Scene.Choices(i).Handle)
+        '                        'DxLibDLL.DX.DrawString(100, 100 + AVGControl * 20, Scene.Choices(AVGControl).Context, 65535)
+        '                        DxVB.DrawPic(ImageArray(IMAGE_BULLET, 0), 100, 150 + AVGControl * 100)
+        '                    End If
+        '                Next i
+        '            Case WordType.Script
+        '                For i = 0 To Scene.Choices.GetUpperBound(0) Step 1
+        '                    If Not Scene.Choices(i).Handle = Nothing Then
+        '                        'DxLibDLL.DX.DrawString(100, 900 + i * 20, Scene.Choices(i).Handle, 16777215)
+        '                        DxVB.DrawString(100, 600 + i * 100, Scene.Choices(i).Handle)
+        '                    End If
+        '                Next i
+        '            Case WordType.Title
+        '                For i = 0 To Scene.Choices.GetUpperBound(0) Step 1
+        '                    If Not Scene.Choices(i).Handle = Nothing Then
+        '                        'DxLibDLL.DX.DrawString(920, 100 + i * 20, Scene.Choices(i).Handle, 16777215)
+        '                        DxVB.DrawString(800, 100 + i * 100, Scene.Choices(i).Handle)
+        '                        'DxLibDLL.DX.DrawString(920, 100 + AVGControl * 20, Scene.Choices(AVGControl).Context, 65535)
+        '                        DxVB.DrawPic(ImageArray(IMAGE_BULLET, 0), 800, 150 + AVGControl * 100)
+        '                    End If
+        '                Next i
+        '        End Select
 
-                If Not Scene.BGM = Nothing Then
-                    DxVB.PlayMusic(Scene.BGM)
-                End If
+        '        If Not Scene.BGM = Nothing Then
+        '            DxVB.PlayMusic(Scene.BGM)
+        '        End If
 
-                Scene.IsBuilt = True
-            End If
-        End Sub
+        '        Scene.IsBuilt = True
+        '    End If
+        'End Sub
 
     End Class
 

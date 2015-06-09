@@ -2,12 +2,22 @@
 Public Class Game
     Private ExitFlag As Boolean = False
     Private Config_Obj As New AVG.Config
-    Private Scene() As AVG.Scene
+    Private AVGGame As AVG.AVGCore
     Private FPS_Obj As Base.FPSCounter
+    Private MsgBox As New Message
 
-    Public Sub New()
+    Public Sub New(ByRef Config As AVG.Config)
         FPS_Obj = New Base.FPSCounter()
+        Config_Obj = Config
+    End Sub
 
+    Public Sub Initilize()
+        DxVB.DxTitle(Config_Obj.GameName)
+        AVGGame = New AVG.AVGCore("DATAs\Image\Cursor.png")
+        MsgBox.MsgShow("Loading", "Loading resources...", False, False)
+        AVGGame.LoadScenes(AVG.LoadScript(Config_Obj.SavePath))
+        AVGGame.ResourcesLoad()
+        MsgBox.HideMe()
     End Sub
 
     Public Sub Work()
@@ -23,7 +33,7 @@ Public Class Game
     End Function
 
     Private Sub Render()
-
+        AVGGame.Work()
     End Sub
 
     Private Sub Control()

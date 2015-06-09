@@ -6,7 +6,7 @@ Public Class CtrlEdit
     Public Flag As Integer = -1
     Private GameObj As Game
     Private MsgBox As New Message
-    Private Config_obj As AVG.Config
+    Private Config_Tmp As AVG.Config
 
     Private Function LaunchWindow() As Boolean
         If DMode1.IsChecked Then If DxVB.DxInit(My.Resources.Icon.Handle, GameTitle, IsFullScreen.IsChecked, 1280, 720, 1, 1) Then GoTo ExitFlag
@@ -26,29 +26,29 @@ ExitFlag:
         Flag = 1
         Me.IsEnabled = False
 
-        MsgBox.MsgShow("Loading", "Loading game", False, False)
+        MsgBox.MsgShow("Initilizing", "Initilizing engine", False, False)
 
         If LaunchWindow() Then
-            GameObj = New Game
+            GameObj = New Game(Config_Tmp)
             MsgBox.HideMe()
             Do
                 GameObj.Work()
             Loop Until GameObj.GetExitFlag() Or DxVB.DxEndInfo = -1
             DxVB.DxEnd()
         Else
-            MsgBox.MsgShow("Warning", "Initilize game failed")
+            MsgBox.MsgShow("Warning", "Initilize engine failed")
         End If
         Flag = 0
         Me.IsEnabled = True
     End Sub  
 
     Private Sub BtnLoadConfig_Click(sender As Object, e As RoutedEventArgs)
-        'Config_obj = AVG.LoadConfig("DATAs\Config.txt")
-        'MsgBox.MsgShow("Finsih", "Script load finished")
+        Config_Tmp = AVG.LoadConfig("DATAs\Config.txt")
+        MsgBox.MsgShow("Finsih", "Script load finished")
     End Sub
 
     Private Sub BtnLoadScript_Click(sender As Object, e As RoutedEventArgs)
-        'AVG.LoadScript(Config_obj.SavePath)
+
     End Sub
 
     Private Sub BtnScriptHelp_Click(sender As Object, e As RoutedEventArgs)

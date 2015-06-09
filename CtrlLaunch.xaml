@@ -51,7 +51,7 @@
                 Background="{DynamicResource PrimaryHueMidBrush}" BorderBrush="{DynamicResource PrimaryHueMidBrush}" Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" Click="Launch_Click"/>
         <Label Content="Set Volume" Margin="110,213,226,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="30" />
         <Slider x:Name="CtrlVol" Margin="57,248,182,0" VerticalAlignment="Top" Height="30" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" LargeChange="10" Maximum="100" SmallChange="1"/>
-        <Button x:Name="BtnNewConfig" Content="New Config" Margin="351,30,19,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+        <Button x:Name="BtnNewConfig" Content="New Config" Margin="351,30,19,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource PrimaryHueMidBrush}" Click="BtnNewConfig_Click"/>
         <Button x:Name="BtnEditConfig" Content="Edit Config" Margin="351,67,19,0" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueMidBrush}" BorderBrush="{x:Null}" Background="{x:Null}"/>
         <Button x:Name="BtnConfigHelp" Content="Config Help" Margin="351,104,19,0" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueMidBrush}" BorderBrush="{x:Null}" Background="{x:Null}"/>
     </Grid>
