@@ -463,6 +463,12 @@ Public Class EngineCore
             DX.PlaySoundFile(Path, DX.DX_PLAYTYPE_BACK)
         End Sub
 
+        Public Shared Sub PlayMusic(ByRef Music As AVG.Music)
+            If Not Music.Handle = -1 Then
+                DX.PlayMusicMem(Music.Handle, DX.DX_PLAYTYPE_LOOP)
+            End If
+        End Sub
+
         Public Shared Sub PlayMusic(ByVal Handle As Integer)
             DX.PlayMusicMem(Handle, DX.DX_PLAYTYPE_LOOP)
         End Sub
@@ -509,8 +515,17 @@ Public Class EngineCore
             End If
         End Function
 
-        Public Shared Function LoadMuisc(ByRef Path As String)
+        Public Shared Function LoadMuisc(ByRef Path As String) As Integer
             Return DX.LoadMusicMem(Path)
+        End Function
+
+        Public Shared Function LoadMuisc(ByRef Music As AVG.Music)
+            Music.Handle = DX.LoadMusicMem(Music.Path)
+            If Music.Handle = -1 Then
+                Return False
+            Else
+                Return True
+            End If
         End Function
 
         Public Shared Sub DrawPic(ByRef Image As DxImage, ByVal x As Single, ByVal y As Single)
@@ -994,6 +1009,10 @@ Public Class EngineCore
             Public Path As String
             Public Index As Integer
         End Structure
+        Public Structure Music
+            Public Path As String
+            Public Handle As Integer
+        End Structure
         Public Structure PicObj
             Public Location As Single     'Can use Enum
             Public IMG As Image
@@ -1035,16 +1054,19 @@ Public Class EngineCore
             Public SceneIndex As Integer
             Public BG As Image
             Public CG() As PicObj
-            Public BGM As String
+            Public BGM As Music
             Public WordType As WordType
             Public Choices() As Selection
             Public IsBuilt As Boolean
             Public Sub New()
                 IsBuilt = False
                 SceneIndex = -1
+                BG = New Image
                 BG.Path = ""
                 BG.Index = -1
-                BGM = ""
+                BGM = New Music
+                BGM.Path = ""
+                BGM.Handle = -1
                 WordType = -1
                 ReDim CG(10)
                 ReDim Choices(100)
@@ -1103,7 +1125,7 @@ Public Class EngineCore
                             Next i
                     End Select
 
-                    If Not BGM = Nothing Then
+                    If Not IsBuilt Then
                         DxVB.PlayMusic(BGM)
                     End If
 
@@ -1136,6 +1158,7 @@ Public Class EngineCore
                 For i = 0 To Scenes.GetUpperBound(0) Step 1
                     If Not Scenes(i) Is Nothing Then
                         FlagTmp = FlagTmp And DxVB.LoadTexture(Scenes(i).BG.Path, Scenes(i).BG.Texture)
+                        Scenes(i).BGM.Handle = DxVB.LoadMuisc(Scenes(i).BGM.Path)
                         If FlagTmp = False Then Return False
                         For j = 0 To Scenes(i).CG.GetUpperBound(0) Step 1
                             If Not Scenes(i).CG(j).IMG.Path = Nothing Then
@@ -1332,7 +1355,7 @@ Bottom:
                         Scenes(SceneIndexTmp).BG.Path = TmpString(TmpHead + 1)
                         Scenes(SceneIndexTmp).BG.Index = SceneIndexTmp
                     Case "音乐", "music", "set.bgm"
-                        Scenes(SceneIndexTmp).BGM = TmpString(TmpHead + 1)
+                        Scenes(SceneIndexTmp).BGM.Path = TmpString(TmpHead + 1)
                     Case "开始定义立绘", "defcg", "def.cg"
                         CGIndexTmp = CInt(TmpString(TmpHead + 1))
                         Scenes(SceneIndexTmp).CG(CGIndexTmp).IMG.Index = CGIndexTmp

@@ -1,6 +1,6 @@
 ﻿def.scene 0
 	set.back DATAs\Image\back01.png
-	#set.bgm DATAs\Music\bgm01.mp3
+	set.bgm DATAs\Music\bgm01.mp3
 	def.cg 1
 		set.path DATAs\Image\cg01.png
 		set.pos 200
@@ -72,7 +72,7 @@ end.scene
 
 def.scene 4
 	set.back DATAs\Image\back01.png
-	#set.bgm DATAs\Music\bgm02.mp3
+	set.bgm DATAs\Music\bgm02.mp3
 	def.cg 1
 		set.path DATAs\Image\cg01.png
 		set.pos 1000
