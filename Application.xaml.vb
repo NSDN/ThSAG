@@ -6,6 +6,7 @@ Class Application
     Sub Start() Handles Me.Startup
         LoadFrom("DLLs\Core86.dll")
         LoadFrom("DLLs\Core128.dll")
+
     End Sub
 
 End Class

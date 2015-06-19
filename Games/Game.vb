@@ -16,6 +16,11 @@ Public Class Game
         AVGGame = New AVG.AVGCore("DATAs\Image\Cursor.png")
         MsgBox.MsgShow("Loading", "Loading resources...", False, False)
         AVGGame.LoadScenes(AVG.LoadScript(Config_Obj.SavePath))
+        If Config_Obj.ScriptCount > 0 Then
+            For i = 0 To Config_Obj.ScriptCount - 1 Step 1
+                AVGGame.LoadScenes(AVG.LoadScript(Config_Obj.ScriptPath(i)))
+            Next i
+        End If
         AVGGame.ResourcesLoad()
         MsgBox.HideMe()
     End Sub

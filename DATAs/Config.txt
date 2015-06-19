@@ -1,2 +1,0 @@
-﻿def.name ThSAG ver0.001
-def.save DATAs\SAVEs\Save.save

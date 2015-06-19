@@ -1,86 +1,56 @@
 ﻿def.scene 0
-	set.back DATAs\Image\back01.png
-	set.bgm DATAs\Music\bgm01.mp3
+	set.back DATAs\Image\Back.png
 	def.cg 1
-		set.path DATAs\Image\cg01.png
-		set.pos 200
+		set.path DATAs\Image\Logo.png
+		set.pos 960
 	end.cg
-	def.word type.comm
-		set.word Hello Gensokyo!
-		set.jump 1
-		set.word Emm...
+	def.word type.start
+		set.word 
+		set.jump 0
+		set.word 
+		set.jump 0
+		set.word 
+		set.jump 0
+		set.word 
+		set.jump 0
+		set.word 
+		set.jump 0
+		set.word             Copyright © NSDN 2015
 		set.jump 0
 	end.word
 end.scene
 
 def.scene 1
-	set.back DATAs\Image\back01.png
-	#set.bgm DATAs\Music\bgm01.mp3
+	set.back DATAs\Image\Back.png
 	def.cg 1
-		set.path DATAs\Image\cg01.png
-		set.pos 400
+		set.path DATAs\Image\Logo.png
+		set.pos 1200
 	end.cg
-	def.word type.comm
-		set.word 测试脚本
+	def.word type.title
+		set.word Game Start
 		set.jump 2
-		set.word BGM测试
-		set.jump 1
-	end.word
-end.scene
-
-def.scene 2
-	set.back DATAs\Image\back01.png
-	#set.bgm DATAs\Music\bgm01.mp3
-	def.cg 1
-		set.path DATAs\Image\cg01.png
-		set.pos 600
-	end.cg
-	def.word type.read
-		set.word 目前Scene2
+		set.word About
 		set.jump 3
-		set.word 第二行
-		set.jump 2
-		set.word 第三行
-		set.jump 2
-		set.word 第四行
-		set.jump 2
-		set.word 第五行
-		set.jump 2
-		set.word 第六行
-		set.jump 2
 	end.word
 end.scene
 
 def.scene 3
-	set.back DATAs\Image\back01.png
-	#set.bgm DATAs\Music\bgm01.mp3
-	def.cg 1
-		set.path DATAs\Image\cg01.png
-		set.pos 800
-	end.cg
-	def.word type.start
-		set.word 启动界面，无法选择
-		set.jump 4
-		set.word 多行测试
-		set.jump 4
-		set.word 多行测试
-		set.jump 4
-		set.word 多行测试
-		set.jump 4
-	end.word
-end.scene
-
-def.scene 4
-	set.back DATAs\Image\back01.png
-	set.bgm DATAs\Music\bgm02.mp3
-	def.cg 1
-		set.path DATAs\Image\cg01.png
-		set.pos 1000
-	end.cg
-	def.word type.comm
-		set.word 回到开始
+	set.back DATAs\Image\Back.png
+	
+	def.word type.save
+		set.word         大型企划
+		set.jump 3
+		set.word     囧囧的奇妙历险 之
+		set.jump 3
+		set.word        厄运日本行
+		set.jump 3
+		set.word     ---->
+		set.jump 3
+		set.word             原作：囧仙，京都人形，gogo13，氧气
+		set.jump 3
+		set.word             制作：喵玉殿技术部（NSDN）
+		set.jump 3
+		set.word                         Back
 		set.jump 1
-		set.word 换歌试试
-		set.jump 4
 	end.word
 end.scene

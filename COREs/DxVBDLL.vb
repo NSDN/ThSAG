@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.InteropServices
+
 Namespace DxVBDLL
     Public Class DX
         Private Const DX_DLL_32 As String = "DLLs\Core32.dll"
@@ -23,6 +24,7 @@ Namespace DxVBDLL
 		Public Const MAX_SOCKET_NUM As Integer = 8192
 		Public Const MAX_LIGHT_NUM As Integer = 4096
 		Public Const MAX_SHADER_NUM As Integer = 4096
+		Public Const MAX_CONSTANT_BUFFER_NUM As Integer = 8192
 		Public Const MAX_MODEL_BASE_NUM As Integer = 32768
 		Public Const MAX_MODEL_NUM As Integer = 32768
 		Public Const MAX_VERTEX_BUFFER_NUM As Integer = 16384
@@ -36,6 +38,7 @@ Namespace DxVBDLL
 		Public Const DEFAULT_ZBUFFER_BITDEPTH As Integer = 16
 		Public Const DX_DEFAULT_FONT_HANDLE As Integer = 2
 		Public Const FONT_CACHE_MAXNUM As Integer = 2024
+		Public Const FONT_CACHE_EX_NUM As Integer = 1024
 		Public Const FONT_CACHE_MEMORYSIZE As Integer = 327680
 		Public Const FONT_CACHE_MAX_YLENGTH As Integer = 16384
 		Public Const MAX_USERIMAGEREAD_FUNCNUM As Integer = 10
@@ -64,11 +67,23 @@ Namespace DxVBDLL
 		Public Const DX_DIRECTXVERSION_7 As Integer = 458752
 		Public Const DX_DIRECTXVERSION_8 As Integer = 524288
 		Public Const DX_DIRECTXVERSION_8_1 As Integer = 524544
+		Public Const DX_DIRECT3D_NONE As Integer = 0
+		Public Const DX_DIRECT3D_9 As Integer = 1
+		Public Const DX_DIRECT3D_9EX As Integer = 2
+		Public Const DX_DIRECT3D_11 As Integer = 3
+		Public Const DX_DIRECT3D_11_FEATURE_LEVEL_9_1 As Integer = 37120
+		Public Const DX_DIRECT3D_11_FEATURE_LEVEL_9_2 As Integer = 37376
+		Public Const DX_DIRECT3D_11_FEATURE_LEVEL_9_3 As Integer = 37632
+		Public Const DX_DIRECT3D_11_FEATURE_LEVEL_10_0 As Integer = 40960
+		Public Const DX_DIRECT3D_11_FEATURE_LEVEL_10_1 As Integer = 41216
+		Public Const DX_DIRECT3D_11_FEATURE_LEVEL_11_0 As Integer = 45056
+		Public Const DX_DIRECT3D_11_FEATURE_LEVEL_11_1 As Integer = 45312
 		Public Const DX_CHARSET_DEFAULT As Integer = 0
 		Public Const DX_CHARSET_SHFTJIS As Integer = 1
 		Public Const DX_CHARSET_HANGEUL As Integer = 2
 		Public Const DX_CHARSET_BIG5 As Integer = 3
 		Public Const DX_CHARSET_GB2312 As Integer = 4
+		Public Const DX_CHARSET_NUM As Integer = 5
 		Public Const DX_MIDIMODE_MCI As Integer = 0
 		Public Const DX_MIDIMODE_DM As Integer = 1
 		Public Const DX_DRAWMODE_NEAREST As Integer = 0
@@ -84,6 +99,9 @@ Namespace DxVBDLL
 		Public Const DX_FONTTYPE_ANTIALIASING_EDGE As Integer = 3
 		Public Const DX_FONTTYPE_ANTIALIASING_EDGE_4X4 As Integer = 19
 		Public Const DX_FONTTYPE_ANTIALIASING_EDGE_8X8 As Integer = 35
+		Public Const DX_FONTIMAGE_BIT_1 As Integer = 0
+		Public Const DX_FONTIMAGE_BIT_4 As Integer = 1
+		Public Const DX_FONTIMAGE_BIT_8 As Integer = 2
 		Public Const DX_BLENDMODE_NOBLEND As Integer = 0
 		Public Const DX_BLENDMODE_ALPHA As Integer = 1
 		Public Const DX_BLENDMODE_ADD As Integer = 2
@@ -107,6 +125,8 @@ Namespace DxVBDLL
 		Public Const DX_BLENDMODE_PMA_ALPHA_X4 As Integer = 21
 		Public Const DX_BLENDMODE_PMA_ADD_X4 As Integer = 22
 		Public Const DX_BLENDMODE_NUM As Integer = 23
+		Public Const DX_DRAWFLOATCOORDTYPE_DIRECT3D9 As Integer = 0
+		Public Const DX_DRAWFLOATCOORDTYPE_DIRECT3D10 As Integer = 1
 		Public Const DX_BLENDGRAPHTYPE_NORMAL As Integer = 0
 		Public Const DX_BLENDGRAPHTYPE_WIPE As Integer = 1
 		Public Const DX_BLENDGRAPHTYPE_ALPHA As Integer = 2
@@ -296,6 +316,12 @@ Namespace DxVBDLL
 		Public Const DX_TEXADDRESS_CLAMP As Integer = 3
 		Public Const DX_TEXADDRESS_BORDER As Integer = 4
 		Public Const DX_TEXADDRESS_NUM As Integer = 5
+		Public Const DX_SHADERTYPE_VERTEX As Integer = 0
+		Public Const DX_SHADERTYPE_PIXEL As Integer = 1
+		Public Const DX_SHADERTYPE_GEOMETRY As Integer = 2
+		Public Const DX_SHADERTYPE_COMPUTE As Integer = 3
+		Public Const DX_SHADERTYPE_DOMAIN As Integer = 4
+		Public Const DX_SHADERTYPE_HULL As Integer = 5
 		Public Const DX_VERTEX_TYPE_NORMAL_3D As Integer = 0
 		Public Const DX_VERTEX_TYPE_SHADER_3D As Integer = 1
 		Public Const DX_VERTEX_TYPE_NUM As Integer = 2
@@ -322,7 +348,6 @@ Namespace DxVBDLL
 		Public Const DX_LIGHTTYPE_D3DLIGHT_POINT As Integer = 1
 		Public Const DX_LIGHTTYPE_D3DLIGHT_SPOT As Integer = 2
 		Public Const DX_LIGHTTYPE_D3DLIGHT_DIRECTIONAL As Integer = 3
-		Public Const DX_LIGHTTYPE_D3DLIGHT_FORCEDWORD As Integer = 2147483647
 		Public Const DX_LIGHTTYPE_POINT As Integer = 1
 		Public Const DX_LIGHTTYPE_SPOT As Integer = 2
 		Public Const DX_LIGHTTYPE_DIRECTIONAL As Integer = 3
@@ -1602,7 +1627,7 @@ Namespace DxVBDLL
 			<FieldOffset(12)> _
 			Public y2 As Integer
 			<FieldOffset(16)> _
-			Public color As Integer
+			Public color As UInteger
 			<FieldOffset(20)> _
 			Public pal As Integer
 		End Structure
@@ -1614,7 +1639,7 @@ Namespace DxVBDLL
 			<FieldOffset(4)> _
 			Public y As Integer
 			<FieldOffset(8)> _
-			Public color As Integer
+			Public color As UInteger
 			<FieldOffset(12)> _
 			Public pal As Integer
 		End Structure
@@ -2086,6 +2111,28 @@ Namespace DxVBDLL
 				Return dx_SetKeyInputStringColor_x64(NmlStr, NmlCur, IMEStr, IMECur, IMELine, IMESelectStr, _
 					IMEModeStr, NmlStrE, IMESelectStrE, IMEModeStrE, IMESelectWinE, IMESelectWinF, _
 					SelectStrBackColor, SelectStrColor, SelectStrEdgeColor)
+			End If
+		End Function
+
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_Paint")> _
+		Shared Function dx_Paint_x86(x As Integer, y As Integer, FillColor As UInteger, BoundaryColor As ULong) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_Paint")> _
+		Shared Function dx_Paint_x64(x As Integer, y As Integer, FillColor As UInteger, BoundaryColor As ULong) As Integer
+		End Function
+		Public Shared Function Paint(x As Integer, y As Integer, FillColor As UInteger) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_Paint_x86(x, y, FillColor, &HffffffffffffffffUL)
+			Else
+				Return dx_Paint_x64(x, y, FillColor, &HffffffffffffffffUL)
+			End If
+		End Function
+		Public Shared Function Paint(x As Integer, y As Integer, FillColor As UInteger, BoundaryColor As ULong) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_Paint_x86(x, y, FillColor, BoundaryColor)
+			Else
+				Return dx_Paint_x64(x, y, FillColor, BoundaryColor)
 			End If
 		End Function
 
@@ -2924,6 +2971,48 @@ Namespace DxVBDLL
 			End If
 		End Function
 
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetOutApplicationLogValidFlag")> _
+		Shared Function dx_SetOutApplicationLogValidFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetOutApplicationLogValidFlag")> _
+		Shared Function dx_SetOutApplicationLogValidFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetOutApplicationLogValidFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetOutApplicationLogValidFlag_x86(Flag)
+			Else
+				Return dx_SetOutApplicationLogValidFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetApplicationLogSaveDirectory")> _
+		Shared Function dx_SetApplicationLogSaveDirectory_x86(DirectoryPath As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetApplicationLogSaveDirectory")> _
+		Shared Function dx_SetApplicationLogSaveDirectory_x64(DirectoryPath As String) As Integer
+		End Function
+		Public Shared Function SetApplicationLogSaveDirectory(DirectoryPath As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetApplicationLogSaveDirectory_x86(DirectoryPath)
+			Else
+				Return dx_SetApplicationLogSaveDirectory_x64(DirectoryPath)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseDateNameLogFile")> _
+		Shared Function dx_SetUseDateNameLogFile_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseDateNameLogFile")> _
+		Shared Function dx_SetUseDateNameLogFile_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetUseDateNameLogFile(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseDateNameLogFile_x86(Flag)
+			Else
+				Return dx_SetUseDateNameLogFile_x64(Flag)
+			End If
+		End Function
+
 		<DllImport(DX_DLL_32, EntryPoint := "dx_SetLogDrawOutFlag")> _
 		Shared Function dx_SetLogDrawOutFlag_x86(DrawFlag As Integer) As Integer
 		End Function
@@ -3047,1686 +3136,6 @@ Namespace DxVBDLL
 				Return dx_SetDeleteHandleFlag_x86(Handle, DeleteFlag)
 			Else
 				Return dx_SetDeleteHandleFlag_x64(Handle, DeleteFlag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowCRect")> _
-		Shared Function dx_GetWindowCRect_x86(ByRef RectBuf As RECT) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowCRect")> _
-		Shared Function dx_GetWindowCRect_x64(ByRef RectBuf As RECT) As Integer
-		End Function
-		Public Shared Function GetWindowCRect(ByRef RectBuf As RECT) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetWindowCRect_x86(RectBuf)
-			Else
-				Return dx_GetWindowCRect_x64(RectBuf)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowActiveFlag")> _
-		Shared Function dx_GetWindowActiveFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowActiveFlag")> _
-		Shared Function dx_GetWindowActiveFlag_x64() As Integer
-		End Function
-		Public Shared Function GetWindowActiveFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetWindowActiveFlag_x86()
-			Else
-				Return dx_GetWindowActiveFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowMinSizeFlag")> _
-		Shared Function dx_GetWindowMinSizeFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowMinSizeFlag")> _
-		Shared Function dx_GetWindowMinSizeFlag_x64() As Integer
-		End Function
-		Public Shared Function GetWindowMinSizeFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetWindowMinSizeFlag_x86()
-			Else
-				Return dx_GetWindowMinSizeFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowMaxSizeFlag")> _
-		Shared Function dx_GetWindowMaxSizeFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowMaxSizeFlag")> _
-		Shared Function dx_GetWindowMaxSizeFlag_x64() As Integer
-		End Function
-		Public Shared Function GetWindowMaxSizeFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetWindowMaxSizeFlag_x86()
-			Else
-				Return dx_GetWindowMaxSizeFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetActiveFlag")> _
-		Shared Function dx_GetActiveFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetActiveFlag")> _
-		Shared Function dx_GetActiveFlag_x64() As Integer
-		End Function
-		Public Shared Function GetActiveFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetActiveFlag_x86()
-			Else
-				Return dx_GetActiveFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowModeFlag")> _
-		Shared Function dx_GetWindowModeFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowModeFlag")> _
-		Shared Function dx_GetWindowModeFlag_x64() As Integer
-		End Function
-		Public Shared Function GetWindowModeFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetWindowModeFlag_x86()
-			Else
-				Return dx_GetWindowModeFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDefaultState")> _
-		Shared Function dx_GetDefaultState_x86(ByRef SizeX As Integer, ByRef SizeY As Integer, ByRef ColorBitDepth As Integer, ByRef RefreshRate As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDefaultState")> _
-		Shared Function dx_GetDefaultState_x64(ByRef SizeX As Integer, ByRef SizeY As Integer, ByRef ColorBitDepth As Integer, ByRef RefreshRate As Integer) As Integer
-		End Function
-		Public Shared Function GetDefaultState(ByRef SizeX As Integer, ByRef SizeY As Integer, ByRef ColorBitDepth As Integer, ByRef RefreshRate As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetDefaultState_x86(SizeX, SizeY, ColorBitDepth, RefreshRate)
-			Else
-				Return dx_GetDefaultState_x64(SizeX, SizeY, ColorBitDepth, RefreshRate)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetNoActiveState")> _
-		Shared Function dx_GetNoActiveState_x86(ResetFlag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetNoActiveState")> _
-		Shared Function dx_GetNoActiveState_x64(ResetFlag As Integer) As Integer
-		End Function
-		Public Shared Function GetNoActiveState() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetNoActiveState_x86([TRUE])
-			Else
-				Return dx_GetNoActiveState_x64([TRUE])
-			End If
-		End Function
-		Public Shared Function GetNoActiveState(ResetFlag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetNoActiveState_x86(ResetFlag)
-			Else
-				Return dx_GetNoActiveState_x64(ResetFlag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetMouseDispFlag")> _
-		Shared Function dx_GetMouseDispFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetMouseDispFlag")> _
-		Shared Function dx_GetMouseDispFlag_x64() As Integer
-		End Function
-		Public Shared Function GetMouseDispFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetMouseDispFlag_x86()
-			Else
-				Return dx_GetMouseDispFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetAlwaysRunFlag")> _
-		Shared Function dx_GetAlwaysRunFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetAlwaysRunFlag")> _
-		Shared Function dx_GetAlwaysRunFlag_x64() As Integer
-		End Function
-		Public Shared Function GetAlwaysRunFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetAlwaysRunFlag_x86()
-			Else
-				Return dx_GetAlwaysRunFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx__GetSystemInfo")> _
-		Shared Function dx__GetSystemInfo_x86(ByRef DxLibVer As Integer, ByRef DirectXVer As Integer, ByRef WindowsVer As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx__GetSystemInfo")> _
-		Shared Function dx__GetSystemInfo_x64(ByRef DxLibVer As Integer, ByRef DirectXVer As Integer, ByRef WindowsVer As Integer) As Integer
-		End Function
-		Public Shared Function _GetSystemInfo(ByRef DxLibVer As Integer, ByRef DirectXVer As Integer, ByRef WindowsVer As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx__GetSystemInfo_x86(DxLibVer, DirectXVer, WindowsVer)
-			Else
-				Return dx__GetSystemInfo_x64(DxLibVer, DirectXVer, WindowsVer)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetPcInfo")> _
-		Shared Function dx_GetPcInfo_x86(OSString As System.Text.StringBuilder, DirectXString As System.Text.StringBuilder, CPUString As System.Text.StringBuilder, ByRef CPUSpeed As Integer, ByRef FreeMemorySize As Double, ByRef TotalMemorySize As Double, _
-			VideoDriverFileName As System.Text.StringBuilder, VideoDriverString As System.Text.StringBuilder, ByRef FreeVideoMemorySize As Double, ByRef TotalVideoMemorySize As Double) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetPcInfo")> _
-		Shared Function dx_GetPcInfo_x64(OSString As System.Text.StringBuilder, DirectXString As System.Text.StringBuilder, CPUString As System.Text.StringBuilder, ByRef CPUSpeed As Integer, ByRef FreeMemorySize As Double, ByRef TotalMemorySize As Double, _
-			VideoDriverFileName As System.Text.StringBuilder, VideoDriverString As System.Text.StringBuilder, ByRef FreeVideoMemorySize As Double, ByRef TotalVideoMemorySize As Double) As Integer
-		End Function
-		Public Shared Function GetPcInfo(OSString As System.Text.StringBuilder, DirectXString As System.Text.StringBuilder, CPUString As System.Text.StringBuilder, ByRef CPUSpeed As Integer, ByRef FreeMemorySize As Double, ByRef TotalMemorySize As Double, _
-			VideoDriverFileName As System.Text.StringBuilder, VideoDriverString As System.Text.StringBuilder, ByRef FreeVideoMemorySize As Double, ByRef TotalVideoMemorySize As Double) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetPcInfo_x86(OSString, DirectXString, CPUString, CPUSpeed, FreeMemorySize, TotalMemorySize, _
-					VideoDriverFileName, VideoDriverString, FreeVideoMemorySize, TotalVideoMemorySize)
-			Else
-				Return dx_GetPcInfo_x64(OSString, DirectXString, CPUString, CPUSpeed, FreeMemorySize, TotalMemorySize, _
-					VideoDriverFileName, VideoDriverString, FreeVideoMemorySize, TotalVideoMemorySize)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseMMXFlag")> _
-		Shared Function dx_GetUseMMXFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseMMXFlag")> _
-		Shared Function dx_GetUseMMXFlag_x64() As Integer
-		End Function
-		Public Shared Function GetUseMMXFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetUseMMXFlag_x86()
-			Else
-				Return dx_GetUseMMXFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseSSEFlag")> _
-		Shared Function dx_GetUseSSEFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseSSEFlag")> _
-		Shared Function dx_GetUseSSEFlag_x64() As Integer
-		End Function
-		Public Shared Function GetUseSSEFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetUseSSEFlag_x86()
-			Else
-				Return dx_GetUseSSEFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseSSE2Flag")> _
-		Shared Function dx_GetUseSSE2Flag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseSSE2Flag")> _
-		Shared Function dx_GetUseSSE2Flag_x64() As Integer
-		End Function
-		Public Shared Function GetUseSSE2Flag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetUseSSE2Flag_x86()
-			Else
-				Return dx_GetUseSSE2Flag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowCloseFlag")> _
-		Shared Function dx_GetWindowCloseFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowCloseFlag")> _
-		Shared Function dx_GetWindowCloseFlag_x64() As Integer
-		End Function
-		Public Shared Function GetWindowCloseFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetWindowCloseFlag_x86()
-			Else
-				Return dx_GetWindowCloseFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseWindowRgnFlag")> _
-		Shared Function dx_GetUseWindowRgnFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseWindowRgnFlag")> _
-		Shared Function dx_GetUseWindowRgnFlag_x64() As Integer
-		End Function
-		Public Shared Function GetUseWindowRgnFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetUseWindowRgnFlag_x86()
-			Else
-				Return dx_GetUseWindowRgnFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowSize")> _
-		Shared Function dx_GetWindowSize_x86(ByRef Width As Integer, ByRef Height As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowSize")> _
-		Shared Function dx_GetWindowSize_x64(ByRef Width As Integer, ByRef Height As Integer) As Integer
-		End Function
-		Public Shared Function GetWindowSize(ByRef Width As Integer, ByRef Height As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetWindowSize_x86(Width, Height)
-			Else
-				Return dx_GetWindowSize_x64(Width, Height)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowPosition")> _
-		Shared Function dx_GetWindowPosition_x86(ByRef x As Integer, ByRef y As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowPosition")> _
-		Shared Function dx_GetWindowPosition_x64(ByRef x As Integer, ByRef y As Integer) As Integer
-		End Function
-		Public Shared Function GetWindowPosition(ByRef x As Integer, ByRef y As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetWindowPosition_x86(x, y)
-			Else
-				Return dx_GetWindowPosition_x64(x, y)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowUserCloseFlag")> _
-		Shared Function dx_GetWindowUserCloseFlag_x86(StateResetFlag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowUserCloseFlag")> _
-		Shared Function dx_GetWindowUserCloseFlag_x64(StateResetFlag As Integer) As Integer
-		End Function
-		Public Shared Function GetWindowUserCloseFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetWindowUserCloseFlag_x86([FALSE])
-			Else
-				Return dx_GetWindowUserCloseFlag_x64([FALSE])
-			End If
-		End Function
-		Public Shared Function GetWindowUserCloseFlag(StateResetFlag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetWindowUserCloseFlag_x86(StateResetFlag)
-			Else
-				Return dx_GetWindowUserCloseFlag_x64(StateResetFlag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetNotDrawFlag")> _
-		Shared Function dx_GetNotDrawFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetNotDrawFlag")> _
-		Shared Function dx_GetNotDrawFlag_x64() As Integer
-		End Function
-		Public Shared Function GetNotDrawFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetNotDrawFlag_x86()
-			Else
-				Return dx_GetNotDrawFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetPaintMessageFlag")> _
-		Shared Function dx_GetPaintMessageFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetPaintMessageFlag")> _
-		Shared Function dx_GetPaintMessageFlag_x64() As Integer
-		End Function
-		Public Shared Function GetPaintMessageFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetPaintMessageFlag_x86()
-			Else
-				Return dx_GetPaintMessageFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetValidHiPerformanceCounter")> _
-		Shared Function dx_GetValidHiPerformanceCounter_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetValidHiPerformanceCounter")> _
-		Shared Function dx_GetValidHiPerformanceCounter_x64() As Integer
-		End Function
-		Public Shared Function GetValidHiPerformanceCounter() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetValidHiPerformanceCounter_x86()
-			Else
-				Return dx_GetValidHiPerformanceCounter_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_ChangeWindowMode")> _
-		Shared Function dx_ChangeWindowMode_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_ChangeWindowMode")> _
-		Shared Function dx_ChangeWindowMode_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function ChangeWindowMode(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_ChangeWindowMode_x86(Flag)
-			Else
-				Return dx_ChangeWindowMode_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseCharSet")> _
-		Shared Function dx_SetUseCharSet_x86(CharSet As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseCharSet")> _
-		Shared Function dx_SetUseCharSet_x64(CharSet As Integer) As Integer
-		End Function
-		Public Shared Function SetUseCharSet(CharSet As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseCharSet_x86(CharSet)
-			Else
-				Return dx_SetUseCharSet_x64(CharSet)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadPauseGraph")> _
-		Shared Function dx_LoadPauseGraph_x86(FileName As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadPauseGraph")> _
-		Shared Function dx_LoadPauseGraph_x64(FileName As String) As Integer
-		End Function
-		Public Shared Function LoadPauseGraph(FileName As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_LoadPauseGraph_x86(FileName)
-			Else
-				Return dx_LoadPauseGraph_x64(FileName)
-			End If
-		End Function
-
-		#if DX_USE_UNSAFE Then
-		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadPauseGraphFromMem")> _
-		Shared Function dx_LoadPauseGraphFromMem_x86(MemImage As System.Void*, MemImageSize As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadPauseGraphFromMem")> _
-		Shared Function dx_LoadPauseGraphFromMem_x64(MemImage As System.Void*, MemImageSize As Integer) As Integer
-		End Function
-		Public Shared Function LoadPauseGraphFromMem(MemImage As System.Void*, MemImageSize As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_LoadPauseGraphFromMem_x86(MemImage, MemImageSize)
-			Else
-				Return dx_LoadPauseGraphFromMem_x64(MemImage, MemImageSize)
-			End If
-		End Function
-		#End If
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowText")> _
-		Shared Function dx_SetWindowText_x86(WindowText As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowText")> _
-		Shared Function dx_SetWindowText_x64(WindowText As String) As Integer
-		End Function
-		Public Shared Function SetWindowText(WindowText As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowText_x86(WindowText)
-			Else
-				Return dx_SetWindowText_x64(WindowText)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMainWindowText")> _
-		Shared Function dx_SetMainWindowText_x86(WindowText As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMainWindowText")> _
-		Shared Function dx_SetMainWindowText_x64(WindowText As String) As Integer
-		End Function
-		Public Shared Function SetMainWindowText(WindowText As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetMainWindowText_x86(WindowText)
-			Else
-				Return dx_SetMainWindowText_x64(WindowText)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMainWindowClassName")> _
-		Shared Function dx_SetMainWindowClassName_x86(ClassName As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMainWindowClassName")> _
-		Shared Function dx_SetMainWindowClassName_x64(ClassName As String) As Integer
-		End Function
-		Public Shared Function SetMainWindowClassName(ClassName As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetMainWindowClassName_x86(ClassName)
-			Else
-				Return dx_SetMainWindowClassName_x64(ClassName)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetOutApplicationLogValidFlag")> _
-		Shared Function dx_SetOutApplicationLogValidFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetOutApplicationLogValidFlag")> _
-		Shared Function dx_SetOutApplicationLogValidFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetOutApplicationLogValidFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetOutApplicationLogValidFlag_x86(Flag)
-			Else
-				Return dx_SetOutApplicationLogValidFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetApplicationLogSaveDirectory")> _
-		Shared Function dx_SetApplicationLogSaveDirectory_x86(DirectoryPath As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetApplicationLogSaveDirectory")> _
-		Shared Function dx_SetApplicationLogSaveDirectory_x64(DirectoryPath As String) As Integer
-		End Function
-		Public Shared Function SetApplicationLogSaveDirectory(DirectoryPath As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetApplicationLogSaveDirectory_x86(DirectoryPath)
-			Else
-				Return dx_SetApplicationLogSaveDirectory_x64(DirectoryPath)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseDateNameLogFile")> _
-		Shared Function dx_SetUseDateNameLogFile_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseDateNameLogFile")> _
-		Shared Function dx_SetUseDateNameLogFile_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetUseDateNameLogFile(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseDateNameLogFile_x86(Flag)
-			Else
-				Return dx_SetUseDateNameLogFile_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetAlwaysRunFlag")> _
-		Shared Function dx_SetAlwaysRunFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetAlwaysRunFlag")> _
-		Shared Function dx_SetAlwaysRunFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetAlwaysRunFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetAlwaysRunFlag_x86(Flag)
-			Else
-				Return dx_SetAlwaysRunFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowIconID")> _
-		Shared Function dx_SetWindowIconID_x86(ID As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowIconID")> _
-		Shared Function dx_SetWindowIconID_x64(ID As Integer) As Integer
-		End Function
-		Public Shared Function SetWindowIconID(ID As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowIconID_x86(ID)
-			Else
-				Return dx_SetWindowIconID_x64(ID)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowIconHandle")> _
-		Shared Function dx_SetWindowIconHandle_x86(Icon As System.IntPtr) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowIconHandle")> _
-		Shared Function dx_SetWindowIconHandle_x64(Icon As System.IntPtr) As Integer
-		End Function
-		Public Shared Function SetWindowIconHandle(Icon As System.IntPtr) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowIconHandle_x86(Icon)
-			Else
-				Return dx_SetWindowIconHandle_x64(Icon)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowStyleMode")> _
-		Shared Function dx_SetWindowStyleMode_x86(Mode As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowStyleMode")> _
-		Shared Function dx_SetWindowStyleMode_x64(Mode As Integer) As Integer
-		End Function
-		Public Shared Function SetWindowStyleMode(Mode As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowStyleMode_x86(Mode)
-			Else
-				Return dx_SetWindowStyleMode_x64(Mode)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowZOrder")> _
-		Shared Function dx_SetWindowZOrder_x86(ZType As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowZOrder")> _
-		Shared Function dx_SetWindowZOrder_x64(ZType As Integer) As Integer
-		End Function
-		Public Shared Function SetWindowZOrder(ZType As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowZOrder_x86(ZType)
-			Else
-				Return dx_SetWindowZOrder_x64(ZType)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowSizeChangeEnableFlag")> _
-		Shared Function dx_SetWindowSizeChangeEnableFlag_x86(Flag As Integer, FitScreen As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowSizeChangeEnableFlag")> _
-		Shared Function dx_SetWindowSizeChangeEnableFlag_x64(Flag As Integer, FitScreen As Integer) As Integer
-		End Function
-		Public Shared Function SetWindowSizeChangeEnableFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowSizeChangeEnableFlag_x86(Flag, [TRUE])
-			Else
-				Return dx_SetWindowSizeChangeEnableFlag_x64(Flag, [TRUE])
-			End If
-		End Function
-		Public Shared Function SetWindowSizeChangeEnableFlag(Flag As Integer, FitScreen As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowSizeChangeEnableFlag_x86(Flag, FitScreen)
-			Else
-				Return dx_SetWindowSizeChangeEnableFlag_x64(Flag, FitScreen)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowSizeExtendRate")> _
-		Shared Function dx_SetWindowSizeExtendRate_x86(ExRateX As Double, ExRateY As Double) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowSizeExtendRate")> _
-		Shared Function dx_SetWindowSizeExtendRate_x64(ExRateX As Double, ExRateY As Double) As Integer
-		End Function
-		Public Shared Function SetWindowSizeExtendRate(ExRateX As Double) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowSizeExtendRate_x86(ExRateX, -1.0)
-			Else
-				Return dx_SetWindowSizeExtendRate_x64(ExRateX, -1.0)
-			End If
-		End Function
-		Public Shared Function SetWindowSizeExtendRate(ExRateX As Double, ExRateY As Double) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowSizeExtendRate_x86(ExRateX, ExRateY)
-			Else
-				Return dx_SetWindowSizeExtendRate_x64(ExRateX, ExRateY)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowSize")> _
-		Shared Function dx_SetWindowSize_x86(Width As Integer, Height As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowSize")> _
-		Shared Function dx_SetWindowSize_x64(Width As Integer, Height As Integer) As Integer
-		End Function
-		Public Shared Function SetWindowSize(Width As Integer, Height As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowSize_x86(Width, Height)
-			Else
-				Return dx_SetWindowSize_x64(Width, Height)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowPosition")> _
-		Shared Function dx_SetWindowPosition_x86(x As Integer, y As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowPosition")> _
-		Shared Function dx_SetWindowPosition_x64(x As Integer, y As Integer) As Integer
-		End Function
-		Public Shared Function SetWindowPosition(x As Integer, y As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowPosition_x86(x, y)
-			Else
-				Return dx_SetWindowPosition_x64(x, y)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetSysCommandOffFlag")> _
-		Shared Function dx_SetSysCommandOffFlag_x86(Flag As Integer, HookDllPath As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetSysCommandOffFlag")> _
-		Shared Function dx_SetSysCommandOffFlag_x64(Flag As Integer, HookDllPath As String) As Integer
-		End Function
-		Public Shared Function SetSysCommandOffFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetSysCommandOffFlag_x86(Flag, Nothing)
-			Else
-				Return dx_SetSysCommandOffFlag_x64(Flag, Nothing)
-			End If
-		End Function
-		Public Shared Function SetSysCommandOffFlag(Flag As Integer, HookDllPath As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetSysCommandOffFlag_x86(Flag, HookDllPath)
-			Else
-				Return dx_SetSysCommandOffFlag_x64(Flag, HookDllPath)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseHookWinProcReturnValue")> _
-		Shared Function dx_SetUseHookWinProcReturnValue_x86(UseFlag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseHookWinProcReturnValue")> _
-		Shared Function dx_SetUseHookWinProcReturnValue_x64(UseFlag As Integer) As Integer
-		End Function
-		Public Shared Function SetUseHookWinProcReturnValue(UseFlag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseHookWinProcReturnValue_x86(UseFlag)
-			Else
-				Return dx_SetUseHookWinProcReturnValue_x64(UseFlag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetDoubleStartValidFlag")> _
-		Shared Function dx_SetDoubleStartValidFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetDoubleStartValidFlag")> _
-		Shared Function dx_SetDoubleStartValidFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetDoubleStartValidFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetDoubleStartValidFlag_x86(Flag)
-			Else
-				Return dx_SetDoubleStartValidFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_AddMessageTakeOverWindow")> _
-		Shared Function dx_AddMessageTakeOverWindow_x86(Window As System.IntPtr) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_AddMessageTakeOverWindow")> _
-		Shared Function dx_AddMessageTakeOverWindow_x64(Window As System.IntPtr) As Integer
-		End Function
-		Public Shared Function AddMessageTakeOverWindow(Window As System.IntPtr) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_AddMessageTakeOverWindow_x86(Window)
-			Else
-				Return dx_AddMessageTakeOverWindow_x64(Window)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SubMessageTakeOverWindow")> _
-		Shared Function dx_SubMessageTakeOverWindow_x86(Window As System.IntPtr) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SubMessageTakeOverWindow")> _
-		Shared Function dx_SubMessageTakeOverWindow_x64(Window As System.IntPtr) As Integer
-		End Function
-		Public Shared Function SubMessageTakeOverWindow(Window As System.IntPtr) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SubMessageTakeOverWindow_x86(Window)
-			Else
-				Return dx_SubMessageTakeOverWindow_x64(Window)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowInitPosition")> _
-		Shared Function dx_SetWindowInitPosition_x86(x As Integer, y As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowInitPosition")> _
-		Shared Function dx_SetWindowInitPosition_x64(x As Integer, y As Integer) As Integer
-		End Function
-		Public Shared Function SetWindowInitPosition(x As Integer, y As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowInitPosition_x86(x, y)
-			Else
-				Return dx_SetWindowInitPosition_x64(x, y)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetNotWinFlag")> _
-		Shared Function dx_SetNotWinFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetNotWinFlag")> _
-		Shared Function dx_SetNotWinFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetNotWinFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetNotWinFlag_x86(Flag)
-			Else
-				Return dx_SetNotWinFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetNotDrawFlag")> _
-		Shared Function dx_SetNotDrawFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetNotDrawFlag")> _
-		Shared Function dx_SetNotDrawFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetNotDrawFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetNotDrawFlag_x86(Flag)
-			Else
-				Return dx_SetNotDrawFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetNotSoundFlag")> _
-		Shared Function dx_SetNotSoundFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetNotSoundFlag")> _
-		Shared Function dx_SetNotSoundFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetNotSoundFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetNotSoundFlag_x86(Flag)
-			Else
-				Return dx_SetNotSoundFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetNotInputFlag")> _
-		Shared Function dx_SetNotInputFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetNotInputFlag")> _
-		Shared Function dx_SetNotInputFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetNotInputFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetNotInputFlag_x86(Flag)
-			Else
-				Return dx_SetNotInputFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetDialogBoxHandle")> _
-		Shared Function dx_SetDialogBoxHandle_x86(WindowHandle As System.IntPtr) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetDialogBoxHandle")> _
-		Shared Function dx_SetDialogBoxHandle_x64(WindowHandle As System.IntPtr) As Integer
-		End Function
-		Public Shared Function SetDialogBoxHandle(WindowHandle As System.IntPtr) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetDialogBoxHandle_x86(WindowHandle)
-			Else
-				Return dx_SetDialogBoxHandle_x64(WindowHandle)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowVisibleFlag")> _
-		Shared Function dx_SetWindowVisibleFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowVisibleFlag")> _
-		Shared Function dx_SetWindowVisibleFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetWindowVisibleFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowVisibleFlag_x86(Flag)
-			Else
-				Return dx_SetWindowVisibleFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowMinimizeFlag")> _
-		Shared Function dx_SetWindowMinimizeFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowMinimizeFlag")> _
-		Shared Function dx_SetWindowMinimizeFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetWindowMinimizeFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowMinimizeFlag_x86(Flag)
-			Else
-				Return dx_SetWindowMinimizeFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowUserCloseEnableFlag")> _
-		Shared Function dx_SetWindowUserCloseEnableFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowUserCloseEnableFlag")> _
-		Shared Function dx_SetWindowUserCloseEnableFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetWindowUserCloseEnableFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowUserCloseEnableFlag_x86(Flag)
-			Else
-				Return dx_SetWindowUserCloseEnableFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetDxLibEndPostQuitMessageFlag")> _
-		Shared Function dx_SetDxLibEndPostQuitMessageFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetDxLibEndPostQuitMessageFlag")> _
-		Shared Function dx_SetDxLibEndPostQuitMessageFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetDxLibEndPostQuitMessageFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetDxLibEndPostQuitMessageFlag_x86(Flag)
-			Else
-				Return dx_SetDxLibEndPostQuitMessageFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUserWindow")> _
-		Shared Function dx_SetUserWindow_x86(WindowHandle As System.IntPtr) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUserWindow")> _
-		Shared Function dx_SetUserWindow_x64(WindowHandle As System.IntPtr) As Integer
-		End Function
-		Public Shared Function SetUserWindow(WindowHandle As System.IntPtr) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUserWindow_x86(WindowHandle)
-			Else
-				Return dx_SetUserWindow_x64(WindowHandle)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUserChildWindow")> _
-		Shared Function dx_SetUserChildWindow_x86(WindowHandle As System.IntPtr) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUserChildWindow")> _
-		Shared Function dx_SetUserChildWindow_x64(WindowHandle As System.IntPtr) As Integer
-		End Function
-		Public Shared Function SetUserChildWindow(WindowHandle As System.IntPtr) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUserChildWindow_x86(WindowHandle)
-			Else
-				Return dx_SetUserChildWindow_x64(WindowHandle)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUserWindowMessageProcessDXLibFlag")> _
-		Shared Function dx_SetUserWindowMessageProcessDXLibFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUserWindowMessageProcessDXLibFlag")> _
-		Shared Function dx_SetUserWindowMessageProcessDXLibFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetUserWindowMessageProcessDXLibFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUserWindowMessageProcessDXLibFlag_x86(Flag)
-			Else
-				Return dx_SetUserWindowMessageProcessDXLibFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseFPUPreserveFlag")> _
-		Shared Function dx_SetUseFPUPreserveFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseFPUPreserveFlag")> _
-		Shared Function dx_SetUseFPUPreserveFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetUseFPUPreserveFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseFPUPreserveFlag_x86(Flag)
-			Else
-				Return dx_SetUseFPUPreserveFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetValidMousePointerWindowOutClientAreaMoveFlag")> _
-		Shared Function dx_SetValidMousePointerWindowOutClientAreaMoveFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetValidMousePointerWindowOutClientAreaMoveFlag")> _
-		Shared Function dx_SetValidMousePointerWindowOutClientAreaMoveFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetValidMousePointerWindowOutClientAreaMoveFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetValidMousePointerWindowOutClientAreaMoveFlag_x86(Flag)
-			Else
-				Return dx_SetValidMousePointerWindowOutClientAreaMoveFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseBackBufferTransColorFlag")> _
-		Shared Function dx_SetUseBackBufferTransColorFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseBackBufferTransColorFlag")> _
-		Shared Function dx_SetUseBackBufferTransColorFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetUseBackBufferTransColorFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseBackBufferTransColorFlag_x86(Flag)
-			Else
-				Return dx_SetUseBackBufferTransColorFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseUpdateLayerdWindowFlag")> _
-		Shared Function dx_SetUseUpdateLayerdWindowFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseUpdateLayerdWindowFlag")> _
-		Shared Function dx_SetUseUpdateLayerdWindowFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetUseUpdateLayerdWindowFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseUpdateLayerdWindowFlag_x86(Flag)
-			Else
-				Return dx_SetUseUpdateLayerdWindowFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetClipboardText")> _
-		Shared Function dx_GetClipboardText_x86(DestBuffer As System.Text.StringBuilder) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetClipboardText")> _
-		Shared Function dx_GetClipboardText_x64(DestBuffer As System.Text.StringBuilder) As Integer
-		End Function
-		Public Shared Function GetClipboardText(DestBuffer As System.Text.StringBuilder) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetClipboardText_x86(DestBuffer)
-			Else
-				Return dx_GetClipboardText_x64(DestBuffer)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetClipboardText")> _
-		Shared Function dx_SetClipboardText_x86(Text As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetClipboardText")> _
-		Shared Function dx_SetClipboardText_x64(Text As String) As Integer
-		End Function
-		Public Shared Function SetClipboardText(Text As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetClipboardText_x86(Text)
-			Else
-				Return dx_SetClipboardText_x64(Text)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetDragFileValidFlag")> _
-		Shared Function dx_SetDragFileValidFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetDragFileValidFlag")> _
-		Shared Function dx_SetDragFileValidFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetDragFileValidFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetDragFileValidFlag_x86(Flag)
-			Else
-				Return dx_SetDragFileValidFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_DragFileInfoClear")> _
-		Shared Function dx_DragFileInfoClear_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_DragFileInfoClear")> _
-		Shared Function dx_DragFileInfoClear_x64() As Integer
-		End Function
-		Public Shared Function DragFileInfoClear() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_DragFileInfoClear_x86()
-			Else
-				Return dx_DragFileInfoClear_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDragFilePath")> _
-		Shared Function dx_GetDragFilePath_x86(FilePathBuffer As System.Text.StringBuilder) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDragFilePath")> _
-		Shared Function dx_GetDragFilePath_x64(FilePathBuffer As System.Text.StringBuilder) As Integer
-		End Function
-		Public Shared Function GetDragFilePath(FilePathBuffer As System.Text.StringBuilder) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetDragFilePath_x86(FilePathBuffer)
-			Else
-				Return dx_GetDragFilePath_x64(FilePathBuffer)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDragFileNum")> _
-		Shared Function dx_GetDragFileNum_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDragFileNum")> _
-		Shared Function dx_GetDragFileNum_x64() As Integer
-		End Function
-		Public Shared Function GetDragFileNum() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetDragFileNum_x86()
-			Else
-				Return dx_GetDragFileNum_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowRgnGraph")> _
-		Shared Function dx_SetWindowRgnGraph_x86(FileName As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowRgnGraph")> _
-		Shared Function dx_SetWindowRgnGraph_x64(FileName As String) As Integer
-		End Function
-		Public Shared Function SetWindowRgnGraph(FileName As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetWindowRgnGraph_x86(FileName)
-			Else
-				Return dx_SetWindowRgnGraph_x64(FileName)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_UpdateTransColorWindowRgn")> _
-		Shared Function dx_UpdateTransColorWindowRgn_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_UpdateTransColorWindowRgn")> _
-		Shared Function dx_UpdateTransColorWindowRgn_x64() As Integer
-		End Function
-		Public Shared Function UpdateTransColorWindowRgn() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_UpdateTransColorWindowRgn_x86()
-			Else
-				Return dx_UpdateTransColorWindowRgn_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetupToolBar")> _
-		Shared Function dx_SetupToolBar_x86(BitmapName As String, DivNum As Integer, ResourceID As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetupToolBar")> _
-		Shared Function dx_SetupToolBar_x64(BitmapName As String, DivNum As Integer, ResourceID As Integer) As Integer
-		End Function
-		Public Shared Function SetupToolBar(BitmapName As String, DivNum As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetupToolBar_x86(BitmapName, DivNum, -1)
-			Else
-				Return dx_SetupToolBar_x64(BitmapName, DivNum, -1)
-			End If
-		End Function
-		Public Shared Function SetupToolBar(BitmapName As String, DivNum As Integer, ResourceID As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetupToolBar_x86(BitmapName, DivNum, ResourceID)
-			Else
-				Return dx_SetupToolBar_x64(BitmapName, DivNum, ResourceID)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_AddToolBarButton")> _
-		Shared Function dx_AddToolBarButton_x86(Type As Integer, State As Integer, ImageIndex As Integer, ID As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_AddToolBarButton")> _
-		Shared Function dx_AddToolBarButton_x64(Type As Integer, State As Integer, ImageIndex As Integer, ID As Integer) As Integer
-		End Function
-		Public Shared Function AddToolBarButton(Type As Integer, State As Integer, ImageIndex As Integer, ID As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_AddToolBarButton_x86(Type, State, ImageIndex, ID)
-			Else
-				Return dx_AddToolBarButton_x64(Type, State, ImageIndex, ID)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_AddToolBarSep")> _
-		Shared Function dx_AddToolBarSep_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_AddToolBarSep")> _
-		Shared Function dx_AddToolBarSep_x64() As Integer
-		End Function
-		Public Shared Function AddToolBarSep() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_AddToolBarSep_x86()
-			Else
-				Return dx_AddToolBarSep_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetToolBarButtonState")> _
-		Shared Function dx_GetToolBarButtonState_x86(ID As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetToolBarButtonState")> _
-		Shared Function dx_GetToolBarButtonState_x64(ID As Integer) As Integer
-		End Function
-		Public Shared Function GetToolBarButtonState(ID As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetToolBarButtonState_x86(ID)
-			Else
-				Return dx_GetToolBarButtonState_x64(ID)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetToolBarButtonState")> _
-		Shared Function dx_SetToolBarButtonState_x86(ID As Integer, State As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetToolBarButtonState")> _
-		Shared Function dx_SetToolBarButtonState_x64(ID As Integer, State As Integer) As Integer
-		End Function
-		Public Shared Function SetToolBarButtonState(ID As Integer, State As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetToolBarButtonState_x86(ID, State)
-			Else
-				Return dx_SetToolBarButtonState_x64(ID, State)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_DeleteAllToolBarButton")> _
-		Shared Function dx_DeleteAllToolBarButton_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_DeleteAllToolBarButton")> _
-		Shared Function dx_DeleteAllToolBarButton_x64() As Integer
-		End Function
-		Public Shared Function DeleteAllToolBarButton() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_DeleteAllToolBarButton_x86()
-			Else
-				Return dx_DeleteAllToolBarButton_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseMenuFlag")> _
-		Shared Function dx_SetUseMenuFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseMenuFlag")> _
-		Shared Function dx_SetUseMenuFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetUseMenuFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseMenuFlag_x86(Flag)
-			Else
-				Return dx_SetUseMenuFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseKeyAccelFlag")> _
-		Shared Function dx_SetUseKeyAccelFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseKeyAccelFlag")> _
-		Shared Function dx_SetUseKeyAccelFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetUseKeyAccelFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseKeyAccelFlag_x86(Flag)
-			Else
-				Return dx_SetUseKeyAccelFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_AddKeyAccel")> _
-		Shared Function dx_AddKeyAccel_x86(ItemName As String, ItemID As Integer, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_AddKeyAccel")> _
-		Shared Function dx_AddKeyAccel_x64(ItemName As String, ItemID As Integer, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
-		End Function
-		Public Shared Function AddKeyAccel(ItemName As String, ItemID As Integer, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_AddKeyAccel_x86(ItemName, ItemID, KeyCode, CtrlFlag, AltFlag, ShiftFlag)
-			Else
-				Return dx_AddKeyAccel_x64(ItemName, ItemID, KeyCode, CtrlFlag, AltFlag, ShiftFlag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_AddKeyAccel_Name")> _
-		Shared Function dx_AddKeyAccel_Name_x86(ItemName As String, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_AddKeyAccel_Name")> _
-		Shared Function dx_AddKeyAccel_Name_x64(ItemName As String, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
-		End Function
-		Public Shared Function AddKeyAccel_Name(ItemName As String, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_AddKeyAccel_Name_x86(ItemName, KeyCode, CtrlFlag, AltFlag, ShiftFlag)
-			Else
-				Return dx_AddKeyAccel_Name_x64(ItemName, KeyCode, CtrlFlag, AltFlag, ShiftFlag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_AddKeyAccel_ID")> _
-		Shared Function dx_AddKeyAccel_ID_x86(ItemID As Integer, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_AddKeyAccel_ID")> _
-		Shared Function dx_AddKeyAccel_ID_x64(ItemID As Integer, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
-		End Function
-		Public Shared Function AddKeyAccel_ID(ItemID As Integer, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_AddKeyAccel_ID_x86(ItemID, KeyCode, CtrlFlag, AltFlag, ShiftFlag)
-			Else
-				Return dx_AddKeyAccel_ID_x64(ItemID, KeyCode, CtrlFlag, AltFlag, ShiftFlag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_ClearKeyAccel")> _
-		Shared Function dx_ClearKeyAccel_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_ClearKeyAccel")> _
-		Shared Function dx_ClearKeyAccel_x64() As Integer
-		End Function
-		Public Shared Function ClearKeyAccel() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_ClearKeyAccel_x86()
-			Else
-				Return dx_ClearKeyAccel_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_AddMenuItem")> _
-		Shared Function dx_AddMenuItem_x86(AddType As Integer, ItemName As String, ItemID As Integer, SeparatorFlag As Integer, NewItemName As String, NewItemID As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_AddMenuItem")> _
-		Shared Function dx_AddMenuItem_x64(AddType As Integer, ItemName As String, ItemID As Integer, SeparatorFlag As Integer, NewItemName As String, NewItemID As Integer) As Integer
-		End Function
-		Public Shared Function AddMenuItem(AddType As Integer, ItemName As String, ItemID As Integer, SeparatorFlag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_AddMenuItem_x86(AddType, ItemName, ItemID, SeparatorFlag, Nothing, -1)
-			Else
-				Return dx_AddMenuItem_x64(AddType, ItemName, ItemID, SeparatorFlag, Nothing, -1)
-			End If
-		End Function
-		Public Shared Function AddMenuItem(AddType As Integer, ItemName As String, ItemID As Integer, SeparatorFlag As Integer, NewItemName As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_AddMenuItem_x86(AddType, ItemName, ItemID, SeparatorFlag, NewItemName, -1)
-			Else
-				Return dx_AddMenuItem_x64(AddType, ItemName, ItemID, SeparatorFlag, NewItemName, -1)
-			End If
-		End Function
-		Public Shared Function AddMenuItem(AddType As Integer, ItemName As String, ItemID As Integer, SeparatorFlag As Integer, NewItemName As String, NewItemID As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_AddMenuItem_x86(AddType, ItemName, ItemID, SeparatorFlag, NewItemName, NewItemID)
-			Else
-				Return dx_AddMenuItem_x64(AddType, ItemName, ItemID, SeparatorFlag, NewItemName, NewItemID)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_DeleteMenuItem")> _
-		Shared Function dx_DeleteMenuItem_x86(ItemName As String, ItemID As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_DeleteMenuItem")> _
-		Shared Function dx_DeleteMenuItem_x64(ItemName As String, ItemID As Integer) As Integer
-		End Function
-		Public Shared Function DeleteMenuItem(ItemName As String, ItemID As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_DeleteMenuItem_x86(ItemName, ItemID)
-			Else
-				Return dx_DeleteMenuItem_x64(ItemName, ItemID)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_CheckMenuItemSelect")> _
-		Shared Function dx_CheckMenuItemSelect_x86(ItemName As String, ItemID As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_CheckMenuItemSelect")> _
-		Shared Function dx_CheckMenuItemSelect_x64(ItemName As String, ItemID As Integer) As Integer
-		End Function
-		Public Shared Function CheckMenuItemSelect(ItemName As String, ItemID As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_CheckMenuItemSelect_x86(ItemName, ItemID)
-			Else
-				Return dx_CheckMenuItemSelect_x64(ItemName, ItemID)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMenuItemEnable")> _
-		Shared Function dx_SetMenuItemEnable_x86(ItemName As String, ItemID As Integer, EnableFlag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMenuItemEnable")> _
-		Shared Function dx_SetMenuItemEnable_x64(ItemName As String, ItemID As Integer, EnableFlag As Integer) As Integer
-		End Function
-		Public Shared Function SetMenuItemEnable(ItemName As String, ItemID As Integer, EnableFlag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetMenuItemEnable_x86(ItemName, ItemID, EnableFlag)
-			Else
-				Return dx_SetMenuItemEnable_x64(ItemName, ItemID, EnableFlag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMenuItemMark")> _
-		Shared Function dx_SetMenuItemMark_x86(ItemName As String, ItemID As Integer, Mark As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMenuItemMark")> _
-		Shared Function dx_SetMenuItemMark_x64(ItemName As String, ItemID As Integer, Mark As Integer) As Integer
-		End Function
-		Public Shared Function SetMenuItemMark(ItemName As String, ItemID As Integer, Mark As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetMenuItemMark_x86(ItemName, ItemID, Mark)
-			Else
-				Return dx_SetMenuItemMark_x64(ItemName, ItemID, Mark)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_CheckMenuItemSelectAll")> _
-		Shared Function dx_CheckMenuItemSelectAll_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_CheckMenuItemSelectAll")> _
-		Shared Function dx_CheckMenuItemSelectAll_x64() As Integer
-		End Function
-		Public Shared Function CheckMenuItemSelectAll() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_CheckMenuItemSelectAll_x86()
-			Else
-				Return dx_CheckMenuItemSelectAll_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_AddMenuItem_Name")> _
-		Shared Function dx_AddMenuItem_Name_x86(ParentItemName As String, NewItemName As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_AddMenuItem_Name")> _
-		Shared Function dx_AddMenuItem_Name_x64(ParentItemName As String, NewItemName As String) As Integer
-		End Function
-		Public Shared Function AddMenuItem_Name(ParentItemName As String, NewItemName As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_AddMenuItem_Name_x86(ParentItemName, NewItemName)
-			Else
-				Return dx_AddMenuItem_Name_x64(ParentItemName, NewItemName)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_AddMenuLine_Name")> _
-		Shared Function dx_AddMenuLine_Name_x86(ParentItemName As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_AddMenuLine_Name")> _
-		Shared Function dx_AddMenuLine_Name_x64(ParentItemName As String) As Integer
-		End Function
-		Public Shared Function AddMenuLine_Name(ParentItemName As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_AddMenuLine_Name_x86(ParentItemName)
-			Else
-				Return dx_AddMenuLine_Name_x64(ParentItemName)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_InsertMenuItem_Name")> _
-		Shared Function dx_InsertMenuItem_Name_x86(ItemName As String, NewItemName As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_InsertMenuItem_Name")> _
-		Shared Function dx_InsertMenuItem_Name_x64(ItemName As String, NewItemName As String) As Integer
-		End Function
-		Public Shared Function InsertMenuItem_Name(ItemName As String, NewItemName As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_InsertMenuItem_Name_x86(ItemName, NewItemName)
-			Else
-				Return dx_InsertMenuItem_Name_x64(ItemName, NewItemName)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_InsertMenuLine_Name")> _
-		Shared Function dx_InsertMenuLine_Name_x86(ItemName As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_InsertMenuLine_Name")> _
-		Shared Function dx_InsertMenuLine_Name_x64(ItemName As String) As Integer
-		End Function
-		Public Shared Function InsertMenuLine_Name(ItemName As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_InsertMenuLine_Name_x86(ItemName)
-			Else
-				Return dx_InsertMenuLine_Name_x64(ItemName)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_DeleteMenuItem_Name")> _
-		Shared Function dx_DeleteMenuItem_Name_x86(ItemName As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_DeleteMenuItem_Name")> _
-		Shared Function dx_DeleteMenuItem_Name_x64(ItemName As String) As Integer
-		End Function
-		Public Shared Function DeleteMenuItem_Name(ItemName As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_DeleteMenuItem_Name_x86(ItemName)
-			Else
-				Return dx_DeleteMenuItem_Name_x64(ItemName)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_CheckMenuItemSelect_Name")> _
-		Shared Function dx_CheckMenuItemSelect_Name_x86(ItemName As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_CheckMenuItemSelect_Name")> _
-		Shared Function dx_CheckMenuItemSelect_Name_x64(ItemName As String) As Integer
-		End Function
-		Public Shared Function CheckMenuItemSelect_Name(ItemName As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_CheckMenuItemSelect_Name_x86(ItemName)
-			Else
-				Return dx_CheckMenuItemSelect_Name_x64(ItemName)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMenuItemEnable_Name")> _
-		Shared Function dx_SetMenuItemEnable_Name_x86(ItemName As String, EnableFlag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMenuItemEnable_Name")> _
-		Shared Function dx_SetMenuItemEnable_Name_x64(ItemName As String, EnableFlag As Integer) As Integer
-		End Function
-		Public Shared Function SetMenuItemEnable_Name(ItemName As String, EnableFlag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetMenuItemEnable_Name_x86(ItemName, EnableFlag)
-			Else
-				Return dx_SetMenuItemEnable_Name_x64(ItemName, EnableFlag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMenuItemMark_Name")> _
-		Shared Function dx_SetMenuItemMark_Name_x86(ItemName As String, Mark As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMenuItemMark_Name")> _
-		Shared Function dx_SetMenuItemMark_Name_x64(ItemName As String, Mark As Integer) As Integer
-		End Function
-		Public Shared Function SetMenuItemMark_Name(ItemName As String, Mark As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetMenuItemMark_Name_x86(ItemName, Mark)
-			Else
-				Return dx_SetMenuItemMark_Name_x64(ItemName, Mark)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_AddMenuItem_ID")> _
-		Shared Function dx_AddMenuItem_ID_x86(ParentItemID As Integer, NewItemName As String, NewItemID As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_AddMenuItem_ID")> _
-		Shared Function dx_AddMenuItem_ID_x64(ParentItemID As Integer, NewItemName As String, NewItemID As Integer) As Integer
-		End Function
-		Public Shared Function AddMenuItem_ID(ParentItemID As Integer, NewItemName As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_AddMenuItem_ID_x86(ParentItemID, NewItemName, -1)
-			Else
-				Return dx_AddMenuItem_ID_x64(ParentItemID, NewItemName, -1)
-			End If
-		End Function
-		Public Shared Function AddMenuItem_ID(ParentItemID As Integer, NewItemName As String, NewItemID As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_AddMenuItem_ID_x86(ParentItemID, NewItemName, NewItemID)
-			Else
-				Return dx_AddMenuItem_ID_x64(ParentItemID, NewItemName, NewItemID)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_AddMenuLine_ID")> _
-		Shared Function dx_AddMenuLine_ID_x86(ParentItemID As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_AddMenuLine_ID")> _
-		Shared Function dx_AddMenuLine_ID_x64(ParentItemID As Integer) As Integer
-		End Function
-		Public Shared Function AddMenuLine_ID(ParentItemID As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_AddMenuLine_ID_x86(ParentItemID)
-			Else
-				Return dx_AddMenuLine_ID_x64(ParentItemID)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_InsertMenuItem_ID")> _
-		Shared Function dx_InsertMenuItem_ID_x86(ItemID As Integer, NewItemID As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_InsertMenuItem_ID")> _
-		Shared Function dx_InsertMenuItem_ID_x64(ItemID As Integer, NewItemID As Integer) As Integer
-		End Function
-		Public Shared Function InsertMenuItem_ID(ItemID As Integer, NewItemID As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_InsertMenuItem_ID_x86(ItemID, NewItemID)
-			Else
-				Return dx_InsertMenuItem_ID_x64(ItemID, NewItemID)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_InsertMenuLine_ID")> _
-		Shared Function dx_InsertMenuLine_ID_x86(ItemID As Integer, NewItemID As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_InsertMenuLine_ID")> _
-		Shared Function dx_InsertMenuLine_ID_x64(ItemID As Integer, NewItemID As Integer) As Integer
-		End Function
-		Public Shared Function InsertMenuLine_ID(ItemID As Integer, NewItemID As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_InsertMenuLine_ID_x86(ItemID, NewItemID)
-			Else
-				Return dx_InsertMenuLine_ID_x64(ItemID, NewItemID)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_DeleteMenuItem_ID")> _
-		Shared Function dx_DeleteMenuItem_ID_x86(ItemID As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_DeleteMenuItem_ID")> _
-		Shared Function dx_DeleteMenuItem_ID_x64(ItemID As Integer) As Integer
-		End Function
-		Public Shared Function DeleteMenuItem_ID(ItemID As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_DeleteMenuItem_ID_x86(ItemID)
-			Else
-				Return dx_DeleteMenuItem_ID_x64(ItemID)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_CheckMenuItemSelect_ID")> _
-		Shared Function dx_CheckMenuItemSelect_ID_x86(ItemID As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_CheckMenuItemSelect_ID")> _
-		Shared Function dx_CheckMenuItemSelect_ID_x64(ItemID As Integer) As Integer
-		End Function
-		Public Shared Function CheckMenuItemSelect_ID(ItemID As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_CheckMenuItemSelect_ID_x86(ItemID)
-			Else
-				Return dx_CheckMenuItemSelect_ID_x64(ItemID)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMenuItemEnable_ID")> _
-		Shared Function dx_SetMenuItemEnable_ID_x86(ItemID As Integer, EnableFlag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMenuItemEnable_ID")> _
-		Shared Function dx_SetMenuItemEnable_ID_x64(ItemID As Integer, EnableFlag As Integer) As Integer
-		End Function
-		Public Shared Function SetMenuItemEnable_ID(ItemID As Integer, EnableFlag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetMenuItemEnable_ID_x86(ItemID, EnableFlag)
-			Else
-				Return dx_SetMenuItemEnable_ID_x64(ItemID, EnableFlag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMenuItemMark_ID")> _
-		Shared Function dx_SetMenuItemMark_ID_x86(ItemID As Integer, Mark As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMenuItemMark_ID")> _
-		Shared Function dx_SetMenuItemMark_ID_x64(ItemID As Integer, Mark As Integer) As Integer
-		End Function
-		Public Shared Function SetMenuItemMark_ID(ItemID As Integer, Mark As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetMenuItemMark_ID_x86(ItemID, Mark)
-			Else
-				Return dx_SetMenuItemMark_ID_x64(ItemID, Mark)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_DeleteMenuItemAll")> _
-		Shared Function dx_DeleteMenuItemAll_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_DeleteMenuItemAll")> _
-		Shared Function dx_DeleteMenuItemAll_x64() As Integer
-		End Function
-		Public Shared Function DeleteMenuItemAll() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_DeleteMenuItemAll_x86()
-			Else
-				Return dx_DeleteMenuItemAll_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_ClearMenuItemSelect")> _
-		Shared Function dx_ClearMenuItemSelect_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_ClearMenuItemSelect")> _
-		Shared Function dx_ClearMenuItemSelect_x64() As Integer
-		End Function
-		Public Shared Function ClearMenuItemSelect() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_ClearMenuItemSelect_x86()
-			Else
-				Return dx_ClearMenuItemSelect_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetMenuItemID")> _
-		Shared Function dx_GetMenuItemID_x86(ItemName As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetMenuItemID")> _
-		Shared Function dx_GetMenuItemID_x64(ItemName As String) As Integer
-		End Function
-		Public Shared Function GetMenuItemID(ItemName As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetMenuItemID_x86(ItemName)
-			Else
-				Return dx_GetMenuItemID_x64(ItemName)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetMenuItemName")> _
-		Shared Function dx_GetMenuItemName_x86(ItemID As Integer, NameBuffer As System.Text.StringBuilder) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetMenuItemName")> _
-		Shared Function dx_GetMenuItemName_x64(ItemID As Integer, NameBuffer As System.Text.StringBuilder) As Integer
-		End Function
-		Public Shared Function GetMenuItemName(ItemID As Integer, NameBuffer As System.Text.StringBuilder) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetMenuItemName_x86(ItemID, NameBuffer)
-			Else
-				Return dx_GetMenuItemName_x64(ItemID, NameBuffer)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadMenuResource")> _
-		Shared Function dx_LoadMenuResource_x86(MenuResourceID As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadMenuResource")> _
-		Shared Function dx_LoadMenuResource_x64(MenuResourceID As Integer) As Integer
-		End Function
-		Public Shared Function LoadMenuResource(MenuResourceID As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_LoadMenuResource_x86(MenuResourceID)
-			Else
-				Return dx_LoadMenuResource_x64(MenuResourceID)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetDisplayMenuFlag")> _
-		Shared Function dx_SetDisplayMenuFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetDisplayMenuFlag")> _
-		Shared Function dx_SetDisplayMenuFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetDisplayMenuFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetDisplayMenuFlag_x86(Flag)
-			Else
-				Return dx_SetDisplayMenuFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDisplayMenuFlag")> _
-		Shared Function dx_GetDisplayMenuFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDisplayMenuFlag")> _
-		Shared Function dx_GetDisplayMenuFlag_x64() As Integer
-		End Function
-		Public Shared Function GetDisplayMenuFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetDisplayMenuFlag_x86()
-			Else
-				Return dx_GetDisplayMenuFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseMenuFlag")> _
-		Shared Function dx_GetUseMenuFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseMenuFlag")> _
-		Shared Function dx_GetUseMenuFlag_x64() As Integer
-		End Function
-		Public Shared Function GetUseMenuFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetUseMenuFlag_x86()
-			Else
-				Return dx_GetUseMenuFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetAutoMenuDisplayFlag")> _
-		Shared Function dx_SetAutoMenuDisplayFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetAutoMenuDisplayFlag")> _
-		Shared Function dx_SetAutoMenuDisplayFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetAutoMenuDisplayFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetAutoMenuDisplayFlag_x86(Flag)
-			Else
-				Return dx_SetAutoMenuDisplayFlag_x64(Flag)
 			End If
 		End Function
 
@@ -5064,6 +3473,20 @@ Namespace DxVBDLL
 				dx_DxDumpAlloc_x86()
 			Else
 				dx_DxDumpAlloc_x64()
+			End If
+		End Sub
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DxDrawAlloc")> _
+		Shared Sub dx_DxDrawAlloc_x86(x As Integer, y As Integer, Width As Integer, Height As Integer)
+		End Sub
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DxDrawAlloc")> _
+		Shared Sub dx_DxDrawAlloc_x64(x As Integer, y As Integer, Width As Integer, Height As Integer)
+		End Sub
+		Public Shared Sub DxDrawAlloc(x As Integer, y As Integer, Width As Integer, Height As Integer)
+			If System.IntPtr.Size = 4 Then
+				dx_DxDrawAlloc_x86(x, y, Width, Height)
+			Else
+				dx_DxDrawAlloc_x64(x, y, Width, Height)
 			End If
 		End Sub
 
@@ -5420,16 +3843,16 @@ Namespace DxVBDLL
 
 		#if DX_USE_UNSAFE Then
 		<DllImport(DX_DLL_32, EntryPoint := "dx_GetMyIPAddress")> _
-		Shared Function dx_GetMyIPAddress_x86(IpBuf As IPDATA*) As Integer
+		Shared Function dx_GetMyIPAddress_x86(IpBuf As IPDATA*, IpBufLength As Integer, IpNum As Integer*) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_GetMyIPAddress")> _
-		Shared Function dx_GetMyIPAddress_x64(IpBuf As IPDATA*) As Integer
+		Shared Function dx_GetMyIPAddress_x64(IpBuf As IPDATA*, IpBufLength As Integer, IpNum As Integer*) As Integer
 		End Function
-		Public Shared Function GetMyIPAddress(IpBuf As IPDATA*) As Integer
+		Public Shared Function GetMyIPAddress(IpBuf As IPDATA*, IpBufLength As Integer, IpNum As Integer*) As Integer
 			If System.IntPtr.Size = 4 Then
-				Return dx_GetMyIPAddress_x86(IpBuf)
+				Return dx_GetMyIPAddress_x86(IpBuf, IpBufLength, IpNum)
 			Else
-				Return dx_GetMyIPAddress_x64(IpBuf)
+				Return dx_GetMyIPAddress_x64(IpBuf, IpBufLength, IpNum)
 			End If
 		End Function
 		#End If
@@ -5897,63 +4320,63 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawObtainsString")> _
-		Shared Function dx_DrawObtainsString_x86(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
-			FontHandle As Integer, SelectBackColor As Integer, SelectStrColor As Integer, SelectStrEdgeColor As Integer, SelectStart As Integer, SelectEnd As Integer) As Integer
+		Shared Function dx_DrawObtainsString_x86(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
+			FontHandle As Integer, SelectBackColor As UInteger, SelectStrColor As UInteger, SelectStrEdgeColor As UInteger, SelectStart As Integer, SelectEnd As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawObtainsString")> _
-		Shared Function dx_DrawObtainsString_x64(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
-			FontHandle As Integer, SelectBackColor As Integer, SelectStrColor As Integer, SelectStrEdgeColor As Integer, SelectStart As Integer, SelectEnd As Integer) As Integer
+		Shared Function dx_DrawObtainsString_x64(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
+			FontHandle As Integer, SelectBackColor As UInteger, SelectStrColor As UInteger, SelectStrEdgeColor As UInteger, SelectStart As Integer, SelectEnd As Integer) As Integer
 		End Function
-		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer) As Integer
+		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_x86(x, y, AddY, [String], StrColor, 0, _
-					-1, -1, 0, -1, -1, -1)
+					-1, &HffffffffUI, 0, &HffffffffUI, -1, -1)
 			Else
 				Return dx_DrawObtainsString_x64(x, y, AddY, [String], StrColor, 0, _
-					-1, -1, 0, -1, -1, -1)
+					-1, &HffffffffUI, 0, &HffffffffUI, -1, -1)
 			End If
 		End Function
-		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer) As Integer
+		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_x86(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					-1, -1, 0, -1, -1, -1)
+					-1, &HffffffffUI, 0, &HffffffffUI, -1, -1)
 			Else
 				Return dx_DrawObtainsString_x64(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					-1, -1, 0, -1, -1, -1)
+					-1, &HffffffffUI, 0, &HffffffffUI, -1, -1)
 			End If
 		End Function
-		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
+		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
 			FontHandle As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_x86(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					FontHandle, -1, 0, -1, -1, -1)
+					FontHandle, &HffffffffUI, 0, &HffffffffUI, -1, -1)
 			Else
 				Return dx_DrawObtainsString_x64(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					FontHandle, -1, 0, -1, -1, -1)
+					FontHandle, &HffffffffUI, 0, &HffffffffUI, -1, -1)
 			End If
 		End Function
-		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
-			FontHandle As Integer, SelectBackColor As Integer) As Integer
+		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
+			FontHandle As Integer, SelectBackColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_x86(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					FontHandle, SelectBackColor, 0, -1, -1, -1)
+					FontHandle, SelectBackColor, 0, &HffffffffUI, -1, -1)
 			Else
 				Return dx_DrawObtainsString_x64(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					FontHandle, SelectBackColor, 0, -1, -1, -1)
+					FontHandle, SelectBackColor, 0, &HffffffffUI, -1, -1)
 			End If
 		End Function
-		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
-			FontHandle As Integer, SelectBackColor As Integer, SelectStrColor As Integer) As Integer
+		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
+			FontHandle As Integer, SelectBackColor As UInteger, SelectStrColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_x86(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					FontHandle, SelectBackColor, SelectStrColor, -1, -1, -1)
+					FontHandle, SelectBackColor, SelectStrColor, &HffffffffUI, -1, -1)
 			Else
 				Return dx_DrawObtainsString_x64(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					FontHandle, SelectBackColor, SelectStrColor, -1, -1, -1)
+					FontHandle, SelectBackColor, SelectStrColor, &HffffffffUI, -1, -1)
 			End If
 		End Function
-		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
-			FontHandle As Integer, SelectBackColor As Integer, SelectStrColor As Integer, SelectStrEdgeColor As Integer) As Integer
+		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
+			FontHandle As Integer, SelectBackColor As UInteger, SelectStrColor As UInteger, SelectStrEdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_x86(x, y, AddY, [String], StrColor, StrEdgeColor, _
 					FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, -1, -1)
@@ -5962,8 +4385,8 @@ Namespace DxVBDLL
 					FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, -1, -1)
 			End If
 		End Function
-		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
-			FontHandle As Integer, SelectBackColor As Integer, SelectStrColor As Integer, SelectStrEdgeColor As Integer, SelectStart As Integer) As Integer
+		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
+			FontHandle As Integer, SelectBackColor As UInteger, SelectStrColor As UInteger, SelectStrEdgeColor As UInteger, SelectStart As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_x86(x, y, AddY, [String], StrColor, StrEdgeColor, _
 					FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, SelectStart, -1)
@@ -5972,8 +4395,8 @@ Namespace DxVBDLL
 					FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, SelectStart, -1)
 			End If
 		End Function
-		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
-			FontHandle As Integer, SelectBackColor As Integer, SelectStrColor As Integer, SelectStrEdgeColor As Integer, SelectStart As Integer, SelectEnd As Integer) As Integer
+		Public Shared Function DrawObtainsString(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
+			FontHandle As Integer, SelectBackColor As UInteger, SelectStrColor As UInteger, SelectStrEdgeColor As UInteger, SelectStart As Integer, SelectEnd As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_x86(x, y, AddY, [String], StrColor, StrEdgeColor, _
 					FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, SelectStart, SelectEnd)
@@ -5984,63 +4407,63 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawObtainsString_CharClip")> _
-		Shared Function dx_DrawObtainsString_CharClip_x86(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
-			FontHandle As Integer, SelectBackColor As Integer, SelectStrColor As Integer, SelectStrEdgeColor As Integer, SelectStart As Integer, SelectEnd As Integer) As Integer
+		Shared Function dx_DrawObtainsString_CharClip_x86(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
+			FontHandle As Integer, SelectBackColor As UInteger, SelectStrColor As UInteger, SelectStrEdgeColor As UInteger, SelectStart As Integer, SelectEnd As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawObtainsString_CharClip")> _
-		Shared Function dx_DrawObtainsString_CharClip_x64(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
-			FontHandle As Integer, SelectBackColor As Integer, SelectStrColor As Integer, SelectStrEdgeColor As Integer, SelectStart As Integer, SelectEnd As Integer) As Integer
+		Shared Function dx_DrawObtainsString_CharClip_x64(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
+			FontHandle As Integer, SelectBackColor As UInteger, SelectStrColor As UInteger, SelectStrEdgeColor As UInteger, SelectStart As Integer, SelectEnd As Integer) As Integer
 		End Function
-		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer) As Integer
+		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_CharClip_x86(x, y, AddY, [String], StrColor, 0, _
-					-1, -1, 0, -1, -1, -1)
+					-1, &HffffffffUI, 0, &HffffffffUI, -1, -1)
 			Else
 				Return dx_DrawObtainsString_CharClip_x64(x, y, AddY, [String], StrColor, 0, _
-					-1, -1, 0, -1, -1, -1)
+					-1, &HffffffffUI, 0, &HffffffffUI, -1, -1)
 			End If
 		End Function
-		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer) As Integer
+		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_CharClip_x86(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					-1, -1, 0, -1, -1, -1)
+					-1, &HffffffffUI, 0, &HffffffffUI, -1, -1)
 			Else
 				Return dx_DrawObtainsString_CharClip_x64(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					-1, -1, 0, -1, -1, -1)
+					-1, &HffffffffUI, 0, &HffffffffUI, -1, -1)
 			End If
 		End Function
-		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
+		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
 			FontHandle As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_CharClip_x86(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					FontHandle, -1, 0, -1, -1, -1)
+					FontHandle, &HffffffffUI, 0, &HffffffffUI, -1, -1)
 			Else
 				Return dx_DrawObtainsString_CharClip_x64(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					FontHandle, -1, 0, -1, -1, -1)
+					FontHandle, &HffffffffUI, 0, &HffffffffUI, -1, -1)
 			End If
 		End Function
-		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
-			FontHandle As Integer, SelectBackColor As Integer) As Integer
+		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
+			FontHandle As Integer, SelectBackColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_CharClip_x86(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					FontHandle, SelectBackColor, 0, -1, -1, -1)
+					FontHandle, SelectBackColor, 0, &HffffffffUI, -1, -1)
 			Else
 				Return dx_DrawObtainsString_CharClip_x64(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					FontHandle, SelectBackColor, 0, -1, -1, -1)
+					FontHandle, SelectBackColor, 0, &HffffffffUI, -1, -1)
 			End If
 		End Function
-		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
-			FontHandle As Integer, SelectBackColor As Integer, SelectStrColor As Integer) As Integer
+		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
+			FontHandle As Integer, SelectBackColor As UInteger, SelectStrColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_CharClip_x86(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					FontHandle, SelectBackColor, SelectStrColor, -1, -1, -1)
+					FontHandle, SelectBackColor, SelectStrColor, &HffffffffUI, -1, -1)
 			Else
 				Return dx_DrawObtainsString_CharClip_x64(x, y, AddY, [String], StrColor, StrEdgeColor, _
-					FontHandle, SelectBackColor, SelectStrColor, -1, -1, -1)
+					FontHandle, SelectBackColor, SelectStrColor, &HffffffffUI, -1, -1)
 			End If
 		End Function
-		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
-			FontHandle As Integer, SelectBackColor As Integer, SelectStrColor As Integer, SelectStrEdgeColor As Integer) As Integer
+		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
+			FontHandle As Integer, SelectBackColor As UInteger, SelectStrColor As UInteger, SelectStrEdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_CharClip_x86(x, y, AddY, [String], StrColor, StrEdgeColor, _
 					FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, -1, -1)
@@ -6049,8 +4472,8 @@ Namespace DxVBDLL
 					FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, -1, -1)
 			End If
 		End Function
-		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
-			FontHandle As Integer, SelectBackColor As Integer, SelectStrColor As Integer, SelectStrEdgeColor As Integer, SelectStart As Integer) As Integer
+		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
+			FontHandle As Integer, SelectBackColor As UInteger, SelectStrColor As UInteger, SelectStrEdgeColor As UInteger, SelectStart As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_CharClip_x86(x, y, AddY, [String], StrColor, StrEdgeColor, _
 					FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, SelectStart, -1)
@@ -6059,8 +4482,8 @@ Namespace DxVBDLL
 					FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, SelectStart, -1)
 			End If
 		End Function
-		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As Integer, StrEdgeColor As Integer, _
-			FontHandle As Integer, SelectBackColor As Integer, SelectStrColor As Integer, SelectStrEdgeColor As Integer, SelectStart As Integer, SelectEnd As Integer) As Integer
+		Public Shared Function DrawObtainsString_CharClip(x As Integer, y As Integer, AddY As Integer, [String] As String, StrColor As UInteger, StrEdgeColor As UInteger, _
+			FontHandle As Integer, SelectBackColor As UInteger, SelectStrColor As UInteger, SelectStrEdgeColor As UInteger, SelectStart As Integer, SelectEnd As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsString_CharClip_x86(x, y, AddY, [String], StrColor, StrEdgeColor, _
 					FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, SelectStart, SelectEnd)
@@ -6071,14 +4494,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawObtainsBox")> _
-		Shared Function dx_DrawObtainsBox_x86(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, AddY As Integer, Color As Integer, _
+		Shared Function dx_DrawObtainsBox_x86(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, AddY As Integer, Color As UInteger, _
 			FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawObtainsBox")> _
-		Shared Function dx_DrawObtainsBox_x64(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, AddY As Integer, Color As Integer, _
+		Shared Function dx_DrawObtainsBox_x64(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, AddY As Integer, Color As UInteger, _
 			FillFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawObtainsBox(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, AddY As Integer, Color As Integer, _
+		Public Shared Function DrawObtainsBox(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, AddY As Integer, Color As UInteger, _
 			FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawObtainsBox_x86(x1, y1, x2, y2, AddY, Color, _
@@ -6175,12 +4598,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_SetKeyInputStringColor2")> _
-		Shared Function dx_SetKeyInputStringColor2_x86(TargetColor As Integer, Color As Integer) As Integer
+		Shared Function dx_SetKeyInputStringColor2_x86(TargetColor As Integer, Color As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_SetKeyInputStringColor2")> _
-		Shared Function dx_SetKeyInputStringColor2_x64(TargetColor As Integer, Color As Integer) As Integer
+		Shared Function dx_SetKeyInputStringColor2_x64(TargetColor As Integer, Color As UInteger) As Integer
 		End Function
-		Public Shared Function SetKeyInputStringColor2(TargetColor As Integer, Color As Integer) As Integer
+		Public Shared Function SetKeyInputStringColor2(TargetColor As Integer, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_SetKeyInputStringColor2_x86(TargetColor, Color)
 			Else
@@ -6892,20 +5315,6 @@ Namespace DxVBDLL
 			End If
 		End Function
 
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetKeyExclusiveCooperativeLevelFlag")> _
-		Shared Function dx_SetKeyExclusiveCooperativeLevelFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetKeyExclusiveCooperativeLevelFlag")> _
-		Shared Function dx_SetKeyExclusiveCooperativeLevelFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetKeyExclusiveCooperativeLevelFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetKeyExclusiveCooperativeLevelFlag_x86(Flag)
-			Else
-				Return dx_SetKeyExclusiveCooperativeLevelFlag_x64(Flag)
-			End If
-		End Function
-
 		<DllImport(DX_DLL_32, EntryPoint := "dx_GetJoypadNum")> _
 		Shared Function dx_GetJoypadNum_x86() As Integer
 		End Function
@@ -7001,48 +5410,6 @@ Namespace DxVBDLL
 				Return dx_GetJoypadXInputState_x86(InputType, XInputState)
 			Else
 				Return dx_GetJoypadXInputState_x64(InputType, XInputState)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_KeyboradBufferProcess")> _
-		Shared Function dx_KeyboradBufferProcess_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_KeyboradBufferProcess")> _
-		Shared Function dx_KeyboradBufferProcess_x64() As Integer
-		End Function
-		Public Shared Function KeyboradBufferProcess() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_KeyboradBufferProcess_x86()
-			Else
-				Return dx_KeyboradBufferProcess_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_ConvertKeyCodeToVirtualKey")> _
-		Shared Function dx_ConvertKeyCodeToVirtualKey_x86(KeyCode As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_ConvertKeyCodeToVirtualKey")> _
-		Shared Function dx_ConvertKeyCodeToVirtualKey_x64(KeyCode As Integer) As Integer
-		End Function
-		Public Shared Function ConvertKeyCodeToVirtualKey(KeyCode As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_ConvertKeyCodeToVirtualKey_x86(KeyCode)
-			Else
-				Return dx_ConvertKeyCodeToVirtualKey_x64(KeyCode)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_ConvertVirtualKeyToKeyCode")> _
-		Shared Function dx_ConvertVirtualKeyToKeyCode_x86(VirtualKey As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_ConvertVirtualKeyToKeyCode")> _
-		Shared Function dx_ConvertVirtualKeyToKeyCode_x64(VirtualKey As Integer) As Integer
-		End Function
-		Public Shared Function ConvertVirtualKeyToKeyCode(VirtualKey As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_ConvertVirtualKeyToKeyCode_x86(VirtualKey)
-			Else
-				Return dx_ConvertVirtualKeyToKeyCode_x64(VirtualKey)
 			End If
 		End Function
 
@@ -7151,20 +5518,6 @@ Namespace DxVBDLL
 			End If
 		End Function
 
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetJoypadName")> _
-		Shared Function dx_GetJoypadName_x86(InputType As Integer, InstanceNameBuffer As System.Text.StringBuilder, ProductNameBuffer As System.Text.StringBuilder) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetJoypadName")> _
-		Shared Function dx_GetJoypadName_x64(InputType As Integer, InstanceNameBuffer As System.Text.StringBuilder, ProductNameBuffer As System.Text.StringBuilder) As Integer
-		End Function
-		Public Shared Function GetJoypadName(InputType As Integer, InstanceNameBuffer As System.Text.StringBuilder, ProductNameBuffer As System.Text.StringBuilder) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetJoypadName_x86(InputType, InstanceNameBuffer, ProductNameBuffer)
-			Else
-				Return dx_GetJoypadName_x64(InputType, InstanceNameBuffer, ProductNameBuffer)
-			End If
-		End Function
-
 		<DllImport(DX_DLL_32, EntryPoint := "dx_ReSetupJoypad")> _
 		Shared Function dx_ReSetupJoypad_x86() As Integer
 		End Function
@@ -7176,48 +5529,6 @@ Namespace DxVBDLL
 				Return dx_ReSetupJoypad_x86()
 			Else
 				Return dx_ReSetupJoypad_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetKeyboardNotDirectInputFlag")> _
-		Shared Function dx_SetKeyboardNotDirectInputFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetKeyboardNotDirectInputFlag")> _
-		Shared Function dx_SetKeyboardNotDirectInputFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetKeyboardNotDirectInputFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetKeyboardNotDirectInputFlag_x86(Flag)
-			Else
-				Return dx_SetKeyboardNotDirectInputFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseDirectInputFlag")> _
-		Shared Function dx_SetUseDirectInputFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseDirectInputFlag")> _
-		Shared Function dx_SetUseDirectInputFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetUseDirectInputFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseDirectInputFlag_x86(Flag)
-			Else
-				Return dx_SetUseDirectInputFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseXInputFlag")> _
-		Shared Function dx_SetUseXInputFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseXInputFlag")> _
-		Shared Function dx_SetUseXInputFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetUseXInputFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseXInputFlag_x86(Flag)
-			Else
-				Return dx_SetUseXInputFlag_x64(Flag)
 			End If
 		End Function
 
@@ -7701,44 +6012,6 @@ Namespace DxVBDLL
 				Return dx_LoadBlendGraph_x86(FileName)
 			Else
 				Return dx_LoadBlendGraph_x64(FileName)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadDivGraphToResource")> _
-		Shared Function dx_LoadDivGraphToResource_x86(ResourceID As Integer, AllNum As Integer, XNum As Integer, YNum As Integer, XSize As Integer, YSize As Integer, _
-			ByRef HandleBuf As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadDivGraphToResource")> _
-		Shared Function dx_LoadDivGraphToResource_x64(ResourceID As Integer, AllNum As Integer, XNum As Integer, YNum As Integer, XSize As Integer, YSize As Integer, _
-			ByRef HandleBuf As Integer) As Integer
-		End Function
-		Public Shared Function LoadDivGraphToResource(ResourceID As Integer, AllNum As Integer, XNum As Integer, YNum As Integer, XSize As Integer, YSize As Integer, _
-			ByRef HandleBuf As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_LoadDivGraphToResource_x86(ResourceID, AllNum, XNum, YNum, XSize, YSize, _
-					HandleBuf)
-			Else
-				Return dx_LoadDivGraphToResource_x64(ResourceID, AllNum, XNum, YNum, XSize, YSize, _
-					HandleBuf)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadDivGraphToResource_2")> _
-		Shared Function dx_LoadDivGraphToResource_2_x86(ResourceName As String, ResourceType As String, AllNum As Integer, XNum As Integer, YNum As Integer, XSize As Integer, _
-			YSize As Integer, ByRef HandleBuf As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadDivGraphToResource_2")> _
-		Shared Function dx_LoadDivGraphToResource_2_x64(ResourceName As String, ResourceType As String, AllNum As Integer, XNum As Integer, YNum As Integer, XSize As Integer, _
-			YSize As Integer, ByRef HandleBuf As Integer) As Integer
-		End Function
-		Public Shared Function LoadDivGraphToResource(ResourceName As String, ResourceType As String, AllNum As Integer, XNum As Integer, YNum As Integer, XSize As Integer, _
-			YSize As Integer, ByRef HandleBuf As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_LoadDivGraphToResource_2_x86(ResourceName, ResourceType, AllNum, XNum, YNum, XSize, _
-					YSize, HandleBuf)
-			Else
-				Return dx_LoadDivGraphToResource_2_x64(ResourceName, ResourceType, AllNum, XNum, YNum, XSize, _
-					YSize, HandleBuf)
 			End If
 		End Function
 
@@ -9097,12 +7370,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_SetGraphPalette")> _
-		Shared Function dx_SetGraphPalette_x86(GrHandle As Integer, ColorIndex As Integer, Color As Integer) As Integer
+		Shared Function dx_SetGraphPalette_x86(GrHandle As Integer, ColorIndex As Integer, Color As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_SetGraphPalette")> _
-		Shared Function dx_SetGraphPalette_x64(GrHandle As Integer, ColorIndex As Integer, Color As Integer) As Integer
+		Shared Function dx_SetGraphPalette_x64(GrHandle As Integer, ColorIndex As Integer, Color As UInteger) As Integer
 		End Function
-		Public Shared Function SetGraphPalette(GrHandle As Integer, ColorIndex As Integer, Color As Integer) As Integer
+		Public Shared Function SetGraphPalette(GrHandle As Integer, ColorIndex As Integer, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_SetGraphPalette_x86(GrHandle, ColorIndex, Color)
 			Else
@@ -9125,19 +7398,19 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawLine")> _
-		Shared Function dx_DrawLine_x86(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As Integer, Thickness As Integer) As Integer
+		Shared Function dx_DrawLine_x86(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As UInteger, Thickness As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawLine")> _
-		Shared Function dx_DrawLine_x64(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As Integer, Thickness As Integer) As Integer
+		Shared Function dx_DrawLine_x64(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As UInteger, Thickness As Integer) As Integer
 		End Function
-		Public Shared Function DrawLine(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As Integer) As Integer
+		Public Shared Function DrawLine(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawLine_x86(x1, y1, x2, y2, Color, 1)
 			Else
 				Return dx_DrawLine_x64(x1, y1, x2, y2, Color, 1)
 			End If
 		End Function
-		Public Shared Function DrawLine(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As Integer, Thickness As Integer) As Integer
+		Public Shared Function DrawLine(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As UInteger, Thickness As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawLine_x86(x1, y1, x2, y2, Color, Thickness)
 			Else
@@ -9146,12 +7419,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawBox")> _
-		Shared Function dx_DrawBox_x86(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As Integer, FillFlag As Integer) As Integer
+		Shared Function dx_DrawBox_x86(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As UInteger, FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawBox")> _
-		Shared Function dx_DrawBox_x64(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As Integer, FillFlag As Integer) As Integer
+		Shared Function dx_DrawBox_x64(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As UInteger, FillFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawBox(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As Integer, FillFlag As Integer) As Integer
+		Public Shared Function DrawBox(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As UInteger, FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawBox_x86(x1, y1, x2, y2, Color, FillFlag)
 			Else
@@ -9160,12 +7433,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawFillBox")> _
-		Shared Function dx_DrawFillBox_x86(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As Integer) As Integer
+		Shared Function dx_DrawFillBox_x86(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawFillBox")> _
-		Shared Function dx_DrawFillBox_x64(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As Integer) As Integer
+		Shared Function dx_DrawFillBox_x64(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As UInteger) As Integer
 		End Function
-		Public Shared Function DrawFillBox(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As Integer) As Integer
+		Public Shared Function DrawFillBox(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawFillBox_x86(x1, y1, x2, y2, Color)
 			Else
@@ -9174,12 +7447,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawLineBox")> _
-		Shared Function dx_DrawLineBox_x86(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As Integer) As Integer
+		Shared Function dx_DrawLineBox_x86(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawLineBox")> _
-		Shared Function dx_DrawLineBox_x64(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As Integer) As Integer
+		Shared Function dx_DrawLineBox_x64(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As UInteger) As Integer
 		End Function
-		Public Shared Function DrawLineBox(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As Integer) As Integer
+		Public Shared Function DrawLineBox(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawLineBox_x86(x1, y1, x2, y2, Color)
 			Else
@@ -9188,26 +7461,26 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawCircle")> _
-		Shared Function dx_DrawCircle_x86(x As Integer, y As Integer, r As Integer, Color As Integer, FillFlag As Integer, LineThickness As Integer) As Integer
+		Shared Function dx_DrawCircle_x86(x As Integer, y As Integer, r As Integer, Color As UInteger, FillFlag As Integer, LineThickness As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawCircle")> _
-		Shared Function dx_DrawCircle_x64(x As Integer, y As Integer, r As Integer, Color As Integer, FillFlag As Integer, LineThickness As Integer) As Integer
+		Shared Function dx_DrawCircle_x64(x As Integer, y As Integer, r As Integer, Color As UInteger, FillFlag As Integer, LineThickness As Integer) As Integer
 		End Function
-		Public Shared Function DrawCircle(x As Integer, y As Integer, r As Integer, Color As Integer) As Integer
+		Public Shared Function DrawCircle(x As Integer, y As Integer, r As Integer, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawCircle_x86(x, y, r, Color, [TRUE], 1)
 			Else
 				Return dx_DrawCircle_x64(x, y, r, Color, [TRUE], 1)
 			End If
 		End Function
-		Public Shared Function DrawCircle(x As Integer, y As Integer, r As Integer, Color As Integer, FillFlag As Integer) As Integer
+		Public Shared Function DrawCircle(x As Integer, y As Integer, r As Integer, Color As UInteger, FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawCircle_x86(x, y, r, Color, FillFlag, 1)
 			Else
 				Return dx_DrawCircle_x64(x, y, r, Color, FillFlag, 1)
 			End If
 		End Function
-		Public Shared Function DrawCircle(x As Integer, y As Integer, r As Integer, Color As Integer, FillFlag As Integer, LineThickness As Integer) As Integer
+		Public Shared Function DrawCircle(x As Integer, y As Integer, r As Integer, Color As UInteger, FillFlag As Integer, LineThickness As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawCircle_x86(x, y, r, Color, FillFlag, LineThickness)
 			Else
@@ -9216,14 +7489,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawOval")> _
-		Shared Function dx_DrawOval_x86(x As Integer, y As Integer, rx As Integer, ry As Integer, Color As Integer, FillFlag As Integer, _
+		Shared Function dx_DrawOval_x86(x As Integer, y As Integer, rx As Integer, ry As Integer, Color As UInteger, FillFlag As Integer, _
 			LineThickness As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawOval")> _
-		Shared Function dx_DrawOval_x64(x As Integer, y As Integer, rx As Integer, ry As Integer, Color As Integer, FillFlag As Integer, _
+		Shared Function dx_DrawOval_x64(x As Integer, y As Integer, rx As Integer, ry As Integer, Color As UInteger, FillFlag As Integer, _
 			LineThickness As Integer) As Integer
 		End Function
-		Public Shared Function DrawOval(x As Integer, y As Integer, rx As Integer, ry As Integer, Color As Integer, FillFlag As Integer) As Integer
+		Public Shared Function DrawOval(x As Integer, y As Integer, rx As Integer, ry As Integer, Color As UInteger, FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawOval_x86(x, y, rx, ry, Color, FillFlag, _
 					1)
@@ -9232,7 +7505,7 @@ Namespace DxVBDLL
 					1)
 			End If
 		End Function
-		Public Shared Function DrawOval(x As Integer, y As Integer, rx As Integer, ry As Integer, Color As Integer, FillFlag As Integer, _
+		Public Shared Function DrawOval(x As Integer, y As Integer, rx As Integer, ry As Integer, Color As UInteger, FillFlag As Integer, _
 			LineThickness As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawOval_x86(x, y, rx, ry, Color, FillFlag, _
@@ -9245,14 +7518,14 @@ Namespace DxVBDLL
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawTriangle")> _
 		Shared Function dx_DrawTriangle_x86(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, x3 As Integer, y3 As Integer, _
-			Color As Integer, FillFlag As Integer) As Integer
+			Color As UInteger, FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawTriangle")> _
 		Shared Function dx_DrawTriangle_x64(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, x3 As Integer, y3 As Integer, _
-			Color As Integer, FillFlag As Integer) As Integer
+			Color As UInteger, FillFlag As Integer) As Integer
 		End Function
 		Public Shared Function DrawTriangle(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, x3 As Integer, y3 As Integer, _
-			Color As Integer, FillFlag As Integer) As Integer
+			Color As UInteger, FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawTriangle_x86(x1, y1, x2, y2, x3, y3, _
 					Color, FillFlag)
@@ -9264,14 +7537,14 @@ Namespace DxVBDLL
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawQuadrangle")> _
 		Shared Function dx_DrawQuadrangle_x86(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, x3 As Integer, y3 As Integer, _
-			x4 As Integer, y4 As Integer, Color As Integer, FillFlag As Integer) As Integer
+			x4 As Integer, y4 As Integer, Color As UInteger, FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawQuadrangle")> _
 		Shared Function dx_DrawQuadrangle_x64(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, x3 As Integer, y3 As Integer, _
-			x4 As Integer, y4 As Integer, Color As Integer, FillFlag As Integer) As Integer
+			x4 As Integer, y4 As Integer, Color As UInteger, FillFlag As Integer) As Integer
 		End Function
 		Public Shared Function DrawQuadrangle(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, x3 As Integer, y3 As Integer, _
-			x4 As Integer, y4 As Integer, Color As Integer, FillFlag As Integer) As Integer
+			x4 As Integer, y4 As Integer, Color As UInteger, FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawQuadrangle_x86(x1, y1, x2, y2, x3, y3, _
 					x4, y4, Color, FillFlag)
@@ -9283,14 +7556,14 @@ Namespace DxVBDLL
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawRoundRect")> _
 		Shared Function dx_DrawRoundRect_x86(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, rx As Integer, ry As Integer, _
-			Color As Integer, FillFlag As Integer) As Integer
+			Color As UInteger, FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawRoundRect")> _
 		Shared Function dx_DrawRoundRect_x64(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, rx As Integer, ry As Integer, _
-			Color As Integer, FillFlag As Integer) As Integer
+			Color As UInteger, FillFlag As Integer) As Integer
 		End Function
 		Public Shared Function DrawRoundRect(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, rx As Integer, ry As Integer, _
-			Color As Integer, FillFlag As Integer) As Integer
+			Color As UInteger, FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawRoundRect_x86(x1, y1, x2, y2, rx, ry, _
 					Color, FillFlag)
@@ -9301,37 +7574,16 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawPixel")> _
-		Shared Function dx_DrawPixel_x86(x As Integer, y As Integer, Color As Integer) As Integer
+		Shared Function dx_DrawPixel_x86(x As Integer, y As Integer, Color As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawPixel")> _
-		Shared Function dx_DrawPixel_x64(x As Integer, y As Integer, Color As Integer) As Integer
+		Shared Function dx_DrawPixel_x64(x As Integer, y As Integer, Color As UInteger) As Integer
 		End Function
-		Public Shared Function DrawPixel(x As Integer, y As Integer, Color As Integer) As Integer
+		Public Shared Function DrawPixel(x As Integer, y As Integer, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawPixel_x86(x, y, Color)
 			Else
 				Return dx_DrawPixel_x64(x, y, Color)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_Paint")> _
-		Shared Function dx_Paint_x86(x As Integer, y As Integer, FillColor As Integer, BoundaryColor As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_Paint")> _
-		Shared Function dx_Paint_x64(x As Integer, y As Integer, FillColor As Integer, BoundaryColor As Integer) As Integer
-		End Function
-		Public Shared Function Paint(x As Integer, y As Integer, FillColor As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_Paint_x86(x, y, FillColor, -1)
-			Else
-				Return dx_Paint_x64(x, y, FillColor, -1)
-			End If
-		End Function
-		Public Shared Function Paint(x As Integer, y As Integer, FillColor As Integer, BoundaryColor As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_Paint_x86(x, y, FillColor, BoundaryColor)
-			Else
-				Return dx_Paint_x64(x, y, FillColor, BoundaryColor)
 			End If
 		End Function
 
@@ -9364,12 +7616,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawPixel3D")> _
-		Shared Function dx_DrawPixel3D_x86(Pos As VECTOR, Color As Integer) As Integer
+		Shared Function dx_DrawPixel3D_x86(Pos As VECTOR, Color As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawPixel3D")> _
-		Shared Function dx_DrawPixel3D_x64(Pos As VECTOR, Color As Integer) As Integer
+		Shared Function dx_DrawPixel3D_x64(Pos As VECTOR, Color As UInteger) As Integer
 		End Function
-		Public Shared Function DrawPixel3D(Pos As VECTOR, Color As Integer) As Integer
+		Public Shared Function DrawPixel3D(Pos As VECTOR, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawPixel3D_x86(Pos, Color)
 			Else
@@ -9378,12 +7630,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawPixel3DD")> _
-		Shared Function dx_DrawPixel3DD_x86(Pos As VECTOR_D, Color As Integer) As Integer
+		Shared Function dx_DrawPixel3DD_x86(Pos As VECTOR_D, Color As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawPixel3DD")> _
-		Shared Function dx_DrawPixel3DD_x64(Pos As VECTOR_D, Color As Integer) As Integer
+		Shared Function dx_DrawPixel3DD_x64(Pos As VECTOR_D, Color As UInteger) As Integer
 		End Function
-		Public Shared Function DrawPixel3DD(Pos As VECTOR_D, Color As Integer) As Integer
+		Public Shared Function DrawPixel3DD(Pos As VECTOR_D, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawPixel3DD_x86(Pos, Color)
 			Else
@@ -9392,12 +7644,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawLine3D")> _
-		Shared Function dx_DrawLine3D_x86(Pos1 As VECTOR, Pos2 As VECTOR, Color As Integer) As Integer
+		Shared Function dx_DrawLine3D_x86(Pos1 As VECTOR, Pos2 As VECTOR, Color As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawLine3D")> _
-		Shared Function dx_DrawLine3D_x64(Pos1 As VECTOR, Pos2 As VECTOR, Color As Integer) As Integer
+		Shared Function dx_DrawLine3D_x64(Pos1 As VECTOR, Pos2 As VECTOR, Color As UInteger) As Integer
 		End Function
-		Public Shared Function DrawLine3D(Pos1 As VECTOR, Pos2 As VECTOR, Color As Integer) As Integer
+		Public Shared Function DrawLine3D(Pos1 As VECTOR, Pos2 As VECTOR, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawLine3D_x86(Pos1, Pos2, Color)
 			Else
@@ -9406,12 +7658,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawLine3DD")> _
-		Shared Function dx_DrawLine3DD_x86(Pos1 As VECTOR_D, Pos2 As VECTOR_D, Color As Integer) As Integer
+		Shared Function dx_DrawLine3DD_x86(Pos1 As VECTOR_D, Pos2 As VECTOR_D, Color As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawLine3DD")> _
-		Shared Function dx_DrawLine3DD_x64(Pos1 As VECTOR_D, Pos2 As VECTOR_D, Color As Integer) As Integer
+		Shared Function dx_DrawLine3DD_x64(Pos1 As VECTOR_D, Pos2 As VECTOR_D, Color As UInteger) As Integer
 		End Function
-		Public Shared Function DrawLine3DD(Pos1 As VECTOR_D, Pos2 As VECTOR_D, Color As Integer) As Integer
+		Public Shared Function DrawLine3DD(Pos1 As VECTOR_D, Pos2 As VECTOR_D, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawLine3DD_x86(Pos1, Pos2, Color)
 			Else
@@ -9420,12 +7672,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawTriangle3D")> _
-		Shared Function dx_DrawTriangle3D_x86(Pos1 As VECTOR, Pos2 As VECTOR, Pos3 As VECTOR, Color As Integer, FillFlag As Integer) As Integer
+		Shared Function dx_DrawTriangle3D_x86(Pos1 As VECTOR, Pos2 As VECTOR, Pos3 As VECTOR, Color As UInteger, FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawTriangle3D")> _
-		Shared Function dx_DrawTriangle3D_x64(Pos1 As VECTOR, Pos2 As VECTOR, Pos3 As VECTOR, Color As Integer, FillFlag As Integer) As Integer
+		Shared Function dx_DrawTriangle3D_x64(Pos1 As VECTOR, Pos2 As VECTOR, Pos3 As VECTOR, Color As UInteger, FillFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawTriangle3D(Pos1 As VECTOR, Pos2 As VECTOR, Pos3 As VECTOR, Color As Integer, FillFlag As Integer) As Integer
+		Public Shared Function DrawTriangle3D(Pos1 As VECTOR, Pos2 As VECTOR, Pos3 As VECTOR, Color As UInteger, FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawTriangle3D_x86(Pos1, Pos2, Pos3, Color, FillFlag)
 			Else
@@ -9434,12 +7686,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawTriangle3DD")> _
-		Shared Function dx_DrawTriangle3DD_x86(Pos1 As VECTOR_D, Pos2 As VECTOR_D, Pos3 As VECTOR_D, Color As Integer, FillFlag As Integer) As Integer
+		Shared Function dx_DrawTriangle3DD_x86(Pos1 As VECTOR_D, Pos2 As VECTOR_D, Pos3 As VECTOR_D, Color As UInteger, FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawTriangle3DD")> _
-		Shared Function dx_DrawTriangle3DD_x64(Pos1 As VECTOR_D, Pos2 As VECTOR_D, Pos3 As VECTOR_D, Color As Integer, FillFlag As Integer) As Integer
+		Shared Function dx_DrawTriangle3DD_x64(Pos1 As VECTOR_D, Pos2 As VECTOR_D, Pos3 As VECTOR_D, Color As UInteger, FillFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawTriangle3DD(Pos1 As VECTOR_D, Pos2 As VECTOR_D, Pos3 As VECTOR_D, Color As Integer, FillFlag As Integer) As Integer
+		Public Shared Function DrawTriangle3DD(Pos1 As VECTOR_D, Pos2 As VECTOR_D, Pos3 As VECTOR_D, Color As UInteger, FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawTriangle3DD_x86(Pos1, Pos2, Pos3, Color, FillFlag)
 			Else
@@ -9448,12 +7700,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawCube3D")> _
-		Shared Function dx_DrawCube3D_x86(Pos1 As VECTOR, Pos2 As VECTOR, DifColor As Integer, SpcColor As Integer, FillFlag As Integer) As Integer
+		Shared Function dx_DrawCube3D_x86(Pos1 As VECTOR, Pos2 As VECTOR, DifColor As UInteger, SpcColor As UInteger, FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawCube3D")> _
-		Shared Function dx_DrawCube3D_x64(Pos1 As VECTOR, Pos2 As VECTOR, DifColor As Integer, SpcColor As Integer, FillFlag As Integer) As Integer
+		Shared Function dx_DrawCube3D_x64(Pos1 As VECTOR, Pos2 As VECTOR, DifColor As UInteger, SpcColor As UInteger, FillFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawCube3D(Pos1 As VECTOR, Pos2 As VECTOR, DifColor As Integer, SpcColor As Integer, FillFlag As Integer) As Integer
+		Public Shared Function DrawCube3D(Pos1 As VECTOR, Pos2 As VECTOR, DifColor As UInteger, SpcColor As UInteger, FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawCube3D_x86(Pos1, Pos2, DifColor, SpcColor, FillFlag)
 			Else
@@ -9462,12 +7714,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawCube3DD")> _
-		Shared Function dx_DrawCube3DD_x86(Pos1 As VECTOR_D, Pos2 As VECTOR_D, DifColor As Integer, SpcColor As Integer, FillFlag As Integer) As Integer
+		Shared Function dx_DrawCube3DD_x86(Pos1 As VECTOR_D, Pos2 As VECTOR_D, DifColor As UInteger, SpcColor As UInteger, FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawCube3DD")> _
-		Shared Function dx_DrawCube3DD_x64(Pos1 As VECTOR_D, Pos2 As VECTOR_D, DifColor As Integer, SpcColor As Integer, FillFlag As Integer) As Integer
+		Shared Function dx_DrawCube3DD_x64(Pos1 As VECTOR_D, Pos2 As VECTOR_D, DifColor As UInteger, SpcColor As UInteger, FillFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawCube3DD(Pos1 As VECTOR_D, Pos2 As VECTOR_D, DifColor As Integer, SpcColor As Integer, FillFlag As Integer) As Integer
+		Public Shared Function DrawCube3DD(Pos1 As VECTOR_D, Pos2 As VECTOR_D, DifColor As UInteger, SpcColor As UInteger, FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawCube3DD_x86(Pos1, Pos2, DifColor, SpcColor, FillFlag)
 			Else
@@ -9476,12 +7728,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawSphere3D")> _
-		Shared Function dx_DrawSphere3D_x86(CenterPos As VECTOR, r As Single, DivNum As Integer, DifColor As Integer, SpcColor As Integer, FillFlag As Integer) As Integer
+		Shared Function dx_DrawSphere3D_x86(CenterPos As VECTOR, r As Single, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawSphere3D")> _
-		Shared Function dx_DrawSphere3D_x64(CenterPos As VECTOR, r As Single, DivNum As Integer, DifColor As Integer, SpcColor As Integer, FillFlag As Integer) As Integer
+		Shared Function dx_DrawSphere3D_x64(CenterPos As VECTOR, r As Single, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, FillFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawSphere3D(CenterPos As VECTOR, r As Single, DivNum As Integer, DifColor As Integer, SpcColor As Integer, FillFlag As Integer) As Integer
+		Public Shared Function DrawSphere3D(CenterPos As VECTOR, r As Single, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawSphere3D_x86(CenterPos, r, DivNum, DifColor, SpcColor, FillFlag)
 			Else
@@ -9490,12 +7742,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawSphere3DD")> _
-		Shared Function dx_DrawSphere3DD_x86(CenterPos As VECTOR_D, r As Double, DivNum As Integer, DifColor As Integer, SpcColor As Integer, FillFlag As Integer) As Integer
+		Shared Function dx_DrawSphere3DD_x86(CenterPos As VECTOR_D, r As Double, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawSphere3DD")> _
-		Shared Function dx_DrawSphere3DD_x64(CenterPos As VECTOR_D, r As Double, DivNum As Integer, DifColor As Integer, SpcColor As Integer, FillFlag As Integer) As Integer
+		Shared Function dx_DrawSphere3DD_x64(CenterPos As VECTOR_D, r As Double, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, FillFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawSphere3DD(CenterPos As VECTOR_D, r As Double, DivNum As Integer, DifColor As Integer, SpcColor As Integer, FillFlag As Integer) As Integer
+		Public Shared Function DrawSphere3DD(CenterPos As VECTOR_D, r As Double, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawSphere3DD_x86(CenterPos, r, DivNum, DifColor, SpcColor, FillFlag)
 			Else
@@ -9504,14 +7756,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawCapsule3D")> _
-		Shared Function dx_DrawCapsule3D_x86(Pos1 As VECTOR, Pos2 As VECTOR, r As Single, DivNum As Integer, DifColor As Integer, SpcColor As Integer, _
+		Shared Function dx_DrawCapsule3D_x86(Pos1 As VECTOR, Pos2 As VECTOR, r As Single, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, _
 			FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawCapsule3D")> _
-		Shared Function dx_DrawCapsule3D_x64(Pos1 As VECTOR, Pos2 As VECTOR, r As Single, DivNum As Integer, DifColor As Integer, SpcColor As Integer, _
+		Shared Function dx_DrawCapsule3D_x64(Pos1 As VECTOR, Pos2 As VECTOR, r As Single, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, _
 			FillFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawCapsule3D(Pos1 As VECTOR, Pos2 As VECTOR, r As Single, DivNum As Integer, DifColor As Integer, SpcColor As Integer, _
+		Public Shared Function DrawCapsule3D(Pos1 As VECTOR, Pos2 As VECTOR, r As Single, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, _
 			FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawCapsule3D_x86(Pos1, Pos2, r, DivNum, DifColor, SpcColor, _
@@ -9523,14 +7775,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawCapsule3DD")> _
-		Shared Function dx_DrawCapsule3DD_x86(Pos1 As VECTOR_D, Pos2 As VECTOR_D, r As Double, DivNum As Integer, DifColor As Integer, SpcColor As Integer, _
+		Shared Function dx_DrawCapsule3DD_x86(Pos1 As VECTOR_D, Pos2 As VECTOR_D, r As Double, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, _
 			FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawCapsule3DD")> _
-		Shared Function dx_DrawCapsule3DD_x64(Pos1 As VECTOR_D, Pos2 As VECTOR_D, r As Double, DivNum As Integer, DifColor As Integer, SpcColor As Integer, _
+		Shared Function dx_DrawCapsule3DD_x64(Pos1 As VECTOR_D, Pos2 As VECTOR_D, r As Double, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, _
 			FillFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawCapsule3DD(Pos1 As VECTOR_D, Pos2 As VECTOR_D, r As Double, DivNum As Integer, DifColor As Integer, SpcColor As Integer, _
+		Public Shared Function DrawCapsule3DD(Pos1 As VECTOR_D, Pos2 As VECTOR_D, r As Double, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, _
 			FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawCapsule3DD_x86(Pos1, Pos2, r, DivNum, DifColor, SpcColor, _
@@ -9542,14 +7794,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawCone3D")> _
-		Shared Function dx_DrawCone3D_x86(TopPos As VECTOR, BottomPos As VECTOR, r As Single, DivNum As Integer, DifColor As Integer, SpcColor As Integer, _
+		Shared Function dx_DrawCone3D_x86(TopPos As VECTOR, BottomPos As VECTOR, r As Single, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, _
 			FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawCone3D")> _
-		Shared Function dx_DrawCone3D_x64(TopPos As VECTOR, BottomPos As VECTOR, r As Single, DivNum As Integer, DifColor As Integer, SpcColor As Integer, _
+		Shared Function dx_DrawCone3D_x64(TopPos As VECTOR, BottomPos As VECTOR, r As Single, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, _
 			FillFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawCone3D(TopPos As VECTOR, BottomPos As VECTOR, r As Single, DivNum As Integer, DifColor As Integer, SpcColor As Integer, _
+		Public Shared Function DrawCone3D(TopPos As VECTOR, BottomPos As VECTOR, r As Single, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, _
 			FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawCone3D_x86(TopPos, BottomPos, r, DivNum, DifColor, SpcColor, _
@@ -9561,14 +7813,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawCone3DD")> _
-		Shared Function dx_DrawCone3DD_x86(TopPos As VECTOR_D, BottomPos As VECTOR_D, r As Double, DivNum As Integer, DifColor As Integer, SpcColor As Integer, _
+		Shared Function dx_DrawCone3DD_x86(TopPos As VECTOR_D, BottomPos As VECTOR_D, r As Double, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, _
 			FillFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawCone3DD")> _
-		Shared Function dx_DrawCone3DD_x64(TopPos As VECTOR_D, BottomPos As VECTOR_D, r As Double, DivNum As Integer, DifColor As Integer, SpcColor As Integer, _
+		Shared Function dx_DrawCone3DD_x64(TopPos As VECTOR_D, BottomPos As VECTOR_D, r As Double, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, _
 			FillFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawCone3DD(TopPos As VECTOR_D, BottomPos As VECTOR_D, r As Double, DivNum As Integer, DifColor As Integer, SpcColor As Integer, _
+		Public Shared Function DrawCone3DD(TopPos As VECTOR_D, BottomPos As VECTOR_D, r As Double, DivNum As Integer, DifColor As UInteger, SpcColor As UInteger, _
 			FillFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawCone3DD_x86(TopPos, BottomPos, r, DivNum, DifColor, SpcColor, _
@@ -10011,6 +8263,30 @@ Namespace DxVBDLL
 			End If
 		End Function
 
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawRectModiGraph")> _
+		Shared Function dx_DrawRectModiGraph_x86(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, x3 As Integer, y3 As Integer, _
+			x4 As Integer, y4 As Integer, SrcX As Integer, SrcY As Integer, Width As Integer, Height As Integer, _
+			GraphHandle As Integer, TransFlag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawRectModiGraph")> _
+		Shared Function dx_DrawRectModiGraph_x64(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, x3 As Integer, y3 As Integer, _
+			x4 As Integer, y4 As Integer, SrcX As Integer, SrcY As Integer, Width As Integer, Height As Integer, _
+			GraphHandle As Integer, TransFlag As Integer) As Integer
+		End Function
+		Public Shared Function DrawRectModiGraph(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, x3 As Integer, y3 As Integer, _
+			x4 As Integer, y4 As Integer, SrcX As Integer, SrcY As Integer, Width As Integer, Height As Integer, _
+			GraphHandle As Integer, TransFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRectModiGraph_x86(x1, y1, x2, y2, x3, y3, _
+					x4, y4, SrcX, SrcY, Width, Height, _
+					GraphHandle, TransFlag)
+			Else
+				Return dx_DrawRectModiGraph_x64(x1, y1, x2, y2, x3, y3, _
+					x4, y4, SrcX, SrcY, Width, Height, _
+					GraphHandle, TransFlag)
+			End If
+		End Function
+
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawRectGraphF")> _
 		Shared Function dx_DrawRectGraphF_x86(DestX As Single, DestY As Single, SrcX As Integer, SrcY As Integer, Width As Integer, Height As Integer, _
 			GraphHandle As Integer, TransFlag As Integer, TurnFlag As Integer) As Integer
@@ -10113,6 +8389,30 @@ Namespace DxVBDLL
 				Return dx_DrawRectRotaGraph3F_x64(x, y, SrcX, SrcY, Width, Height, _
 					cxf, cyf, ExtRateX, ExtRateY, Angle, GraphHandle, _
 					TransFlag, TurnFlag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawRectModiGraphF")> _
+		Shared Function dx_DrawRectModiGraphF_x86(x1 As Single, y1 As Single, x2 As Single, y2 As Single, x3 As Single, y3 As Single, _
+			x4 As Single, y4 As Single, SrcX As Integer, SrcY As Integer, Width As Integer, Height As Integer, _
+			GraphHandle As Integer, TransFlag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawRectModiGraphF")> _
+		Shared Function dx_DrawRectModiGraphF_x64(x1 As Single, y1 As Single, x2 As Single, y2 As Single, x3 As Single, y3 As Single, _
+			x4 As Single, y4 As Single, SrcX As Integer, SrcY As Integer, Width As Integer, Height As Integer, _
+			GraphHandle As Integer, TransFlag As Integer) As Integer
+		End Function
+		Public Shared Function DrawRectModiGraphF(x1 As Single, y1 As Single, x2 As Single, y2 As Single, x3 As Single, y3 As Single, _
+			x4 As Single, y4 As Single, SrcX As Integer, SrcY As Integer, Width As Integer, Height As Integer, _
+			GraphHandle As Integer, TransFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRectModiGraphF_x86(x1, y1, x2, y2, x3, y3, _
+					x4, y4, SrcX, SrcY, Width, Height, _
+					GraphHandle, TransFlag)
+			Else
+				Return dx_DrawRectModiGraphF_x64(x1, y1, x2, y2, x3, y3, _
+					x4, y4, SrcX, SrcY, Width, Height, _
+					GraphHandle, TransFlag)
 			End If
 		End Function
 
@@ -11930,12 +10230,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_GetPixel")> _
-		Shared Function dx_GetPixel_x86(x As Integer, y As Integer) As Integer
+		Shared Function dx_GetPixel_x86(x As Integer, y As Integer) As UInteger
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_GetPixel")> _
-		Shared Function dx_GetPixel_x64(x As Integer, y As Integer) As Integer
+		Shared Function dx_GetPixel_x64(x As Integer, y As Integer) As UInteger
 		End Function
-		Public Shared Function GetPixel(x As Integer, y As Integer) As Integer
+		Public Shared Function GetPixel(x As Integer, y As Integer) As UInteger
 			If System.IntPtr.Size = 4 Then
 				Return dx_GetPixel_x86(x, y)
 			Else
@@ -12106,48 +10406,6 @@ Namespace DxVBDLL
 				Return dx_SetDrawZBuffer_x86(DrawScreen)
 			Else
 				Return dx_SetDrawZBuffer_x64(DrawScreen)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_BltBackScreenToWindow")> _
-		Shared Function dx_BltBackScreenToWindow_x86(Window As System.IntPtr, ClientX As Integer, ClientY As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_BltBackScreenToWindow")> _
-		Shared Function dx_BltBackScreenToWindow_x64(Window As System.IntPtr, ClientX As Integer, ClientY As Integer) As Integer
-		End Function
-		Public Shared Function BltBackScreenToWindow(Window As System.IntPtr, ClientX As Integer, ClientY As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_BltBackScreenToWindow_x86(Window, ClientX, ClientY)
-			Else
-				Return dx_BltBackScreenToWindow_x64(Window, ClientX, ClientY)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_BltRectBackScreenToWindow")> _
-		Shared Function dx_BltRectBackScreenToWindow_x86(Window As System.IntPtr, BackScreenRect As RECT, WindowClientRect As RECT) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_BltRectBackScreenToWindow")> _
-		Shared Function dx_BltRectBackScreenToWindow_x64(Window As System.IntPtr, BackScreenRect As RECT, WindowClientRect As RECT) As Integer
-		End Function
-		Public Shared Function BltRectBackScreenToWindow(Window As System.IntPtr, BackScreenRect As RECT, WindowClientRect As RECT) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_BltRectBackScreenToWindow_x86(Window, BackScreenRect, WindowClientRect)
-			Else
-				Return dx_BltRectBackScreenToWindow_x64(Window, BackScreenRect, WindowClientRect)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetScreenFlipTargetWindow")> _
-		Shared Function dx_SetScreenFlipTargetWindow_x86(TargetWindow As System.IntPtr) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetScreenFlipTargetWindow")> _
-		Shared Function dx_SetScreenFlipTargetWindow_x64(TargetWindow As System.IntPtr) As Integer
-		End Function
-		Public Shared Function SetScreenFlipTargetWindow(TargetWindow As System.IntPtr) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetScreenFlipTargetWindow_x86(TargetWindow)
-			Else
-				Return dx_SetScreenFlipTargetWindow_x64(TargetWindow)
 			End If
 		End Function
 
@@ -12410,45 +10668,80 @@ Namespace DxVBDLL
 			End If
 		End Function
 
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDisplayNum")> _
+		Shared Function dx_GetDisplayNum_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDisplayNum")> _
+		Shared Function dx_GetDisplayNum_x64() As Integer
+		End Function
+		Public Shared Function GetDisplayNum() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetDisplayNum_x86()
+			Else
+				Return dx_GetDisplayNum_x64()
+			End If
+		End Function
+
 		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDisplayModeNum")> _
-		Shared Function dx_GetDisplayModeNum_x86() As Integer
+		Shared Function dx_GetDisplayModeNum_x86(DisplayIndex As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDisplayModeNum")> _
-		Shared Function dx_GetDisplayModeNum_x64() As Integer
+		Shared Function dx_GetDisplayModeNum_x64(DisplayIndex As Integer) As Integer
 		End Function
 		Public Shared Function GetDisplayModeNum() As Integer
 			If System.IntPtr.Size = 4 Then
-				Return dx_GetDisplayModeNum_x86()
+				Return dx_GetDisplayModeNum_x86(0)
 			Else
-				Return dx_GetDisplayModeNum_x64()
+				Return dx_GetDisplayModeNum_x64(0)
+			End If
+		End Function
+		Public Shared Function GetDisplayModeNum(DisplayIndex As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetDisplayModeNum_x86(DisplayIndex)
+			Else
+				Return dx_GetDisplayModeNum_x64(DisplayIndex)
 			End If
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDisplayMode")> _
-		Shared Function dx_GetDisplayMode_x86(ModeIndex As Integer) As DISPLAYMODEDATA
+		Shared Function dx_GetDisplayMode_x86(ModeIndex As Integer, DisplayIndex As Integer) As DISPLAYMODEDATA
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDisplayMode")> _
-		Shared Function dx_GetDisplayMode_x64(ModeIndex As Integer) As DISPLAYMODEDATA
+		Shared Function dx_GetDisplayMode_x64(ModeIndex As Integer, DisplayIndex As Integer) As DISPLAYMODEDATA
 		End Function
 		Public Shared Function GetDisplayMode(ModeIndex As Integer) As DISPLAYMODEDATA
 			If System.IntPtr.Size = 4 Then
-				Return dx_GetDisplayMode_x86(ModeIndex)
+				Return dx_GetDisplayMode_x86(ModeIndex, 0)
 			Else
-				Return dx_GetDisplayMode_x64(ModeIndex)
+				Return dx_GetDisplayMode_x64(ModeIndex, 0)
+			End If
+		End Function
+		Public Shared Function GetDisplayMode(ModeIndex As Integer, DisplayIndex As Integer) As DISPLAYMODEDATA
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetDisplayMode_x86(ModeIndex, DisplayIndex)
+			Else
+				Return dx_GetDisplayMode_x64(ModeIndex, DisplayIndex)
 			End If
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDisplayMaxResolution")> _
-		Shared Function dx_GetDisplayMaxResolution_x86(ByRef SizeX As Integer, ByRef SizeY As Integer) As Integer
+		Shared Function dx_GetDisplayMaxResolution_x86(ByRef SizeX As Integer, ByRef SizeY As Integer, DisplayIndex As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDisplayMaxResolution")> _
-		Shared Function dx_GetDisplayMaxResolution_x64(ByRef SizeX As Integer, ByRef SizeY As Integer) As Integer
+		Shared Function dx_GetDisplayMaxResolution_x64(ByRef SizeX As Integer, ByRef SizeY As Integer, DisplayIndex As Integer) As Integer
 		End Function
 		Public Shared Function GetDisplayMaxResolution(ByRef SizeX As Integer, ByRef SizeY As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
-				Return dx_GetDisplayMaxResolution_x86(SizeX, SizeY)
+				Return dx_GetDisplayMaxResolution_x86(SizeX, SizeY, 0)
 			Else
-				Return dx_GetDisplayMaxResolution_x64(SizeX, SizeY)
+				Return dx_GetDisplayMaxResolution_x64(SizeX, SizeY, 0)
+			End If
+		End Function
+		Public Shared Function GetDisplayMaxResolution(ByRef SizeX As Integer, ByRef SizeY As Integer, DisplayIndex As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetDisplayMaxResolution_x86(SizeX, SizeY, DisplayIndex)
+			Else
+				Return dx_GetDisplayMaxResolution_x64(SizeX, SizeY, DisplayIndex)
 			End If
 		End Function
 
@@ -12466,17 +10759,17 @@ Namespace DxVBDLL
 			End If
 		End Function
 
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetDisplayRefreshRate")> _
-		Shared Function dx_SetDisplayRefreshRate_x86(RefreshRate As Integer) As Integer
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDrawFloatCoordType")> _
+		Shared Function dx_GetDrawFloatCoordType_x86() As Integer
 		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetDisplayRefreshRate")> _
-		Shared Function dx_SetDisplayRefreshRate_x64(RefreshRate As Integer) As Integer
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDrawFloatCoordType")> _
+		Shared Function dx_GetDrawFloatCoordType_x64() As Integer
 		End Function
-		Public Shared Function SetDisplayRefreshRate(RefreshRate As Integer) As Integer
+		Public Shared Function GetDrawFloatCoordType() As Integer
 			If System.IntPtr.Size = 4 Then
-				Return dx_SetDisplayRefreshRate_x86(RefreshRate)
+				Return dx_GetDrawFloatCoordType_x86()
 			Else
-				Return dx_SetDisplayRefreshRate_x64(RefreshRate)
+				Return dx_GetDrawFloatCoordType_x64()
 			End If
 		End Function
 
@@ -12704,143 +10997,17 @@ Namespace DxVBDLL
 			End If
 		End Function
 
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMultiThreadFlag")> _
-		Shared Function dx_SetMultiThreadFlag_x86(Flag As Integer) As Integer
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseDisplayIndex")> _
+		Shared Function dx_SetUseDisplayIndex_x86(Index As Integer) As Integer
 		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMultiThreadFlag")> _
-		Shared Function dx_SetMultiThreadFlag_x64(Flag As Integer) As Integer
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseDisplayIndex")> _
+		Shared Function dx_SetUseDisplayIndex_x64(Index As Integer) As Integer
 		End Function
-		Public Shared Function SetMultiThreadFlag(Flag As Integer) As Integer
+		Public Shared Function SetUseDisplayIndex(Index As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
-				Return dx_SetMultiThreadFlag_x86(Flag)
+				Return dx_SetUseDisplayIndex_x86(Index)
 			Else
-				Return dx_SetMultiThreadFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseDirectDrawDeviceIndex")> _
-		Shared Function dx_SetUseDirectDrawDeviceIndex_x86(Index As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseDirectDrawDeviceIndex")> _
-		Shared Function dx_SetUseDirectDrawDeviceIndex_x64(Index As Integer) As Integer
-		End Function
-		Public Shared Function SetUseDirectDrawDeviceIndex(Index As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseDirectDrawDeviceIndex_x86(Index)
-			Else
-				Return dx_SetUseDirectDrawDeviceIndex_x64(Index)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetAeroDisableFlag")> _
-		Shared Function dx_SetAeroDisableFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetAeroDisableFlag")> _
-		Shared Function dx_SetAeroDisableFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetAeroDisableFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetAeroDisableFlag_x86(Flag)
-			Else
-				Return dx_SetAeroDisableFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseDirect3D9Ex")> _
-		Shared Function dx_SetUseDirect3D9Ex_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseDirect3D9Ex")> _
-		Shared Function dx_SetUseDirect3D9Ex_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetUseDirect3D9Ex(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseDirect3D9Ex_x86(Flag)
-			Else
-				Return dx_SetUseDirect3D9Ex_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseDirectDrawFlag")> _
-		Shared Function dx_SetUseDirectDrawFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseDirectDrawFlag")> _
-		Shared Function dx_SetUseDirectDrawFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetUseDirectDrawFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseDirectDrawFlag_x86(Flag)
-			Else
-				Return dx_SetUseDirectDrawFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseGDIFlag")> _
-		Shared Function dx_SetUseGDIFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseGDIFlag")> _
-		Shared Function dx_SetUseGDIFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetUseGDIFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseGDIFlag_x86(Flag)
-			Else
-				Return dx_SetUseGDIFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseGDIFlag")> _
-		Shared Function dx_GetUseGDIFlag_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseGDIFlag")> _
-		Shared Function dx_GetUseGDIFlag_x64() As Integer
-		End Function
-		Public Shared Function GetUseGDIFlag() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetUseGDIFlag_x86()
-			Else
-				Return dx_GetUseGDIFlag_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDirectDrawDeviceDescription")> _
-		Shared Function dx_GetDirectDrawDeviceDescription_x86(Number As Integer, StringBuffer As System.Text.StringBuilder) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDirectDrawDeviceDescription")> _
-		Shared Function dx_GetDirectDrawDeviceDescription_x64(Number As Integer, StringBuffer As System.Text.StringBuilder) As Integer
-		End Function
-		Public Shared Function GetDirectDrawDeviceDescription(Number As Integer, StringBuffer As System.Text.StringBuilder) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetDirectDrawDeviceDescription_x86(Number, StringBuffer)
-			Else
-				Return dx_GetDirectDrawDeviceDescription_x64(Number, StringBuffer)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDirectDrawDeviceNum")> _
-		Shared Function dx_GetDirectDrawDeviceNum_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDirectDrawDeviceNum")> _
-		Shared Function dx_GetDirectDrawDeviceNum_x64() As Integer
-		End Function
-		Public Shared Function GetDirectDrawDeviceNum() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetDirectDrawDeviceNum_x86()
-			Else
-				Return dx_GetDirectDrawDeviceNum_x64()
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_RefreshDxLibDirect3DSetting")> _
-		Shared Function dx_RefreshDxLibDirect3DSetting_x86() As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_RefreshDxLibDirect3DSetting")> _
-		Shared Function dx_RefreshDxLibDirect3DSetting_x64() As Integer
-		End Function
-		Public Shared Function RefreshDxLibDirect3DSetting() As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_RefreshDxLibDirect3DSetting_x86()
-			Else
-				Return dx_RefreshDxLibDirect3DSetting_x64()
+				Return dx_SetUseDisplayIndex_x64(Index)
 			End If
 		End Function
 
@@ -14042,6 +12209,92 @@ Namespace DxVBDLL
 			Else
 				Return dx_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_x64(VertexBufHandle, IndexBufHandle, PrimitiveType, BaseVertex, StartVertex, UseVertexNum, _
 					StartIndex, UseIndexNum)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_InitShaderConstantBuffer")> _
+		Shared Function dx_InitShaderConstantBuffer_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_InitShaderConstantBuffer")> _
+		Shared Function dx_InitShaderConstantBuffer_x64() As Integer
+		End Function
+		Public Shared Function InitShaderConstantBuffer() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_InitShaderConstantBuffer_x86()
+			Else
+				Return dx_InitShaderConstantBuffer_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_CreateShaderConstantBuffer")> _
+		Shared Function dx_CreateShaderConstantBuffer_x86(BufferSize As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_CreateShaderConstantBuffer")> _
+		Shared Function dx_CreateShaderConstantBuffer_x64(BufferSize As Integer) As Integer
+		End Function
+		Public Shared Function CreateShaderConstantBuffer(BufferSize As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_CreateShaderConstantBuffer_x86(BufferSize)
+			Else
+				Return dx_CreateShaderConstantBuffer_x64(BufferSize)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DeleteShaderConstantBuffer")> _
+		Shared Function dx_DeleteShaderConstantBuffer_x86(SConstBufHandle As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DeleteShaderConstantBuffer")> _
+		Shared Function dx_DeleteShaderConstantBuffer_x64(SConstBufHandle As Integer) As Integer
+		End Function
+		Public Shared Function DeleteShaderConstantBuffer(SConstBufHandle As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DeleteShaderConstantBuffer_x86(SConstBufHandle)
+			Else
+				Return dx_DeleteShaderConstantBuffer_x64(SConstBufHandle)
+			End If
+		End Function
+
+		#if DX_USE_UNSAFE Then
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetBufferShaderConstantBuffer")> _
+		Shared Sub dx_GetBufferShaderConstantBuffer_x86(SConstBufHandle As Integer)
+		End Sub
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetBufferShaderConstantBuffer")> _
+		Shared Sub dx_GetBufferShaderConstantBuffer_x64(SConstBufHandle As Integer)
+		End Sub
+		Public Shared Sub GetBufferShaderConstantBuffer(SConstBufHandle As Integer)
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetBufferShaderConstantBuffer_x86(SConstBufHandle)
+			Else
+				Return dx_GetBufferShaderConstantBuffer_x64(SConstBufHandle)
+			End If
+		End Sub
+		#End If
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_UpdateShaderConstantBuffer")> _
+		Shared Function dx_UpdateShaderConstantBuffer_x86(SConstBufHandle As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_UpdateShaderConstantBuffer")> _
+		Shared Function dx_UpdateShaderConstantBuffer_x64(SConstBufHandle As Integer) As Integer
+		End Function
+		Public Shared Function UpdateShaderConstantBuffer(SConstBufHandle As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_UpdateShaderConstantBuffer_x86(SConstBufHandle)
+			Else
+				Return dx_UpdateShaderConstantBuffer_x64(SConstBufHandle)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetShaderConstantBuffer")> _
+		Shared Function dx_SetShaderConstantBuffer_x86(SConstBufHandle As Integer, TargetShader As Integer, Slot As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetShaderConstantBuffer")> _
+		Shared Function dx_SetShaderConstantBuffer_x64(SConstBufHandle As Integer, TargetShader As Integer, Slot As Integer) As Integer
+		End Function
+		Public Shared Function SetShaderConstantBuffer(SConstBufHandle As Integer, TargetShader As Integer, Slot As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetShaderConstantBuffer_x86(SConstBufHandle, TargetShader, Slot)
+			Else
+				Return dx_SetShaderConstantBuffer_x64(SConstBufHandle, TargetShader, Slot)
 			End If
 		End Function
 
@@ -15833,22 +14086,6 @@ Namespace DxVBDLL
 			End If
 		End Function
 
-		#if DX_USE_UNSAFE Then
-		<DllImport(DX_DLL_32, EntryPoint := "dx_ColorKaiseki")> _
-		Shared Function dx_ColorKaiseki_x86(PixelData As System.Void*, ColorData As COLORDATA*) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_ColorKaiseki")> _
-		Shared Function dx_ColorKaiseki_x64(PixelData As System.Void*, ColorData As COLORDATA*) As Integer
-		End Function
-		Public Shared Function ColorKaiseki(PixelData As System.Void*, ColorData As COLORDATA*) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_ColorKaiseki_x86(PixelData, ColorData)
-			Else
-				Return dx_ColorKaiseki_x64(PixelData, ColorData)
-			End If
-		End Function
-		#End If
-
 		<DllImport(DX_DLL_32, EntryPoint := "dx_CreateMaskScreen")> _
 		Shared Function dx_CreateMaskScreen_x86() As Integer
 		End Function
@@ -16358,6 +14595,50 @@ Namespace DxVBDLL
 					Italic, Handle)
 			End If
 		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadFontDataToHandle")> _
+		Shared Function dx_LoadFontDataToHandle_x86(FileName As String, EdgeSize As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadFontDataToHandle")> _
+		Shared Function dx_LoadFontDataToHandle_x64(FileName As String, EdgeSize As Integer) As Integer
+		End Function
+		Public Shared Function LoadFontDataToHandle(FileName As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_LoadFontDataToHandle_x86(FileName, 0)
+			Else
+				Return dx_LoadFontDataToHandle_x64(FileName, 0)
+			End If
+		End Function
+		Public Shared Function LoadFontDataToHandle(FileName As String, EdgeSize As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_LoadFontDataToHandle_x86(FileName, EdgeSize)
+			Else
+				Return dx_LoadFontDataToHandle_x64(FileName, EdgeSize)
+			End If
+		End Function
+
+		#if DX_USE_UNSAFE Then
+		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadFontDataFromMemToHandle")> _
+		Shared Function dx_LoadFontDataFromMemToHandle_x86(FontDataImage As System.Void*, FontDataImageSize As Integer, EdgeSize As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadFontDataFromMemToHandle")> _
+		Shared Function dx_LoadFontDataFromMemToHandle_x64(FontDataImage As System.Void*, FontDataImageSize As Integer, EdgeSize As Integer) As Integer
+		End Function
+		Public Shared Function LoadFontDataFromMemToHandle(FontDataImage As System.Void*, FontDataImageSize As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_LoadFontDataFromMemToHandle_x86(FontDataImage, FontDataImageSize, 0)
+			Else
+				Return dx_LoadFontDataFromMemToHandle_x64(FontDataImage, FontDataImageSize, 0)
+			End If
+		End Function
+		Public Shared Function LoadFontDataFromMemToHandle(FontDataImage As System.Void*, FontDataImageSize As Integer, EdgeSize As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_LoadFontDataFromMemToHandle_x86(FontDataImage, FontDataImageSize, EdgeSize)
+			Else
+				Return dx_LoadFontDataFromMemToHandle_x64(FontDataImage, FontDataImageSize, EdgeSize)
+			End If
+		End Function
+		#End If
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_SetFontSpaceToHandle")> _
 		Shared Function dx_SetFontSpaceToHandle_x86(Point As Integer, FontHandle As Integer) As Integer
@@ -16950,19 +15231,19 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawString")> _
-		Shared Function dx_DrawString_x86(x As Integer, y As Integer, [String] As String, Color As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawString_x86(x As Integer, y As Integer, [String] As String, Color As UInteger, EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawString")> _
-		Shared Function dx_DrawString_x64(x As Integer, y As Integer, [String] As String, Color As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawString_x64(x As Integer, y As Integer, [String] As String, Color As UInteger, EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawString(x As Integer, y As Integer, [String] As String, Color As Integer) As Integer
+		Public Shared Function DrawString(x As Integer, y As Integer, [String] As String, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawString_x86(x, y, [String], Color, 0)
 			Else
 				Return dx_DrawString_x64(x, y, [String], Color, 0)
 			End If
 		End Function
-		Public Shared Function DrawString(x As Integer, y As Integer, [String] As String, Color As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawString(x As Integer, y As Integer, [String] As String, Color As UInteger, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawString_x86(x, y, [String], Color, EdgeColor)
 			Else
@@ -16971,19 +15252,19 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawVString")> _
-		Shared Function dx_DrawVString_x86(x As Integer, y As Integer, [String] As String, Color As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawVString_x86(x As Integer, y As Integer, [String] As String, Color As UInteger, EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawVString")> _
-		Shared Function dx_DrawVString_x64(x As Integer, y As Integer, [String] As String, Color As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawVString_x64(x As Integer, y As Integer, [String] As String, Color As UInteger, EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawVString(x As Integer, y As Integer, [String] As String, Color As Integer) As Integer
+		Public Shared Function DrawVString(x As Integer, y As Integer, [String] As String, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawVString_x86(x, y, [String], Color, 0)
 			Else
 				Return dx_DrawVString_x64(x, y, [String], Color, 0)
 			End If
 		End Function
-		Public Shared Function DrawVString(x As Integer, y As Integer, [String] As String, Color As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawVString(x As Integer, y As Integer, [String] As String, Color As UInteger, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawVString_x86(x, y, [String], Color, EdgeColor)
 			Else
@@ -16992,14 +15273,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawExtendString")> _
-		Shared Function dx_DrawExtendString_x86(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawExtendString_x86(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawExtendString")> _
-		Shared Function dx_DrawExtendString_x64(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawExtendString_x64(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawExtendString(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer) As Integer
+		Public Shared Function DrawExtendString(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendString_x86(x, y, ExRateX, ExRateY, [String], Color, _
 					0)
@@ -17008,8 +15289,8 @@ Namespace DxVBDLL
 					0)
 			End If
 		End Function
-		Public Shared Function DrawExtendString(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Public Shared Function DrawExtendString(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendString_x86(x, y, ExRateX, ExRateY, [String], Color, _
 					EdgeColor)
@@ -17020,14 +15301,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawExtendVString")> _
-		Shared Function dx_DrawExtendVString_x86(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawExtendVString_x86(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawExtendVString")> _
-		Shared Function dx_DrawExtendVString_x64(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawExtendVString_x64(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawExtendVString(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer) As Integer
+		Public Shared Function DrawExtendVString(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendVString_x86(x, y, ExRateX, ExRateY, [String], Color, _
 					0)
@@ -17036,8 +15317,8 @@ Namespace DxVBDLL
 					0)
 			End If
 		End Function
-		Public Shared Function DrawExtendVString(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Public Shared Function DrawExtendVString(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendVString_x86(x, y, ExRateX, ExRateY, [String], Color, _
 					EdgeColor)
@@ -17047,20 +15328,69 @@ Namespace DxVBDLL
 			End If
 		End Function
 
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawRotaString")> _
+		Shared Function dx_DrawRotaString_x86(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, EdgeColor As UInteger, VerticalFlag As Integer, [String] As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawRotaString")> _
+		Shared Function dx_DrawRotaString_x64(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, EdgeColor As UInteger, VerticalFlag As Integer, [String] As String) As Integer
+		End Function
+		Public Shared Function DrawRotaString(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaString_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, 0, [FALSE], Nothing)
+			Else
+				Return dx_DrawRotaString_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, 0, [FALSE], Nothing)
+			End If
+		End Function
+		Public Shared Function DrawRotaString(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, EdgeColor As UInteger) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaString_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, EdgeColor, [FALSE], Nothing)
+			Else
+				Return dx_DrawRotaString_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, EdgeColor, [FALSE], Nothing)
+			End If
+		End Function
+		Public Shared Function DrawRotaString(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, EdgeColor As UInteger, VerticalFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaString_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, EdgeColor, VerticalFlag, Nothing)
+			Else
+				Return dx_DrawRotaString_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, EdgeColor, VerticalFlag, Nothing)
+			End If
+		End Function
+		Public Shared Function DrawRotaString(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, EdgeColor As UInteger, VerticalFlag As Integer, [String] As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaString_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, EdgeColor, VerticalFlag, [String])
+			Else
+				Return dx_DrawRotaString_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, EdgeColor, VerticalFlag, [String])
+			End If
+		End Function
+
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawStringF")> _
-		Shared Function dx_DrawStringF_x86(x As Single, y As Single, [String] As String, Color As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawStringF_x86(x As Single, y As Single, [String] As String, Color As UInteger, EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawStringF")> _
-		Shared Function dx_DrawStringF_x64(x As Single, y As Single, [String] As String, Color As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawStringF_x64(x As Single, y As Single, [String] As String, Color As UInteger, EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawStringF(x As Single, y As Single, [String] As String, Color As Integer) As Integer
+		Public Shared Function DrawStringF(x As Single, y As Single, [String] As String, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawStringF_x86(x, y, [String], Color, 0)
 			Else
 				Return dx_DrawStringF_x64(x, y, [String], Color, 0)
 			End If
 		End Function
-		Public Shared Function DrawStringF(x As Single, y As Single, [String] As String, Color As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawStringF(x As Single, y As Single, [String] As String, Color As UInteger, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawStringF_x86(x, y, [String], Color, EdgeColor)
 			Else
@@ -17069,19 +15399,19 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawVStringF")> _
-		Shared Function dx_DrawVStringF_x86(x As Single, y As Single, [String] As String, Color As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawVStringF_x86(x As Single, y As Single, [String] As String, Color As UInteger, EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawVStringF")> _
-		Shared Function dx_DrawVStringF_x64(x As Single, y As Single, [String] As String, Color As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawVStringF_x64(x As Single, y As Single, [String] As String, Color As UInteger, EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawVStringF(x As Single, y As Single, [String] As String, Color As Integer) As Integer
+		Public Shared Function DrawVStringF(x As Single, y As Single, [String] As String, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawVStringF_x86(x, y, [String], Color, 0)
 			Else
 				Return dx_DrawVStringF_x64(x, y, [String], Color, 0)
 			End If
 		End Function
-		Public Shared Function DrawVStringF(x As Single, y As Single, [String] As String, Color As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawVStringF(x As Single, y As Single, [String] As String, Color As UInteger, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawVStringF_x86(x, y, [String], Color, EdgeColor)
 			Else
@@ -17090,14 +15420,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawExtendStringF")> _
-		Shared Function dx_DrawExtendStringF_x86(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawExtendStringF_x86(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawExtendStringF")> _
-		Shared Function dx_DrawExtendStringF_x64(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawExtendStringF_x64(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawExtendStringF(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer) As Integer
+		Public Shared Function DrawExtendStringF(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendStringF_x86(x, y, ExRateX, ExRateY, [String], Color, _
 					0)
@@ -17106,8 +15436,8 @@ Namespace DxVBDLL
 					0)
 			End If
 		End Function
-		Public Shared Function DrawExtendStringF(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Public Shared Function DrawExtendStringF(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendStringF_x86(x, y, ExRateX, ExRateY, [String], Color, _
 					EdgeColor)
@@ -17118,14 +15448,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawExtendVStringF")> _
-		Shared Function dx_DrawExtendVStringF_x86(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawExtendVStringF_x86(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawExtendVStringF")> _
-		Shared Function dx_DrawExtendVStringF_x64(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawExtendVStringF_x64(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawExtendVStringF(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer) As Integer
+		Public Shared Function DrawExtendVStringF(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendVStringF_x86(x, y, ExRateX, ExRateY, [String], Color, _
 					0)
@@ -17134,8 +15464,8 @@ Namespace DxVBDLL
 					0)
 			End If
 		End Function
-		Public Shared Function DrawExtendVStringF(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Public Shared Function DrawExtendVStringF(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendVStringF_x86(x, y, ExRateX, ExRateY, [String], Color, _
 					EdgeColor)
@@ -17145,20 +15475,69 @@ Namespace DxVBDLL
 			End If
 		End Function
 
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawRotaStringF")> _
+		Shared Function dx_DrawRotaStringF_x86(x As Single, y As Single, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, EdgeColor As UInteger, VerticalFlag As Integer, [String] As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawRotaStringF")> _
+		Shared Function dx_DrawRotaStringF_x64(x As Single, y As Single, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, EdgeColor As UInteger, VerticalFlag As Integer, [String] As String) As Integer
+		End Function
+		Public Shared Function DrawRotaStringF(x As Single, y As Single, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaStringF_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, 0, [FALSE], Nothing)
+			Else
+				Return dx_DrawRotaStringF_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, 0, [FALSE], Nothing)
+			End If
+		End Function
+		Public Shared Function DrawRotaStringF(x As Single, y As Single, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, EdgeColor As UInteger) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaStringF_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, EdgeColor, [FALSE], Nothing)
+			Else
+				Return dx_DrawRotaStringF_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, EdgeColor, [FALSE], Nothing)
+			End If
+		End Function
+		Public Shared Function DrawRotaStringF(x As Single, y As Single, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, EdgeColor As UInteger, VerticalFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaStringF_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, EdgeColor, VerticalFlag, Nothing)
+			Else
+				Return dx_DrawRotaStringF_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, EdgeColor, VerticalFlag, Nothing)
+			End If
+		End Function
+		Public Shared Function DrawRotaStringF(x As Single, y As Single, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, EdgeColor As UInteger, VerticalFlag As Integer, [String] As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaStringF_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, EdgeColor, VerticalFlag, [String])
+			Else
+				Return dx_DrawRotaStringF_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, EdgeColor, VerticalFlag, [String])
+			End If
+		End Function
+
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawNumberToI")> _
-		Shared Function dx_DrawNumberToI_x86(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberToI_x86(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As UInteger, EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawNumberToI")> _
-		Shared Function dx_DrawNumberToI_x64(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberToI_x64(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As UInteger, EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawNumberToI(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As Integer) As Integer
+		Public Shared Function DrawNumberToI(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberToI_x86(x, y, Num, RisesNum, Color, 0)
 			Else
 				Return dx_DrawNumberToI_x64(x, y, Num, RisesNum, Color, 0)
 			End If
 		End Function
-		Public Shared Function DrawNumberToI(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawNumberToI(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As UInteger, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberToI_x86(x, y, Num, RisesNum, Color, EdgeColor)
 			Else
@@ -17167,19 +15546,19 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawNumberToF")> _
-		Shared Function dx_DrawNumberToF_x86(x As Integer, y As Integer, Num As Double, Length As Integer, Color As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberToF_x86(x As Integer, y As Integer, Num As Double, Length As Integer, Color As UInteger, EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawNumberToF")> _
-		Shared Function dx_DrawNumberToF_x64(x As Integer, y As Integer, Num As Double, Length As Integer, Color As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberToF_x64(x As Integer, y As Integer, Num As Double, Length As Integer, Color As UInteger, EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawNumberToF(x As Integer, y As Integer, Num As Double, Length As Integer, Color As Integer) As Integer
+		Public Shared Function DrawNumberToF(x As Integer, y As Integer, Num As Double, Length As Integer, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberToF_x86(x, y, Num, Length, Color, 0)
 			Else
 				Return dx_DrawNumberToF_x64(x, y, Num, Length, Color, 0)
 			End If
 		End Function
-		Public Shared Function DrawNumberToF(x As Integer, y As Integer, Num As Double, Length As Integer, Color As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawNumberToF(x As Integer, y As Integer, Num As Double, Length As Integer, Color As UInteger, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberToF_x86(x, y, Num, Length, Color, EdgeColor)
 			Else
@@ -17188,14 +15567,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawNumberPlusToI")> _
-		Shared Function dx_DrawNumberPlusToI_x86(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberPlusToI_x86(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawNumberPlusToI")> _
-		Shared Function dx_DrawNumberPlusToI_x64(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberPlusToI_x64(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawNumberPlusToI(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As Integer) As Integer
+		Public Shared Function DrawNumberPlusToI(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberPlusToI_x86(x, y, NoteString, Num, RisesNum, Color, _
 					0)
@@ -17204,8 +15583,8 @@ Namespace DxVBDLL
 					0)
 			End If
 		End Function
-		Public Shared Function DrawNumberPlusToI(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Public Shared Function DrawNumberPlusToI(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberPlusToI_x86(x, y, NoteString, Num, RisesNum, Color, _
 					EdgeColor)
@@ -17216,14 +15595,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawNumberPlusToF")> _
-		Shared Function dx_DrawNumberPlusToF_x86(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberPlusToF_x86(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawNumberPlusToF")> _
-		Shared Function dx_DrawNumberPlusToF_x64(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberPlusToF_x64(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawNumberPlusToF(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As Integer) As Integer
+		Public Shared Function DrawNumberPlusToF(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberPlusToF_x86(x, y, NoteString, Num, Length, Color, _
 					0)
@@ -17232,8 +15611,8 @@ Namespace DxVBDLL
 					0)
 			End If
 		End Function
-		Public Shared Function DrawNumberPlusToF(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As Integer, _
-			EdgeColor As Integer) As Integer
+		Public Shared Function DrawNumberPlusToF(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As UInteger, _
+			EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberPlusToF_x86(x, y, NoteString, Num, Length, Color, _
 					EdgeColor)
@@ -17300,14 +15679,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawStringToHandle")> _
-		Shared Function dx_DrawStringToHandle_x86(x As Integer, y As Integer, [String] As String, Color As Integer, FontHandle As Integer, EdgeColor As Integer, _
+		Shared Function dx_DrawStringToHandle_x86(x As Integer, y As Integer, [String] As String, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger, _
 			VerticalFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawStringToHandle")> _
-		Shared Function dx_DrawStringToHandle_x64(x As Integer, y As Integer, [String] As String, Color As Integer, FontHandle As Integer, EdgeColor As Integer, _
+		Shared Function dx_DrawStringToHandle_x64(x As Integer, y As Integer, [String] As String, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger, _
 			VerticalFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawStringToHandle(x As Integer, y As Integer, [String] As String, Color As Integer, FontHandle As Integer) As Integer
+		Public Shared Function DrawStringToHandle(x As Integer, y As Integer, [String] As String, Color As UInteger, FontHandle As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawStringToHandle_x86(x, y, [String], Color, FontHandle, 0, _
 					[FALSE])
@@ -17316,7 +15695,7 @@ Namespace DxVBDLL
 					[FALSE])
 			End If
 		End Function
-		Public Shared Function DrawStringToHandle(x As Integer, y As Integer, [String] As String, Color As Integer, FontHandle As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawStringToHandle(x As Integer, y As Integer, [String] As String, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawStringToHandle_x86(x, y, [String], Color, FontHandle, EdgeColor, _
 					[FALSE])
@@ -17325,7 +15704,7 @@ Namespace DxVBDLL
 					[FALSE])
 			End If
 		End Function
-		Public Shared Function DrawStringToHandle(x As Integer, y As Integer, [String] As String, Color As Integer, FontHandle As Integer, EdgeColor As Integer, _
+		Public Shared Function DrawStringToHandle(x As Integer, y As Integer, [String] As String, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger, _
 			VerticalFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawStringToHandle_x86(x, y, [String], Color, FontHandle, EdgeColor, _
@@ -17337,19 +15716,19 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawVStringToHandle")> _
-		Shared Function dx_DrawVStringToHandle_x86(x As Integer, y As Integer, [String] As String, Color As Integer, FontHandle As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawVStringToHandle_x86(x As Integer, y As Integer, [String] As String, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawVStringToHandle")> _
-		Shared Function dx_DrawVStringToHandle_x64(x As Integer, y As Integer, [String] As String, Color As Integer, FontHandle As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawVStringToHandle_x64(x As Integer, y As Integer, [String] As String, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawVStringToHandle(x As Integer, y As Integer, [String] As String, Color As Integer, FontHandle As Integer) As Integer
+		Public Shared Function DrawVStringToHandle(x As Integer, y As Integer, [String] As String, Color As UInteger, FontHandle As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawVStringToHandle_x86(x, y, [String], Color, FontHandle, 0)
 			Else
 				Return dx_DrawVStringToHandle_x64(x, y, [String], Color, FontHandle, 0)
 			End If
 		End Function
-		Public Shared Function DrawVStringToHandle(x As Integer, y As Integer, [String] As String, Color As Integer, FontHandle As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawVStringToHandle(x As Integer, y As Integer, [String] As String, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawVStringToHandle_x86(x, y, [String], Color, FontHandle, EdgeColor)
 			Else
@@ -17358,14 +15737,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawExtendStringToHandle")> _
-		Shared Function dx_DrawExtendStringToHandle_x86(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer, VerticalFlag As Integer) As Integer
+		Shared Function dx_DrawExtendStringToHandle_x86(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger, VerticalFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawExtendStringToHandle")> _
-		Shared Function dx_DrawExtendStringToHandle_x64(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer, VerticalFlag As Integer) As Integer
+		Shared Function dx_DrawExtendStringToHandle_x64(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger, VerticalFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawExtendStringToHandle(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
+		Public Shared Function DrawExtendStringToHandle(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
 			FontHandle As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendStringToHandle_x86(x, y, ExRateX, ExRateY, [String], Color, _
@@ -17375,8 +15754,8 @@ Namespace DxVBDLL
 					FontHandle, 0, [FALSE])
 			End If
 		End Function
-		Public Shared Function DrawExtendStringToHandle(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawExtendStringToHandle(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendStringToHandle_x86(x, y, ExRateX, ExRateY, [String], Color, _
 					FontHandle, EdgeColor, [FALSE])
@@ -17385,8 +15764,8 @@ Namespace DxVBDLL
 					FontHandle, EdgeColor, [FALSE])
 			End If
 		End Function
-		Public Shared Function DrawExtendStringToHandle(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer, VerticalFlag As Integer) As Integer
+		Public Shared Function DrawExtendStringToHandle(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger, VerticalFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendStringToHandle_x86(x, y, ExRateX, ExRateY, [String], Color, _
 					FontHandle, EdgeColor, VerticalFlag)
@@ -17397,14 +15776,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawExtendVStringToHandle")> _
-		Shared Function dx_DrawExtendVStringToHandle_x86(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawExtendVStringToHandle_x86(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawExtendVStringToHandle")> _
-		Shared Function dx_DrawExtendVStringToHandle_x64(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawExtendVStringToHandle_x64(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawExtendVStringToHandle(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
+		Public Shared Function DrawExtendVStringToHandle(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
 			FontHandle As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendVStringToHandle_x86(x, y, ExRateX, ExRateY, [String], Color, _
@@ -17414,8 +15793,8 @@ Namespace DxVBDLL
 					FontHandle, 0)
 			End If
 		End Function
-		Public Shared Function DrawExtendVStringToHandle(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawExtendVStringToHandle(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendVStringToHandle_x86(x, y, ExRateX, ExRateY, [String], Color, _
 					FontHandle, EdgeColor)
@@ -17425,15 +15804,64 @@ Namespace DxVBDLL
 			End If
 		End Function
 
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawRotaStringToHandle")> _
+		Shared Function dx_DrawRotaStringToHandle_x86(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger, VerticalFlag As Integer, [String] As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawRotaStringToHandle")> _
+		Shared Function dx_DrawRotaStringToHandle_x64(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger, VerticalFlag As Integer, [String] As String) As Integer
+		End Function
+		Public Shared Function DrawRotaStringToHandle(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, FontHandle As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaStringToHandle_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, 0, [FALSE], Nothing)
+			Else
+				Return dx_DrawRotaStringToHandle_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, 0, [FALSE], Nothing)
+			End If
+		End Function
+		Public Shared Function DrawRotaStringToHandle(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaStringToHandle_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, EdgeColor, [FALSE], Nothing)
+			Else
+				Return dx_DrawRotaStringToHandle_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, EdgeColor, [FALSE], Nothing)
+			End If
+		End Function
+		Public Shared Function DrawRotaStringToHandle(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger, VerticalFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaStringToHandle_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, EdgeColor, VerticalFlag, Nothing)
+			Else
+				Return dx_DrawRotaStringToHandle_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, EdgeColor, VerticalFlag, Nothing)
+			End If
+		End Function
+		Public Shared Function DrawRotaStringToHandle(x As Integer, y As Integer, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger, VerticalFlag As Integer, [String] As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaStringToHandle_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, EdgeColor, VerticalFlag, [String])
+			Else
+				Return dx_DrawRotaStringToHandle_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, EdgeColor, VerticalFlag, [String])
+			End If
+		End Function
+
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawStringFToHandle")> _
-		Shared Function dx_DrawStringFToHandle_x86(x As Single, y As Single, [String] As String, Color As Integer, FontHandle As Integer, EdgeColor As Integer, _
+		Shared Function dx_DrawStringFToHandle_x86(x As Single, y As Single, [String] As String, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger, _
 			VerticalFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawStringFToHandle")> _
-		Shared Function dx_DrawStringFToHandle_x64(x As Single, y As Single, [String] As String, Color As Integer, FontHandle As Integer, EdgeColor As Integer, _
+		Shared Function dx_DrawStringFToHandle_x64(x As Single, y As Single, [String] As String, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger, _
 			VerticalFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawStringFToHandle(x As Single, y As Single, [String] As String, Color As Integer, FontHandle As Integer) As Integer
+		Public Shared Function DrawStringFToHandle(x As Single, y As Single, [String] As String, Color As UInteger, FontHandle As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawStringFToHandle_x86(x, y, [String], Color, FontHandle, 0, _
 					[FALSE])
@@ -17442,7 +15870,7 @@ Namespace DxVBDLL
 					[FALSE])
 			End If
 		End Function
-		Public Shared Function DrawStringFToHandle(x As Single, y As Single, [String] As String, Color As Integer, FontHandle As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawStringFToHandle(x As Single, y As Single, [String] As String, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawStringFToHandle_x86(x, y, [String], Color, FontHandle, EdgeColor, _
 					[FALSE])
@@ -17451,7 +15879,7 @@ Namespace DxVBDLL
 					[FALSE])
 			End If
 		End Function
-		Public Shared Function DrawStringFToHandle(x As Single, y As Single, [String] As String, Color As Integer, FontHandle As Integer, EdgeColor As Integer, _
+		Public Shared Function DrawStringFToHandle(x As Single, y As Single, [String] As String, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger, _
 			VerticalFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawStringFToHandle_x86(x, y, [String], Color, FontHandle, EdgeColor, _
@@ -17463,19 +15891,19 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawVStringFToHandle")> _
-		Shared Function dx_DrawVStringFToHandle_x86(x As Single, y As Single, [String] As String, Color As Integer, FontHandle As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawVStringFToHandle_x86(x As Single, y As Single, [String] As String, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawVStringFToHandle")> _
-		Shared Function dx_DrawVStringFToHandle_x64(x As Single, y As Single, [String] As String, Color As Integer, FontHandle As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawVStringFToHandle_x64(x As Single, y As Single, [String] As String, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawVStringFToHandle(x As Single, y As Single, [String] As String, Color As Integer, FontHandle As Integer) As Integer
+		Public Shared Function DrawVStringFToHandle(x As Single, y As Single, [String] As String, Color As UInteger, FontHandle As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawVStringFToHandle_x86(x, y, [String], Color, FontHandle, 0)
 			Else
 				Return dx_DrawVStringFToHandle_x64(x, y, [String], Color, FontHandle, 0)
 			End If
 		End Function
-		Public Shared Function DrawVStringFToHandle(x As Single, y As Single, [String] As String, Color As Integer, FontHandle As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawVStringFToHandle(x As Single, y As Single, [String] As String, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawVStringFToHandle_x86(x, y, [String], Color, FontHandle, EdgeColor)
 			Else
@@ -17484,14 +15912,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawExtendStringFToHandle")> _
-		Shared Function dx_DrawExtendStringFToHandle_x86(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer, VerticalFlag As Integer) As Integer
+		Shared Function dx_DrawExtendStringFToHandle_x86(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger, VerticalFlag As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawExtendStringFToHandle")> _
-		Shared Function dx_DrawExtendStringFToHandle_x64(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer, VerticalFlag As Integer) As Integer
+		Shared Function dx_DrawExtendStringFToHandle_x64(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger, VerticalFlag As Integer) As Integer
 		End Function
-		Public Shared Function DrawExtendStringFToHandle(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
+		Public Shared Function DrawExtendStringFToHandle(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
 			FontHandle As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendStringFToHandle_x86(x, y, ExRateX, ExRateY, [String], Color, _
@@ -17501,8 +15929,8 @@ Namespace DxVBDLL
 					FontHandle, 0, [FALSE])
 			End If
 		End Function
-		Public Shared Function DrawExtendStringFToHandle(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawExtendStringFToHandle(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendStringFToHandle_x86(x, y, ExRateX, ExRateY, [String], Color, _
 					FontHandle, EdgeColor, [FALSE])
@@ -17511,8 +15939,8 @@ Namespace DxVBDLL
 					FontHandle, EdgeColor, [FALSE])
 			End If
 		End Function
-		Public Shared Function DrawExtendStringFToHandle(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer, VerticalFlag As Integer) As Integer
+		Public Shared Function DrawExtendStringFToHandle(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger, VerticalFlag As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendStringFToHandle_x86(x, y, ExRateX, ExRateY, [String], Color, _
 					FontHandle, EdgeColor, VerticalFlag)
@@ -17523,14 +15951,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawExtendVStringFToHandle")> _
-		Shared Function dx_DrawExtendVStringFToHandle_x86(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawExtendVStringFToHandle_x86(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawExtendVStringFToHandle")> _
-		Shared Function dx_DrawExtendVStringFToHandle_x64(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawExtendVStringFToHandle_x64(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawExtendVStringFToHandle(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
+		Public Shared Function DrawExtendVStringFToHandle(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
 			FontHandle As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendVStringFToHandle_x86(x, y, ExRateX, ExRateY, [String], Color, _
@@ -17540,8 +15968,8 @@ Namespace DxVBDLL
 					FontHandle, 0)
 			End If
 		End Function
-		Public Shared Function DrawExtendVStringFToHandle(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawExtendVStringFToHandle(x As Single, y As Single, ExRateX As Double, ExRateY As Double, [String] As String, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawExtendVStringFToHandle_x86(x, y, ExRateX, ExRateY, [String], Color, _
 					FontHandle, EdgeColor)
@@ -17551,15 +15979,64 @@ Namespace DxVBDLL
 			End If
 		End Function
 
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawRotaStringFToHandle")> _
+		Shared Function dx_DrawRotaStringFToHandle_x86(x As Single, y As Single, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger, VerticalFlag As Integer, [String] As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawRotaStringFToHandle")> _
+		Shared Function dx_DrawRotaStringFToHandle_x64(x As Single, y As Single, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger, VerticalFlag As Integer, [String] As String) As Integer
+		End Function
+		Public Shared Function DrawRotaStringFToHandle(x As Single, y As Single, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, FontHandle As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaStringFToHandle_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, 0, [FALSE], Nothing)
+			Else
+				Return dx_DrawRotaStringFToHandle_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, 0, [FALSE], Nothing)
+			End If
+		End Function
+		Public Shared Function DrawRotaStringFToHandle(x As Single, y As Single, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaStringFToHandle_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, EdgeColor, [FALSE], Nothing)
+			Else
+				Return dx_DrawRotaStringFToHandle_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, EdgeColor, [FALSE], Nothing)
+			End If
+		End Function
+		Public Shared Function DrawRotaStringFToHandle(x As Single, y As Single, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger, VerticalFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaStringFToHandle_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, EdgeColor, VerticalFlag, Nothing)
+			Else
+				Return dx_DrawRotaStringFToHandle_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, EdgeColor, VerticalFlag, Nothing)
+			End If
+		End Function
+		Public Shared Function DrawRotaStringFToHandle(x As Single, y As Single, ExRateX As Double, ExRateY As Double, RotCenterX As Double, RotCenterY As Double, _
+			RotAngle As Double, Color As UInteger, FontHandle As Integer, EdgeColor As UInteger, VerticalFlag As Integer, [String] As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawRotaStringFToHandle_x86(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, EdgeColor, VerticalFlag, [String])
+			Else
+				Return dx_DrawRotaStringFToHandle_x64(x, y, ExRateX, ExRateY, RotCenterX, RotCenterY, _
+					RotAngle, Color, FontHandle, EdgeColor, VerticalFlag, [String])
+			End If
+		End Function
+
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawNumberToIToHandle")> _
-		Shared Function dx_DrawNumberToIToHandle_x86(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As Integer, FontHandle As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberToIToHandle_x86(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As UInteger, FontHandle As Integer, _
+			EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawNumberToIToHandle")> _
-		Shared Function dx_DrawNumberToIToHandle_x64(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As Integer, FontHandle As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberToIToHandle_x64(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As UInteger, FontHandle As Integer, _
+			EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawNumberToIToHandle(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As Integer, FontHandle As Integer) As Integer
+		Public Shared Function DrawNumberToIToHandle(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As UInteger, FontHandle As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberToIToHandle_x86(x, y, Num, RisesNum, Color, FontHandle, _
 					0)
@@ -17568,8 +16045,8 @@ Namespace DxVBDLL
 					0)
 			End If
 		End Function
-		Public Shared Function DrawNumberToIToHandle(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As Integer, FontHandle As Integer, _
-			EdgeColor As Integer) As Integer
+		Public Shared Function DrawNumberToIToHandle(x As Integer, y As Integer, Num As Integer, RisesNum As Integer, Color As UInteger, FontHandle As Integer, _
+			EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberToIToHandle_x86(x, y, Num, RisesNum, Color, FontHandle, _
 					EdgeColor)
@@ -17580,14 +16057,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawNumberToFToHandle")> _
-		Shared Function dx_DrawNumberToFToHandle_x86(x As Integer, y As Integer, Num As Double, Length As Integer, Color As Integer, FontHandle As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberToFToHandle_x86(x As Integer, y As Integer, Num As Double, Length As Integer, Color As UInteger, FontHandle As Integer, _
+			EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawNumberToFToHandle")> _
-		Shared Function dx_DrawNumberToFToHandle_x64(x As Integer, y As Integer, Num As Double, Length As Integer, Color As Integer, FontHandle As Integer, _
-			EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberToFToHandle_x64(x As Integer, y As Integer, Num As Double, Length As Integer, Color As UInteger, FontHandle As Integer, _
+			EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawNumberToFToHandle(x As Integer, y As Integer, Num As Double, Length As Integer, Color As Integer, FontHandle As Integer) As Integer
+		Public Shared Function DrawNumberToFToHandle(x As Integer, y As Integer, Num As Double, Length As Integer, Color As UInteger, FontHandle As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberToFToHandle_x86(x, y, Num, Length, Color, FontHandle, _
 					0)
@@ -17596,8 +16073,8 @@ Namespace DxVBDLL
 					0)
 			End If
 		End Function
-		Public Shared Function DrawNumberToFToHandle(x As Integer, y As Integer, Num As Double, Length As Integer, Color As Integer, FontHandle As Integer, _
-			EdgeColor As Integer) As Integer
+		Public Shared Function DrawNumberToFToHandle(x As Integer, y As Integer, Num As Double, Length As Integer, Color As UInteger, FontHandle As Integer, _
+			EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberToFToHandle_x86(x, y, Num, Length, Color, FontHandle, _
 					EdgeColor)
@@ -17608,14 +16085,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawNumberPlusToIToHandle")> _
-		Shared Function dx_DrawNumberPlusToIToHandle_x86(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberPlusToIToHandle_x86(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawNumberPlusToIToHandle")> _
-		Shared Function dx_DrawNumberPlusToIToHandle_x64(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberPlusToIToHandle_x64(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawNumberPlusToIToHandle(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As Integer, _
+		Public Shared Function DrawNumberPlusToIToHandle(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As UInteger, _
 			FontHandle As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberPlusToIToHandle_x86(x, y, NoteString, Num, RisesNum, Color, _
@@ -17625,8 +16102,8 @@ Namespace DxVBDLL
 					FontHandle, 0)
 			End If
 		End Function
-		Public Shared Function DrawNumberPlusToIToHandle(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawNumberPlusToIToHandle(x As Integer, y As Integer, NoteString As String, Num As Integer, RisesNum As Integer, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberPlusToIToHandle_x86(x, y, NoteString, Num, RisesNum, Color, _
 					FontHandle, EdgeColor)
@@ -17637,14 +16114,14 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawNumberPlusToFToHandle")> _
-		Shared Function dx_DrawNumberPlusToFToHandle_x86(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberPlusToFToHandle_x86(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawNumberPlusToFToHandle")> _
-		Shared Function dx_DrawNumberPlusToFToHandle_x64(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer) As Integer
+		Shared Function dx_DrawNumberPlusToFToHandle_x64(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger) As Integer
 		End Function
-		Public Shared Function DrawNumberPlusToFToHandle(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As Integer, _
+		Public Shared Function DrawNumberPlusToFToHandle(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As UInteger, _
 			FontHandle As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberPlusToFToHandle_x86(x, y, NoteString, Num, Length, Color, _
@@ -17654,8 +16131,8 @@ Namespace DxVBDLL
 					FontHandle, 0)
 			End If
 		End Function
-		Public Shared Function DrawNumberPlusToFToHandle(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As Integer, _
-			FontHandle As Integer, EdgeColor As Integer) As Integer
+		Public Shared Function DrawNumberPlusToFToHandle(x As Integer, y As Integer, NoteString As String, Num As Double, Length As Integer, Color As UInteger, _
+			FontHandle As Integer, EdgeColor As UInteger) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_DrawNumberPlusToFToHandle_x86(x, y, NoteString, Num, Length, Color, _
 					FontHandle, EdgeColor)
@@ -20166,6 +18643,36 @@ Namespace DxVBDLL
 			End If
 		End Function
 
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetImageSize_File")> _
+		Shared Function dx_GetImageSize_File_x86(FileName As String, ByRef SizeX As Integer, ByRef SizeY As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetImageSize_File")> _
+		Shared Function dx_GetImageSize_File_x64(FileName As String, ByRef SizeX As Integer, ByRef SizeY As Integer) As Integer
+		End Function
+		Public Shared Function GetImageSize_File(FileName As String, ByRef SizeX As Integer, ByRef SizeY As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetImageSize_File_x86(FileName, SizeX, SizeY)
+			Else
+				Return dx_GetImageSize_File_x64(FileName, SizeX, SizeY)
+			End If
+		End Function
+
+		#if DX_USE_UNSAFE Then
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetImageSize_Mem")> _
+		Shared Function dx_GetImageSize_Mem_x86(FileImage As System.Void*, FileImageSize As Integer, SizeX As Integer*, SizeY As Integer*) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetImageSize_Mem")> _
+		Shared Function dx_GetImageSize_Mem_x64(FileImage As System.Void*, FileImageSize As Integer, SizeX As Integer*, SizeY As Integer*) As Integer
+		End Function
+		Public Shared Function GetImageSize_Mem(FileImage As System.Void*, FileImageSize As Integer, SizeX As Integer*, SizeY As Integer*) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetImageSize_Mem_x86(FileImage, FileImageSize, SizeX, SizeY)
+			Else
+				Return dx_GetImageSize_Mem_x64(FileImage, FileImageSize, SizeX, SizeY)
+			End If
+		End Function
+		#End If
+
 		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseFastLoadFlag")> _
 		Shared Function dx_SetUseFastLoadFlag_x86(Flag As Integer) As Integer
 		End Function
@@ -20251,12 +18758,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_GetColor")> _
-		Shared Function dx_GetColor_x86(Red As Integer, Green As Integer, Blue As Integer) As Integer
+		Shared Function dx_GetColor_x86(Red As Integer, Green As Integer, Blue As Integer) As UInteger
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_GetColor")> _
-		Shared Function dx_GetColor_x64(Red As Integer, Green As Integer, Blue As Integer) As Integer
+		Shared Function dx_GetColor_x64(Red As Integer, Green As Integer, Blue As Integer) As UInteger
 		End Function
-		Public Shared Function GetColor(Red As Integer, Green As Integer, Blue As Integer) As Integer
+		Public Shared Function GetColor(Red As Integer, Green As Integer, Blue As Integer) As UInteger
 			If System.IntPtr.Size = 4 Then
 				Return dx_GetColor_x86(Red, Green, Blue)
 			Else
@@ -20265,12 +18772,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_GetColor2")> _
-		Shared Function dx_GetColor2_x86(Color As Integer, ByRef Red As Integer, ByRef Green As Integer, ByRef Blue As Integer) As Integer
+		Shared Function dx_GetColor2_x86(Color As UInteger, ByRef Red As Integer, ByRef Green As Integer, ByRef Blue As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_GetColor2")> _
-		Shared Function dx_GetColor2_x64(Color As Integer, ByRef Red As Integer, ByRef Green As Integer, ByRef Blue As Integer) As Integer
+		Shared Function dx_GetColor2_x64(Color As UInteger, ByRef Red As Integer, ByRef Green As Integer, ByRef Blue As Integer) As Integer
 		End Function
-		Public Shared Function GetColor2(Color As Integer, ByRef Red As Integer, ByRef Green As Integer, ByRef Blue As Integer) As Integer
+		Public Shared Function GetColor2(Color As UInteger, ByRef Red As Integer, ByRef Green As Integer, ByRef Blue As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_GetColor2_x86(Color, Red, Green, Blue)
 			Else
@@ -20279,19 +18786,19 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_GetColor3")> _
-		Shared Function dx_GetColor3_x86(ByRef ColorData As COLORDATA, Red As Integer, Green As Integer, Blue As Integer, Alpha As Integer) As Integer
+		Shared Function dx_GetColor3_x86(ByRef ColorData As COLORDATA, Red As Integer, Green As Integer, Blue As Integer, Alpha As Integer) As UInteger
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_GetColor3")> _
-		Shared Function dx_GetColor3_x64(ByRef ColorData As COLORDATA, Red As Integer, Green As Integer, Blue As Integer, Alpha As Integer) As Integer
+		Shared Function dx_GetColor3_x64(ByRef ColorData As COLORDATA, Red As Integer, Green As Integer, Blue As Integer, Alpha As Integer) As UInteger
 		End Function
-		Public Shared Function GetColor3(ByRef ColorData As COLORDATA, Red As Integer, Green As Integer, Blue As Integer) As Integer
+		Public Shared Function GetColor3(ByRef ColorData As COLORDATA, Red As Integer, Green As Integer, Blue As Integer) As UInteger
 			If System.IntPtr.Size = 4 Then
 				Return dx_GetColor3_x86(ColorData, Red, Green, Blue, 255)
 			Else
 				Return dx_GetColor3_x64(ColorData, Red, Green, Blue, 255)
 			End If
 		End Function
-		Public Shared Function GetColor3(ByRef ColorData As COLORDATA, Red As Integer, Green As Integer, Blue As Integer, Alpha As Integer) As Integer
+		Public Shared Function GetColor3(ByRef ColorData As COLORDATA, Red As Integer, Green As Integer, Blue As Integer, Alpha As Integer) As UInteger
 			If System.IntPtr.Size = 4 Then
 				Return dx_GetColor3_x86(ColorData, Red, Green, Blue, Alpha)
 			Else
@@ -20300,12 +18807,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_GetColor4")> _
-		Shared Function dx_GetColor4_x86(ByRef DestColorData As COLORDATA, ByRef SrcColorData As COLORDATA, SrcColor As Integer) As Integer
+		Shared Function dx_GetColor4_x86(ByRef DestColorData As COLORDATA, ByRef SrcColorData As COLORDATA, SrcColor As UInteger) As UInteger
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_GetColor4")> _
-		Shared Function dx_GetColor4_x64(ByRef DestColorData As COLORDATA, ByRef SrcColorData As COLORDATA, SrcColor As Integer) As Integer
+		Shared Function dx_GetColor4_x64(ByRef DestColorData As COLORDATA, ByRef SrcColorData As COLORDATA, SrcColor As UInteger) As UInteger
 		End Function
-		Public Shared Function GetColor4(ByRef DestColorData As COLORDATA, ByRef SrcColorData As COLORDATA, SrcColor As Integer) As Integer
+		Public Shared Function GetColor4(ByRef DestColorData As COLORDATA, ByRef SrcColorData As COLORDATA, SrcColor As UInteger) As UInteger
 			If System.IntPtr.Size = 4 Then
 				Return dx_GetColor4_x86(DestColorData, SrcColorData, SrcColor)
 			Else
@@ -20314,12 +18821,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_GetColor5")> _
-		Shared Function dx_GetColor5_x86(ByRef ColorData As COLORDATA, Color As Integer, ByRef Red As Integer, ByRef Green As Integer, ByRef Blue As Integer, ByRef Alpha As Integer) As Integer
+		Shared Function dx_GetColor5_x86(ByRef ColorData As COLORDATA, Color As UInteger, ByRef Red As Integer, ByRef Green As Integer, ByRef Blue As Integer, ByRef Alpha As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_GetColor5")> _
-		Shared Function dx_GetColor5_x64(ByRef ColorData As COLORDATA, Color As Integer, ByRef Red As Integer, ByRef Green As Integer, ByRef Blue As Integer, ByRef Alpha As Integer) As Integer
+		Shared Function dx_GetColor5_x64(ByRef ColorData As COLORDATA, Color As UInteger, ByRef Red As Integer, ByRef Green As Integer, ByRef Blue As Integer, ByRef Alpha As Integer) As Integer
 		End Function
-		Public Shared Function GetColor5(ByRef ColorData As COLORDATA, Color As Integer, ByRef Red As Integer, ByRef Green As Integer, ByRef Blue As Integer, ByRef Alpha As Integer) As Integer
+		Public Shared Function GetColor5(ByRef ColorData As COLORDATA, Color As UInteger, ByRef Red As Integer, ByRef Green As Integer, ByRef Blue As Integer, ByRef Alpha As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_GetColor5_x86(ColorData, Color, Red, Green, Blue, Alpha)
 			Else
@@ -20338,6 +18845,34 @@ Namespace DxVBDLL
 				Return dx_CreatePaletteColorData_x86(ColorDataBuf)
 			Else
 				Return dx_CreatePaletteColorData_x64(ColorDataBuf)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_CreateARGBF32ColorData")> _
+		Shared Function dx_CreateARGBF32ColorData_x86(ByRef ColorDataBuf As COLORDATA) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_CreateARGBF32ColorData")> _
+		Shared Function dx_CreateARGBF32ColorData_x64(ByRef ColorDataBuf As COLORDATA) As Integer
+		End Function
+		Public Shared Function CreateARGBF32ColorData(ByRef ColorDataBuf As COLORDATA) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_CreateARGBF32ColorData_x86(ColorDataBuf)
+			Else
+				Return dx_CreateARGBF32ColorData_x64(ColorDataBuf)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_CreateARGBF16ColorData")> _
+		Shared Function dx_CreateARGBF16ColorData_x86(ByRef ColorDataBuf As COLORDATA) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_CreateARGBF16ColorData")> _
+		Shared Function dx_CreateARGBF16ColorData_x64(ByRef ColorDataBuf As COLORDATA) As Integer
+		End Function
+		Public Shared Function CreateARGBF16ColorData(ByRef ColorDataBuf As COLORDATA) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_CreateARGBF16ColorData_x86(ColorDataBuf)
+			Else
+				Return dx_CreateARGBF16ColorData_x64(ColorDataBuf)
 			End If
 		End Function
 
@@ -20559,6 +19094,34 @@ Namespace DxVBDLL
 			End If
 		End Function
 
+		<DllImport(DX_DLL_32, EntryPoint := "dx_MakeARGBF32ColorSoftImage")> _
+		Shared Function dx_MakeARGBF32ColorSoftImage_x86(SizeX As Integer, SizeY As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_MakeARGBF32ColorSoftImage")> _
+		Shared Function dx_MakeARGBF32ColorSoftImage_x64(SizeX As Integer, SizeY As Integer) As Integer
+		End Function
+		Public Shared Function MakeARGBF32ColorSoftImage(SizeX As Integer, SizeY As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_MakeARGBF32ColorSoftImage_x86(SizeX, SizeY)
+			Else
+				Return dx_MakeARGBF32ColorSoftImage_x64(SizeX, SizeY)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_MakeARGBF16ColorSoftImage")> _
+		Shared Function dx_MakeARGBF16ColorSoftImage_x86(SizeX As Integer, SizeY As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_MakeARGBF16ColorSoftImage")> _
+		Shared Function dx_MakeARGBF16ColorSoftImage_x64(SizeX As Integer, SizeY As Integer) As Integer
+		End Function
+		Public Shared Function MakeARGBF16ColorSoftImage(SizeX As Integer, SizeY As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_MakeARGBF16ColorSoftImage_x86(SizeX, SizeY)
+			Else
+				Return dx_MakeARGBF16ColorSoftImage_x64(SizeX, SizeY)
+			End If
+		End Function
+
 		<DllImport(DX_DLL_32, EntryPoint := "dx_MakeARGB8ColorSoftImage")> _
 		Shared Function dx_MakeARGB8ColorSoftImage_x86(SizeX As Integer, SizeY As Integer) As Integer
 		End Function
@@ -20732,62 +19295,6 @@ Namespace DxVBDLL
 			End If
 		End Function
 
-		<DllImport(DX_DLL_32, EntryPoint := "dx_UpdateLayerdWindowForSoftImage")> _
-		Shared Function dx_UpdateLayerdWindowForSoftImage_x86(SIHandle As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_UpdateLayerdWindowForSoftImage")> _
-		Shared Function dx_UpdateLayerdWindowForSoftImage_x64(SIHandle As Integer) As Integer
-		End Function
-		Public Shared Function UpdateLayerdWindowForSoftImage(SIHandle As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_UpdateLayerdWindowForSoftImage_x86(SIHandle)
-			Else
-				Return dx_UpdateLayerdWindowForSoftImage_x64(SIHandle)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_UpdateLayerdWindowForSoftImageRect")> _
-		Shared Function dx_UpdateLayerdWindowForSoftImageRect_x86(SIHandle As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_UpdateLayerdWindowForSoftImageRect")> _
-		Shared Function dx_UpdateLayerdWindowForSoftImageRect_x64(SIHandle As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer) As Integer
-		End Function
-		Public Shared Function UpdateLayerdWindowForSoftImageRect(SIHandle As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_UpdateLayerdWindowForSoftImageRect_x86(SIHandle, x1, y1, x2, y2)
-			Else
-				Return dx_UpdateLayerdWindowForSoftImageRect_x64(SIHandle, x1, y1, x2, y2)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_UpdateLayerdWindowForPremultipliedAlphaSoftImage")> _
-		Shared Function dx_UpdateLayerdWindowForPremultipliedAlphaSoftImage_x86(SIHandle As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_UpdateLayerdWindowForPremultipliedAlphaSoftImage")> _
-		Shared Function dx_UpdateLayerdWindowForPremultipliedAlphaSoftImage_x64(SIHandle As Integer) As Integer
-		End Function
-		Public Shared Function UpdateLayerdWindowForPremultipliedAlphaSoftImage(SIHandle As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_UpdateLayerdWindowForPremultipliedAlphaSoftImage_x86(SIHandle)
-			Else
-				Return dx_UpdateLayerdWindowForPremultipliedAlphaSoftImage_x64(SIHandle)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_UpdateLayerdWindowForPremultipliedAlphaSoftImageRect")> _
-		Shared Function dx_UpdateLayerdWindowForPremultipliedAlphaSoftImageRect_x86(SIHandle As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_UpdateLayerdWindowForPremultipliedAlphaSoftImageRect")> _
-		Shared Function dx_UpdateLayerdWindowForPremultipliedAlphaSoftImageRect_x64(SIHandle As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer) As Integer
-		End Function
-		Public Shared Function UpdateLayerdWindowForPremultipliedAlphaSoftImageRect(SIHandle As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_UpdateLayerdWindowForPremultipliedAlphaSoftImageRect_x86(SIHandle, x1, y1, x2, y2)
-			Else
-				Return dx_UpdateLayerdWindowForPremultipliedAlphaSoftImageRect_x64(SIHandle, x1, y1, x2, y2)
-			End If
-		End Function
-
 		<DllImport(DX_DLL_32, EntryPoint := "dx_FillSoftImage")> _
 		Shared Function dx_FillSoftImage_x86(SIHandle As Integer, r As Integer, g As Integer, b As Integer, a As Integer) As Integer
 		End Function
@@ -20921,6 +19428,25 @@ Namespace DxVBDLL
 			End If
 		End Function
 
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawPixelSoftImageF")> _
+		Shared Function dx_DrawPixelSoftImageF_x86(SIHandle As Integer, x As Integer, y As Integer, r As Single, g As Single, b As Single, _
+			a As Single) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DrawPixelSoftImageF")> _
+		Shared Function dx_DrawPixelSoftImageF_x64(SIHandle As Integer, x As Integer, y As Integer, r As Single, g As Single, b As Single, _
+			a As Single) As Integer
+		End Function
+		Public Shared Function DrawPixelSoftImageF(SIHandle As Integer, x As Integer, y As Integer, r As Single, g As Single, b As Single, _
+			a As Single) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DrawPixelSoftImageF_x86(SIHandle, x, y, r, g, b, _
+					a)
+			Else
+				Return dx_DrawPixelSoftImageF_x64(SIHandle, x, y, r, g, b, _
+					a)
+			End If
+		End Function
+
 		<DllImport(DX_DLL_32, EntryPoint := "dx_DrawPixelSoftImage_Unsafe_XRGB8")> _
 		Shared Sub dx_DrawPixelSoftImage_Unsafe_XRGB8_x86(SIHandle As Integer, x As Integer, y As Integer, r As Integer, g As Integer, b As Integer)
 		End Sub
@@ -20969,6 +19495,25 @@ Namespace DxVBDLL
 					a)
 			Else
 				Return dx_GetPixelSoftImage_x64(SIHandle, x, y, r, g, b, _
+					a)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetPixelSoftImageF")> _
+		Shared Function dx_GetPixelSoftImageF_x86(SIHandle As Integer, x As Integer, y As Integer, ByRef r As Single, ByRef g As Single, ByRef b As Single, _
+			ByRef a As Single) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetPixelSoftImageF")> _
+		Shared Function dx_GetPixelSoftImageF_x64(SIHandle As Integer, x As Integer, y As Integer, ByRef r As Single, ByRef g As Single, ByRef b As Single, _
+			ByRef a As Single) As Integer
+		End Function
+		Public Shared Function GetPixelSoftImageF(SIHandle As Integer, x As Integer, y As Integer, ByRef r As Single, ByRef g As Single, ByRef b As Single, _
+			ByRef a As Single) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetPixelSoftImageF_x86(SIHandle, x, y, r, g, b, _
+					a)
+			Else
+				Return dx_GetPixelSoftImageF_x64(SIHandle, x, y, r, g, b, _
 					a)
 			End If
 		End Function
@@ -21574,27 +20119,6 @@ Namespace DxVBDLL
 				Return dx_LoadSoundMemToBufNumSitei_x86(FileName, BufferNum)
 			Else
 				Return dx_LoadSoundMemToBufNumSitei_x64(FileName, BufferNum)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadSoundMemByResource")> _
-		Shared Function dx_LoadSoundMemByResource_x86(ResourceName As String, ResourceType As String, BufferNum As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadSoundMemByResource")> _
-		Shared Function dx_LoadSoundMemByResource_x64(ResourceName As String, ResourceType As String, BufferNum As Integer) As Integer
-		End Function
-		Public Shared Function LoadSoundMemByResource(ResourceName As String, ResourceType As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_LoadSoundMemByResource_x86(ResourceName, ResourceType, 1)
-			Else
-				Return dx_LoadSoundMemByResource_x64(ResourceName, ResourceType, 1)
-			End If
-		End Function
-		Public Shared Function LoadSoundMemByResource(ResourceName As String, ResourceType As String, BufferNum As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_LoadSoundMemByResource_x86(ResourceName, ResourceType, BufferNum)
-			Else
-				Return dx_LoadSoundMemByResource_x64(ResourceName, ResourceType, BufferNum)
 			End If
 		End Function
 
@@ -22502,34 +21026,6 @@ Namespace DxVBDLL
 			End If
 		End Function
 
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseSoftwareMixingSoundFlag")> _
-		Shared Function dx_SetUseSoftwareMixingSoundFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseSoftwareMixingSoundFlag")> _
-		Shared Function dx_SetUseSoftwareMixingSoundFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetUseSoftwareMixingSoundFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetUseSoftwareMixingSoundFlag_x86(Flag)
-			Else
-				Return dx_SetUseSoftwareMixingSoundFlag_x64(Flag)
-			End If
-		End Function
-
-		<DllImport(DX_DLL_32, EntryPoint := "dx_SetEnableXAudioFlag")> _
-		Shared Function dx_SetEnableXAudioFlag_x86(Flag As Integer) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_SetEnableXAudioFlag")> _
-		Shared Function dx_SetEnableXAudioFlag_x64(Flag As Integer) As Integer
-		End Function
-		Public Shared Function SetEnableXAudioFlag(Flag As Integer) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_SetEnableXAudioFlag_x86(Flag)
-			Else
-				Return dx_SetEnableXAudioFlag_x64(Flag)
-			End If
-		End Function
-
 		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseOldVolumeCalcFlag")> _
 		Shared Function dx_SetUseOldVolumeCalcFlag_x86(Flag As Integer) As Integer
 		End Function
@@ -22641,22 +21137,6 @@ Namespace DxVBDLL
 				Return dx_Set3DSoundListenerConeVolume_x64(InnerAngleVolume, OuterAngleVolume)
 			End If
 		End Function
-
-		#if DX_USE_UNSAFE Then
-		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDSoundObj")> _
-		Shared Sub dx_GetDSoundObj_x86()
-		End Sub
-		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDSoundObj")> _
-		Shared Sub dx_GetDSoundObj_x64()
-		End Sub
-		Public Shared Sub GetDSoundObj()
-			If System.IntPtr.Size = 4 Then
-				Return dx_GetDSoundObj_x86()
-			Else
-				Return dx_GetDSoundObj_x64()
-			End If
-		End Sub
-		#End If
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_PlaySoundFile")> _
 		Shared Function dx_PlaySoundFile_x86(FileName As String, PlayType As Integer) As Integer
@@ -23408,20 +21888,6 @@ Namespace DxVBDLL
 		End Function
 		#End If
 
-		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadMusicMemByResource")> _
-		Shared Function dx_LoadMusicMemByResource_x86(ResourceName As String, ResourceType As String) As Integer
-		End Function
-		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadMusicMemByResource")> _
-		Shared Function dx_LoadMusicMemByResource_x64(ResourceName As String, ResourceType As String) As Integer
-		End Function
-		Public Shared Function LoadMusicMemByResource(ResourceName As String, ResourceType As String) As Integer
-			If System.IntPtr.Size = 4 Then
-				Return dx_LoadMusicMemByResource_x86(ResourceName, ResourceType)
-			Else
-				Return dx_LoadMusicMemByResource_x64(ResourceName, ResourceType)
-			End If
-		End Function
-
 		<DllImport(DX_DLL_32, EntryPoint := "dx_PlayMusicMem")> _
 		Shared Function dx_PlayMusicMem_x86(MusicHandle As Integer, PlayType As Integer) As Integer
 		End Function
@@ -23995,6 +22461,20 @@ Namespace DxVBDLL
 			End If
 		End Function
 
+		<DllImport(DX_DLL_32, EntryPoint := "dx_MV1SetLoadModelPhysicsCalcPrecision")> _
+		Shared Function dx_MV1SetLoadModelPhysicsCalcPrecision_x86(Precision As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_MV1SetLoadModelPhysicsCalcPrecision")> _
+		Shared Function dx_MV1SetLoadModelPhysicsCalcPrecision_x64(Precision As Integer) As Integer
+		End Function
+		Public Shared Function MV1SetLoadModelPhysicsCalcPrecision(Precision As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_MV1SetLoadModelPhysicsCalcPrecision_x86(Precision)
+			Else
+				Return dx_MV1SetLoadModelPhysicsCalcPrecision_x64(Precision)
+			End If
+		End Function
+
 		<DllImport(DX_DLL_32, EntryPoint := "dx_MV1SetLoadModelAnimFilePath")> _
 		Shared Function dx_MV1SetLoadModelAnimFilePath_x86(FileName As String) As Integer
 		End Function
@@ -24199,12 +22679,12 @@ Namespace DxVBDLL
 		End Function
 
 		<DllImport(DX_DLL_32, EntryPoint := "dx_MV1DrawModelDebug")> _
-		Shared Function dx_MV1DrawModelDebug_x86(MHandle As Integer, Color As Integer, IsNormalLine As Integer, NormalLineLength As Single, IsPolyLine As Integer, IsCollisionBox As Integer) As Integer
+		Shared Function dx_MV1DrawModelDebug_x86(MHandle As Integer, Color As UInteger, IsNormalLine As Integer, NormalLineLength As Single, IsPolyLine As Integer, IsCollisionBox As Integer) As Integer
 		End Function
 		<DllImport(DX_DLL_64, EntryPoint := "dx_MV1DrawModelDebug")> _
-		Shared Function dx_MV1DrawModelDebug_x64(MHandle As Integer, Color As Integer, IsNormalLine As Integer, NormalLineLength As Single, IsPolyLine As Integer, IsCollisionBox As Integer) As Integer
+		Shared Function dx_MV1DrawModelDebug_x64(MHandle As Integer, Color As UInteger, IsNormalLine As Integer, NormalLineLength As Single, IsPolyLine As Integer, IsCollisionBox As Integer) As Integer
 		End Function
-		Public Shared Function MV1DrawModelDebug(MHandle As Integer, Color As Integer, IsNormalLine As Integer, NormalLineLength As Single, IsPolyLine As Integer, IsCollisionBox As Integer) As Integer
+		Public Shared Function MV1DrawModelDebug(MHandle As Integer, Color As UInteger, IsNormalLine As Integer, NormalLineLength As Single, IsPolyLine As Integer, IsCollisionBox As Integer) As Integer
 			If System.IntPtr.Size = 4 Then
 				Return dx_MV1DrawModelDebug_x86(MHandle, Color, IsNormalLine, NormalLineLength, IsPolyLine, IsCollisionBox)
 			Else
@@ -28022,6 +26502,2262 @@ Namespace DxVBDLL
 				Return dx_MV1RefreshReferenceMesh_x86(MHandle, FrameIndex, IsTransform, IsPositionOnly)
 			Else
 				Return dx_MV1RefreshReferenceMesh_x64(MHandle, FrameIndex, IsTransform, IsPositionOnly)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowCRect")> _
+		Shared Function dx_GetWindowCRect_x86(ByRef RectBuf As RECT) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowCRect")> _
+		Shared Function dx_GetWindowCRect_x64(ByRef RectBuf As RECT) As Integer
+		End Function
+		Public Shared Function GetWindowCRect(ByRef RectBuf As RECT) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetWindowCRect_x86(RectBuf)
+			Else
+				Return dx_GetWindowCRect_x64(RectBuf)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowActiveFlag")> _
+		Shared Function dx_GetWindowActiveFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowActiveFlag")> _
+		Shared Function dx_GetWindowActiveFlag_x64() As Integer
+		End Function
+		Public Shared Function GetWindowActiveFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetWindowActiveFlag_x86()
+			Else
+				Return dx_GetWindowActiveFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowMinSizeFlag")> _
+		Shared Function dx_GetWindowMinSizeFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowMinSizeFlag")> _
+		Shared Function dx_GetWindowMinSizeFlag_x64() As Integer
+		End Function
+		Public Shared Function GetWindowMinSizeFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetWindowMinSizeFlag_x86()
+			Else
+				Return dx_GetWindowMinSizeFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowMaxSizeFlag")> _
+		Shared Function dx_GetWindowMaxSizeFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowMaxSizeFlag")> _
+		Shared Function dx_GetWindowMaxSizeFlag_x64() As Integer
+		End Function
+		Public Shared Function GetWindowMaxSizeFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetWindowMaxSizeFlag_x86()
+			Else
+				Return dx_GetWindowMaxSizeFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetActiveFlag")> _
+		Shared Function dx_GetActiveFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetActiveFlag")> _
+		Shared Function dx_GetActiveFlag_x64() As Integer
+		End Function
+		Public Shared Function GetActiveFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetActiveFlag_x86()
+			Else
+				Return dx_GetActiveFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowModeFlag")> _
+		Shared Function dx_GetWindowModeFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowModeFlag")> _
+		Shared Function dx_GetWindowModeFlag_x64() As Integer
+		End Function
+		Public Shared Function GetWindowModeFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetWindowModeFlag_x86()
+			Else
+				Return dx_GetWindowModeFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDefaultState")> _
+		Shared Function dx_GetDefaultState_x86(ByRef SizeX As Integer, ByRef SizeY As Integer, ByRef ColorBitDepth As Integer, ByRef RefreshRate As Integer, ByRef LeftTopX As Integer, ByRef LeftTopY As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDefaultState")> _
+		Shared Function dx_GetDefaultState_x64(ByRef SizeX As Integer, ByRef SizeY As Integer, ByRef ColorBitDepth As Integer, ByRef RefreshRate As Integer, ByRef LeftTopX As Integer, ByRef LeftTopY As Integer) As Integer
+		End Function
+		Public Shared Function GetDefaultState(ByRef SizeX As Integer, ByRef SizeY As Integer, ByRef ColorBitDepth As Integer, ByRef RefreshRate As Integer, ByRef LeftTopX As Integer, ByRef LeftTopY As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetDefaultState_x86(SizeX, SizeY, ColorBitDepth, RefreshRate, LeftTopX, LeftTopY)
+			Else
+				Return dx_GetDefaultState_x64(SizeX, SizeY, ColorBitDepth, RefreshRate, LeftTopX, LeftTopY)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetNoActiveState")> _
+		Shared Function dx_GetNoActiveState_x86(ResetFlag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetNoActiveState")> _
+		Shared Function dx_GetNoActiveState_x64(ResetFlag As Integer) As Integer
+		End Function
+		Public Shared Function GetNoActiveState() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetNoActiveState_x86([TRUE])
+			Else
+				Return dx_GetNoActiveState_x64([TRUE])
+			End If
+		End Function
+		Public Shared Function GetNoActiveState(ResetFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetNoActiveState_x86(ResetFlag)
+			Else
+				Return dx_GetNoActiveState_x64(ResetFlag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetMouseDispFlag")> _
+		Shared Function dx_GetMouseDispFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetMouseDispFlag")> _
+		Shared Function dx_GetMouseDispFlag_x64() As Integer
+		End Function
+		Public Shared Function GetMouseDispFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetMouseDispFlag_x86()
+			Else
+				Return dx_GetMouseDispFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetAlwaysRunFlag")> _
+		Shared Function dx_GetAlwaysRunFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetAlwaysRunFlag")> _
+		Shared Function dx_GetAlwaysRunFlag_x64() As Integer
+		End Function
+		Public Shared Function GetAlwaysRunFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetAlwaysRunFlag_x86()
+			Else
+				Return dx_GetAlwaysRunFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx__GetSystemInfo")> _
+		Shared Function dx__GetSystemInfo_x86(ByRef DxLibVer As Integer, ByRef DirectXVer As Integer, ByRef WindowsVer As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx__GetSystemInfo")> _
+		Shared Function dx__GetSystemInfo_x64(ByRef DxLibVer As Integer, ByRef DirectXVer As Integer, ByRef WindowsVer As Integer) As Integer
+		End Function
+		Public Shared Function _GetSystemInfo(ByRef DxLibVer As Integer, ByRef DirectXVer As Integer, ByRef WindowsVer As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx__GetSystemInfo_x86(DxLibVer, DirectXVer, WindowsVer)
+			Else
+				Return dx__GetSystemInfo_x64(DxLibVer, DirectXVer, WindowsVer)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetPcInfo")> _
+		Shared Function dx_GetPcInfo_x86(OSString As System.Text.StringBuilder, DirectXString As System.Text.StringBuilder, CPUString As System.Text.StringBuilder, ByRef CPUSpeed As Integer, ByRef FreeMemorySize As Double, ByRef TotalMemorySize As Double, _
+			VideoDriverFileName As System.Text.StringBuilder, VideoDriverString As System.Text.StringBuilder, ByRef FreeVideoMemorySize As Double, ByRef TotalVideoMemorySize As Double) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetPcInfo")> _
+		Shared Function dx_GetPcInfo_x64(OSString As System.Text.StringBuilder, DirectXString As System.Text.StringBuilder, CPUString As System.Text.StringBuilder, ByRef CPUSpeed As Integer, ByRef FreeMemorySize As Double, ByRef TotalMemorySize As Double, _
+			VideoDriverFileName As System.Text.StringBuilder, VideoDriverString As System.Text.StringBuilder, ByRef FreeVideoMemorySize As Double, ByRef TotalVideoMemorySize As Double) As Integer
+		End Function
+		Public Shared Function GetPcInfo(OSString As System.Text.StringBuilder, DirectXString As System.Text.StringBuilder, CPUString As System.Text.StringBuilder, ByRef CPUSpeed As Integer, ByRef FreeMemorySize As Double, ByRef TotalMemorySize As Double, _
+			VideoDriverFileName As System.Text.StringBuilder, VideoDriverString As System.Text.StringBuilder, ByRef FreeVideoMemorySize As Double, ByRef TotalVideoMemorySize As Double) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetPcInfo_x86(OSString, DirectXString, CPUString, CPUSpeed, FreeMemorySize, TotalMemorySize, _
+					VideoDriverFileName, VideoDriverString, FreeVideoMemorySize, TotalVideoMemorySize)
+			Else
+				Return dx_GetPcInfo_x64(OSString, DirectXString, CPUString, CPUSpeed, FreeMemorySize, TotalMemorySize, _
+					VideoDriverFileName, VideoDriverString, FreeVideoMemorySize, TotalVideoMemorySize)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseMMXFlag")> _
+		Shared Function dx_GetUseMMXFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseMMXFlag")> _
+		Shared Function dx_GetUseMMXFlag_x64() As Integer
+		End Function
+		Public Shared Function GetUseMMXFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetUseMMXFlag_x86()
+			Else
+				Return dx_GetUseMMXFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseSSEFlag")> _
+		Shared Function dx_GetUseSSEFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseSSEFlag")> _
+		Shared Function dx_GetUseSSEFlag_x64() As Integer
+		End Function
+		Public Shared Function GetUseSSEFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetUseSSEFlag_x86()
+			Else
+				Return dx_GetUseSSEFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseSSE2Flag")> _
+		Shared Function dx_GetUseSSE2Flag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseSSE2Flag")> _
+		Shared Function dx_GetUseSSE2Flag_x64() As Integer
+		End Function
+		Public Shared Function GetUseSSE2Flag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetUseSSE2Flag_x86()
+			Else
+				Return dx_GetUseSSE2Flag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowCloseFlag")> _
+		Shared Function dx_GetWindowCloseFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowCloseFlag")> _
+		Shared Function dx_GetWindowCloseFlag_x64() As Integer
+		End Function
+		Public Shared Function GetWindowCloseFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetWindowCloseFlag_x86()
+			Else
+				Return dx_GetWindowCloseFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseWindowRgnFlag")> _
+		Shared Function dx_GetUseWindowRgnFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseWindowRgnFlag")> _
+		Shared Function dx_GetUseWindowRgnFlag_x64() As Integer
+		End Function
+		Public Shared Function GetUseWindowRgnFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetUseWindowRgnFlag_x86()
+			Else
+				Return dx_GetUseWindowRgnFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowSize")> _
+		Shared Function dx_GetWindowSize_x86(ByRef Width As Integer, ByRef Height As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowSize")> _
+		Shared Function dx_GetWindowSize_x64(ByRef Width As Integer, ByRef Height As Integer) As Integer
+		End Function
+		Public Shared Function GetWindowSize(ByRef Width As Integer, ByRef Height As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetWindowSize_x86(Width, Height)
+			Else
+				Return dx_GetWindowSize_x64(Width, Height)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowPosition")> _
+		Shared Function dx_GetWindowPosition_x86(ByRef x As Integer, ByRef y As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowPosition")> _
+		Shared Function dx_GetWindowPosition_x64(ByRef x As Integer, ByRef y As Integer) As Integer
+		End Function
+		Public Shared Function GetWindowPosition(ByRef x As Integer, ByRef y As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetWindowPosition_x86(x, y)
+			Else
+				Return dx_GetWindowPosition_x64(x, y)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetWindowUserCloseFlag")> _
+		Shared Function dx_GetWindowUserCloseFlag_x86(StateResetFlag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetWindowUserCloseFlag")> _
+		Shared Function dx_GetWindowUserCloseFlag_x64(StateResetFlag As Integer) As Integer
+		End Function
+		Public Shared Function GetWindowUserCloseFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetWindowUserCloseFlag_x86([FALSE])
+			Else
+				Return dx_GetWindowUserCloseFlag_x64([FALSE])
+			End If
+		End Function
+		Public Shared Function GetWindowUserCloseFlag(StateResetFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetWindowUserCloseFlag_x86(StateResetFlag)
+			Else
+				Return dx_GetWindowUserCloseFlag_x64(StateResetFlag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetNotDrawFlag")> _
+		Shared Function dx_GetNotDrawFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetNotDrawFlag")> _
+		Shared Function dx_GetNotDrawFlag_x64() As Integer
+		End Function
+		Public Shared Function GetNotDrawFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetNotDrawFlag_x86()
+			Else
+				Return dx_GetNotDrawFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetPaintMessageFlag")> _
+		Shared Function dx_GetPaintMessageFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetPaintMessageFlag")> _
+		Shared Function dx_GetPaintMessageFlag_x64() As Integer
+		End Function
+		Public Shared Function GetPaintMessageFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetPaintMessageFlag_x86()
+			Else
+				Return dx_GetPaintMessageFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetValidHiPerformanceCounter")> _
+		Shared Function dx_GetValidHiPerformanceCounter_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetValidHiPerformanceCounter")> _
+		Shared Function dx_GetValidHiPerformanceCounter_x64() As Integer
+		End Function
+		Public Shared Function GetValidHiPerformanceCounter() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetValidHiPerformanceCounter_x86()
+			Else
+				Return dx_GetValidHiPerformanceCounter_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_ChangeWindowMode")> _
+		Shared Function dx_ChangeWindowMode_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_ChangeWindowMode")> _
+		Shared Function dx_ChangeWindowMode_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function ChangeWindowMode(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_ChangeWindowMode_x86(Flag)
+			Else
+				Return dx_ChangeWindowMode_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseCharSet")> _
+		Shared Function dx_SetUseCharSet_x86(CharSet As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseCharSet")> _
+		Shared Function dx_SetUseCharSet_x64(CharSet As Integer) As Integer
+		End Function
+		Public Shared Function SetUseCharSet(CharSet As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseCharSet_x86(CharSet)
+			Else
+				Return dx_SetUseCharSet_x64(CharSet)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadPauseGraph")> _
+		Shared Function dx_LoadPauseGraph_x86(FileName As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadPauseGraph")> _
+		Shared Function dx_LoadPauseGraph_x64(FileName As String) As Integer
+		End Function
+		Public Shared Function LoadPauseGraph(FileName As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_LoadPauseGraph_x86(FileName)
+			Else
+				Return dx_LoadPauseGraph_x64(FileName)
+			End If
+		End Function
+
+		#if DX_USE_UNSAFE Then
+		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadPauseGraphFromMem")> _
+		Shared Function dx_LoadPauseGraphFromMem_x86(MemImage As System.Void*, MemImageSize As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadPauseGraphFromMem")> _
+		Shared Function dx_LoadPauseGraphFromMem_x64(MemImage As System.Void*, MemImageSize As Integer) As Integer
+		End Function
+		Public Shared Function LoadPauseGraphFromMem(MemImage As System.Void*, MemImageSize As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_LoadPauseGraphFromMem_x86(MemImage, MemImageSize)
+			Else
+				Return dx_LoadPauseGraphFromMem_x64(MemImage, MemImageSize)
+			End If
+		End Function
+		#End If
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowText")> _
+		Shared Function dx_SetWindowText_x86(WindowText As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowText")> _
+		Shared Function dx_SetWindowText_x64(WindowText As String) As Integer
+		End Function
+		Public Shared Function SetWindowText(WindowText As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowText_x86(WindowText)
+			Else
+				Return dx_SetWindowText_x64(WindowText)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMainWindowText")> _
+		Shared Function dx_SetMainWindowText_x86(WindowText As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMainWindowText")> _
+		Shared Function dx_SetMainWindowText_x64(WindowText As String) As Integer
+		End Function
+		Public Shared Function SetMainWindowText(WindowText As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetMainWindowText_x86(WindowText)
+			Else
+				Return dx_SetMainWindowText_x64(WindowText)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMainWindowClassName")> _
+		Shared Function dx_SetMainWindowClassName_x86(ClassName As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMainWindowClassName")> _
+		Shared Function dx_SetMainWindowClassName_x64(ClassName As String) As Integer
+		End Function
+		Public Shared Function SetMainWindowClassName(ClassName As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetMainWindowClassName_x86(ClassName)
+			Else
+				Return dx_SetMainWindowClassName_x64(ClassName)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetAlwaysRunFlag")> _
+		Shared Function dx_SetAlwaysRunFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetAlwaysRunFlag")> _
+		Shared Function dx_SetAlwaysRunFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetAlwaysRunFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetAlwaysRunFlag_x86(Flag)
+			Else
+				Return dx_SetAlwaysRunFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowIconID")> _
+		Shared Function dx_SetWindowIconID_x86(ID As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowIconID")> _
+		Shared Function dx_SetWindowIconID_x64(ID As Integer) As Integer
+		End Function
+		Public Shared Function SetWindowIconID(ID As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowIconID_x86(ID)
+			Else
+				Return dx_SetWindowIconID_x64(ID)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowIconHandle")> _
+		Shared Function dx_SetWindowIconHandle_x86(Icon As System.IntPtr) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowIconHandle")> _
+		Shared Function dx_SetWindowIconHandle_x64(Icon As System.IntPtr) As Integer
+		End Function
+		Public Shared Function SetWindowIconHandle(Icon As System.IntPtr) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowIconHandle_x86(Icon)
+			Else
+				Return dx_SetWindowIconHandle_x64(Icon)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowStyleMode")> _
+		Shared Function dx_SetWindowStyleMode_x86(Mode As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowStyleMode")> _
+		Shared Function dx_SetWindowStyleMode_x64(Mode As Integer) As Integer
+		End Function
+		Public Shared Function SetWindowStyleMode(Mode As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowStyleMode_x86(Mode)
+			Else
+				Return dx_SetWindowStyleMode_x64(Mode)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowZOrder")> _
+		Shared Function dx_SetWindowZOrder_x86(ZType As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowZOrder")> _
+		Shared Function dx_SetWindowZOrder_x64(ZType As Integer) As Integer
+		End Function
+		Public Shared Function SetWindowZOrder(ZType As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowZOrder_x86(ZType)
+			Else
+				Return dx_SetWindowZOrder_x64(ZType)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowSizeChangeEnableFlag")> _
+		Shared Function dx_SetWindowSizeChangeEnableFlag_x86(Flag As Integer, FitScreen As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowSizeChangeEnableFlag")> _
+		Shared Function dx_SetWindowSizeChangeEnableFlag_x64(Flag As Integer, FitScreen As Integer) As Integer
+		End Function
+		Public Shared Function SetWindowSizeChangeEnableFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowSizeChangeEnableFlag_x86(Flag, [TRUE])
+			Else
+				Return dx_SetWindowSizeChangeEnableFlag_x64(Flag, [TRUE])
+			End If
+		End Function
+		Public Shared Function SetWindowSizeChangeEnableFlag(Flag As Integer, FitScreen As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowSizeChangeEnableFlag_x86(Flag, FitScreen)
+			Else
+				Return dx_SetWindowSizeChangeEnableFlag_x64(Flag, FitScreen)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowSizeExtendRate")> _
+		Shared Function dx_SetWindowSizeExtendRate_x86(ExRateX As Double, ExRateY As Double) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowSizeExtendRate")> _
+		Shared Function dx_SetWindowSizeExtendRate_x64(ExRateX As Double, ExRateY As Double) As Integer
+		End Function
+		Public Shared Function SetWindowSizeExtendRate(ExRateX As Double) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowSizeExtendRate_x86(ExRateX, -1.0)
+			Else
+				Return dx_SetWindowSizeExtendRate_x64(ExRateX, -1.0)
+			End If
+		End Function
+		Public Shared Function SetWindowSizeExtendRate(ExRateX As Double, ExRateY As Double) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowSizeExtendRate_x86(ExRateX, ExRateY)
+			Else
+				Return dx_SetWindowSizeExtendRate_x64(ExRateX, ExRateY)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowSize")> _
+		Shared Function dx_SetWindowSize_x86(Width As Integer, Height As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowSize")> _
+		Shared Function dx_SetWindowSize_x64(Width As Integer, Height As Integer) As Integer
+		End Function
+		Public Shared Function SetWindowSize(Width As Integer, Height As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowSize_x86(Width, Height)
+			Else
+				Return dx_SetWindowSize_x64(Width, Height)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowPosition")> _
+		Shared Function dx_SetWindowPosition_x86(x As Integer, y As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowPosition")> _
+		Shared Function dx_SetWindowPosition_x64(x As Integer, y As Integer) As Integer
+		End Function
+		Public Shared Function SetWindowPosition(x As Integer, y As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowPosition_x86(x, y)
+			Else
+				Return dx_SetWindowPosition_x64(x, y)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetSysCommandOffFlag")> _
+		Shared Function dx_SetSysCommandOffFlag_x86(Flag As Integer, HookDllPath As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetSysCommandOffFlag")> _
+		Shared Function dx_SetSysCommandOffFlag_x64(Flag As Integer, HookDllPath As String) As Integer
+		End Function
+		Public Shared Function SetSysCommandOffFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetSysCommandOffFlag_x86(Flag, Nothing)
+			Else
+				Return dx_SetSysCommandOffFlag_x64(Flag, Nothing)
+			End If
+		End Function
+		Public Shared Function SetSysCommandOffFlag(Flag As Integer, HookDllPath As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetSysCommandOffFlag_x86(Flag, HookDllPath)
+			Else
+				Return dx_SetSysCommandOffFlag_x64(Flag, HookDllPath)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseHookWinProcReturnValue")> _
+		Shared Function dx_SetUseHookWinProcReturnValue_x86(UseFlag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseHookWinProcReturnValue")> _
+		Shared Function dx_SetUseHookWinProcReturnValue_x64(UseFlag As Integer) As Integer
+		End Function
+		Public Shared Function SetUseHookWinProcReturnValue(UseFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseHookWinProcReturnValue_x86(UseFlag)
+			Else
+				Return dx_SetUseHookWinProcReturnValue_x64(UseFlag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetDoubleStartValidFlag")> _
+		Shared Function dx_SetDoubleStartValidFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetDoubleStartValidFlag")> _
+		Shared Function dx_SetDoubleStartValidFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetDoubleStartValidFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetDoubleStartValidFlag_x86(Flag)
+			Else
+				Return dx_SetDoubleStartValidFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_AddMessageTakeOverWindow")> _
+		Shared Function dx_AddMessageTakeOverWindow_x86(Window As System.IntPtr) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_AddMessageTakeOverWindow")> _
+		Shared Function dx_AddMessageTakeOverWindow_x64(Window As System.IntPtr) As Integer
+		End Function
+		Public Shared Function AddMessageTakeOverWindow(Window As System.IntPtr) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_AddMessageTakeOverWindow_x86(Window)
+			Else
+				Return dx_AddMessageTakeOverWindow_x64(Window)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SubMessageTakeOverWindow")> _
+		Shared Function dx_SubMessageTakeOverWindow_x86(Window As System.IntPtr) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SubMessageTakeOverWindow")> _
+		Shared Function dx_SubMessageTakeOverWindow_x64(Window As System.IntPtr) As Integer
+		End Function
+		Public Shared Function SubMessageTakeOverWindow(Window As System.IntPtr) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SubMessageTakeOverWindow_x86(Window)
+			Else
+				Return dx_SubMessageTakeOverWindow_x64(Window)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowInitPosition")> _
+		Shared Function dx_SetWindowInitPosition_x86(x As Integer, y As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowInitPosition")> _
+		Shared Function dx_SetWindowInitPosition_x64(x As Integer, y As Integer) As Integer
+		End Function
+		Public Shared Function SetWindowInitPosition(x As Integer, y As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowInitPosition_x86(x, y)
+			Else
+				Return dx_SetWindowInitPosition_x64(x, y)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetNotWinFlag")> _
+		Shared Function dx_SetNotWinFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetNotWinFlag")> _
+		Shared Function dx_SetNotWinFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetNotWinFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetNotWinFlag_x86(Flag)
+			Else
+				Return dx_SetNotWinFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetNotDrawFlag")> _
+		Shared Function dx_SetNotDrawFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetNotDrawFlag")> _
+		Shared Function dx_SetNotDrawFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetNotDrawFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetNotDrawFlag_x86(Flag)
+			Else
+				Return dx_SetNotDrawFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetNotSoundFlag")> _
+		Shared Function dx_SetNotSoundFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetNotSoundFlag")> _
+		Shared Function dx_SetNotSoundFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetNotSoundFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetNotSoundFlag_x86(Flag)
+			Else
+				Return dx_SetNotSoundFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetNotInputFlag")> _
+		Shared Function dx_SetNotInputFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetNotInputFlag")> _
+		Shared Function dx_SetNotInputFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetNotInputFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetNotInputFlag_x86(Flag)
+			Else
+				Return dx_SetNotInputFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetDialogBoxHandle")> _
+		Shared Function dx_SetDialogBoxHandle_x86(WindowHandle As System.IntPtr) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetDialogBoxHandle")> _
+		Shared Function dx_SetDialogBoxHandle_x64(WindowHandle As System.IntPtr) As Integer
+		End Function
+		Public Shared Function SetDialogBoxHandle(WindowHandle As System.IntPtr) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetDialogBoxHandle_x86(WindowHandle)
+			Else
+				Return dx_SetDialogBoxHandle_x64(WindowHandle)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowVisibleFlag")> _
+		Shared Function dx_SetWindowVisibleFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowVisibleFlag")> _
+		Shared Function dx_SetWindowVisibleFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetWindowVisibleFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowVisibleFlag_x86(Flag)
+			Else
+				Return dx_SetWindowVisibleFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowMinimizeFlag")> _
+		Shared Function dx_SetWindowMinimizeFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowMinimizeFlag")> _
+		Shared Function dx_SetWindowMinimizeFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetWindowMinimizeFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowMinimizeFlag_x86(Flag)
+			Else
+				Return dx_SetWindowMinimizeFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowUserCloseEnableFlag")> _
+		Shared Function dx_SetWindowUserCloseEnableFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowUserCloseEnableFlag")> _
+		Shared Function dx_SetWindowUserCloseEnableFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetWindowUserCloseEnableFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowUserCloseEnableFlag_x86(Flag)
+			Else
+				Return dx_SetWindowUserCloseEnableFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetDxLibEndPostQuitMessageFlag")> _
+		Shared Function dx_SetDxLibEndPostQuitMessageFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetDxLibEndPostQuitMessageFlag")> _
+		Shared Function dx_SetDxLibEndPostQuitMessageFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetDxLibEndPostQuitMessageFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetDxLibEndPostQuitMessageFlag_x86(Flag)
+			Else
+				Return dx_SetDxLibEndPostQuitMessageFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUserWindow")> _
+		Shared Function dx_SetUserWindow_x86(WindowHandle As System.IntPtr) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUserWindow")> _
+		Shared Function dx_SetUserWindow_x64(WindowHandle As System.IntPtr) As Integer
+		End Function
+		Public Shared Function SetUserWindow(WindowHandle As System.IntPtr) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUserWindow_x86(WindowHandle)
+			Else
+				Return dx_SetUserWindow_x64(WindowHandle)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUserChildWindow")> _
+		Shared Function dx_SetUserChildWindow_x86(WindowHandle As System.IntPtr) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUserChildWindow")> _
+		Shared Function dx_SetUserChildWindow_x64(WindowHandle As System.IntPtr) As Integer
+		End Function
+		Public Shared Function SetUserChildWindow(WindowHandle As System.IntPtr) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUserChildWindow_x86(WindowHandle)
+			Else
+				Return dx_SetUserChildWindow_x64(WindowHandle)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUserWindowMessageProcessDXLibFlag")> _
+		Shared Function dx_SetUserWindowMessageProcessDXLibFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUserWindowMessageProcessDXLibFlag")> _
+		Shared Function dx_SetUserWindowMessageProcessDXLibFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetUserWindowMessageProcessDXLibFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUserWindowMessageProcessDXLibFlag_x86(Flag)
+			Else
+				Return dx_SetUserWindowMessageProcessDXLibFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseFPUPreserveFlag")> _
+		Shared Function dx_SetUseFPUPreserveFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseFPUPreserveFlag")> _
+		Shared Function dx_SetUseFPUPreserveFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetUseFPUPreserveFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseFPUPreserveFlag_x86(Flag)
+			Else
+				Return dx_SetUseFPUPreserveFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetValidMousePointerWindowOutClientAreaMoveFlag")> _
+		Shared Function dx_SetValidMousePointerWindowOutClientAreaMoveFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetValidMousePointerWindowOutClientAreaMoveFlag")> _
+		Shared Function dx_SetValidMousePointerWindowOutClientAreaMoveFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetValidMousePointerWindowOutClientAreaMoveFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetValidMousePointerWindowOutClientAreaMoveFlag_x86(Flag)
+			Else
+				Return dx_SetValidMousePointerWindowOutClientAreaMoveFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseBackBufferTransColorFlag")> _
+		Shared Function dx_SetUseBackBufferTransColorFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseBackBufferTransColorFlag")> _
+		Shared Function dx_SetUseBackBufferTransColorFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetUseBackBufferTransColorFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseBackBufferTransColorFlag_x86(Flag)
+			Else
+				Return dx_SetUseBackBufferTransColorFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseUpdateLayerdWindowFlag")> _
+		Shared Function dx_SetUseUpdateLayerdWindowFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseUpdateLayerdWindowFlag")> _
+		Shared Function dx_SetUseUpdateLayerdWindowFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetUseUpdateLayerdWindowFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseUpdateLayerdWindowFlag_x86(Flag)
+			Else
+				Return dx_SetUseUpdateLayerdWindowFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetClipboardText")> _
+		Shared Function dx_GetClipboardText_x86(DestBuffer As System.Text.StringBuilder) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetClipboardText")> _
+		Shared Function dx_GetClipboardText_x64(DestBuffer As System.Text.StringBuilder) As Integer
+		End Function
+		Public Shared Function GetClipboardText(DestBuffer As System.Text.StringBuilder) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetClipboardText_x86(DestBuffer)
+			Else
+				Return dx_GetClipboardText_x64(DestBuffer)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetClipboardText")> _
+		Shared Function dx_SetClipboardText_x86(Text As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetClipboardText")> _
+		Shared Function dx_SetClipboardText_x64(Text As String) As Integer
+		End Function
+		Public Shared Function SetClipboardText(Text As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetClipboardText_x86(Text)
+			Else
+				Return dx_SetClipboardText_x64(Text)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetDragFileValidFlag")> _
+		Shared Function dx_SetDragFileValidFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetDragFileValidFlag")> _
+		Shared Function dx_SetDragFileValidFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetDragFileValidFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetDragFileValidFlag_x86(Flag)
+			Else
+				Return dx_SetDragFileValidFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DragFileInfoClear")> _
+		Shared Function dx_DragFileInfoClear_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DragFileInfoClear")> _
+		Shared Function dx_DragFileInfoClear_x64() As Integer
+		End Function
+		Public Shared Function DragFileInfoClear() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DragFileInfoClear_x86()
+			Else
+				Return dx_DragFileInfoClear_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDragFilePath")> _
+		Shared Function dx_GetDragFilePath_x86(FilePathBuffer As System.Text.StringBuilder) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDragFilePath")> _
+		Shared Function dx_GetDragFilePath_x64(FilePathBuffer As System.Text.StringBuilder) As Integer
+		End Function
+		Public Shared Function GetDragFilePath(FilePathBuffer As System.Text.StringBuilder) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetDragFilePath_x86(FilePathBuffer)
+			Else
+				Return dx_GetDragFilePath_x64(FilePathBuffer)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDragFileNum")> _
+		Shared Function dx_GetDragFileNum_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDragFileNum")> _
+		Shared Function dx_GetDragFileNum_x64() As Integer
+		End Function
+		Public Shared Function GetDragFileNum() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetDragFileNum_x86()
+			Else
+				Return dx_GetDragFileNum_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetWindowRgnGraph")> _
+		Shared Function dx_SetWindowRgnGraph_x86(FileName As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetWindowRgnGraph")> _
+		Shared Function dx_SetWindowRgnGraph_x64(FileName As String) As Integer
+		End Function
+		Public Shared Function SetWindowRgnGraph(FileName As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetWindowRgnGraph_x86(FileName)
+			Else
+				Return dx_SetWindowRgnGraph_x64(FileName)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_UpdateTransColorWindowRgn")> _
+		Shared Function dx_UpdateTransColorWindowRgn_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_UpdateTransColorWindowRgn")> _
+		Shared Function dx_UpdateTransColorWindowRgn_x64() As Integer
+		End Function
+		Public Shared Function UpdateTransColorWindowRgn() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_UpdateTransColorWindowRgn_x86()
+			Else
+				Return dx_UpdateTransColorWindowRgn_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetupToolBar")> _
+		Shared Function dx_SetupToolBar_x86(BitmapName As String, DivNum As Integer, ResourceID As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetupToolBar")> _
+		Shared Function dx_SetupToolBar_x64(BitmapName As String, DivNum As Integer, ResourceID As Integer) As Integer
+		End Function
+		Public Shared Function SetupToolBar(BitmapName As String, DivNum As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetupToolBar_x86(BitmapName, DivNum, -1)
+			Else
+				Return dx_SetupToolBar_x64(BitmapName, DivNum, -1)
+			End If
+		End Function
+		Public Shared Function SetupToolBar(BitmapName As String, DivNum As Integer, ResourceID As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetupToolBar_x86(BitmapName, DivNum, ResourceID)
+			Else
+				Return dx_SetupToolBar_x64(BitmapName, DivNum, ResourceID)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_AddToolBarButton")> _
+		Shared Function dx_AddToolBarButton_x86(Type As Integer, State As Integer, ImageIndex As Integer, ID As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_AddToolBarButton")> _
+		Shared Function dx_AddToolBarButton_x64(Type As Integer, State As Integer, ImageIndex As Integer, ID As Integer) As Integer
+		End Function
+		Public Shared Function AddToolBarButton(Type As Integer, State As Integer, ImageIndex As Integer, ID As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_AddToolBarButton_x86(Type, State, ImageIndex, ID)
+			Else
+				Return dx_AddToolBarButton_x64(Type, State, ImageIndex, ID)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_AddToolBarSep")> _
+		Shared Function dx_AddToolBarSep_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_AddToolBarSep")> _
+		Shared Function dx_AddToolBarSep_x64() As Integer
+		End Function
+		Public Shared Function AddToolBarSep() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_AddToolBarSep_x86()
+			Else
+				Return dx_AddToolBarSep_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetToolBarButtonState")> _
+		Shared Function dx_GetToolBarButtonState_x86(ID As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetToolBarButtonState")> _
+		Shared Function dx_GetToolBarButtonState_x64(ID As Integer) As Integer
+		End Function
+		Public Shared Function GetToolBarButtonState(ID As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetToolBarButtonState_x86(ID)
+			Else
+				Return dx_GetToolBarButtonState_x64(ID)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetToolBarButtonState")> _
+		Shared Function dx_SetToolBarButtonState_x86(ID As Integer, State As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetToolBarButtonState")> _
+		Shared Function dx_SetToolBarButtonState_x64(ID As Integer, State As Integer) As Integer
+		End Function
+		Public Shared Function SetToolBarButtonState(ID As Integer, State As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetToolBarButtonState_x86(ID, State)
+			Else
+				Return dx_SetToolBarButtonState_x64(ID, State)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DeleteAllToolBarButton")> _
+		Shared Function dx_DeleteAllToolBarButton_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DeleteAllToolBarButton")> _
+		Shared Function dx_DeleteAllToolBarButton_x64() As Integer
+		End Function
+		Public Shared Function DeleteAllToolBarButton() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DeleteAllToolBarButton_x86()
+			Else
+				Return dx_DeleteAllToolBarButton_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseMenuFlag")> _
+		Shared Function dx_SetUseMenuFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseMenuFlag")> _
+		Shared Function dx_SetUseMenuFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetUseMenuFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseMenuFlag_x86(Flag)
+			Else
+				Return dx_SetUseMenuFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseKeyAccelFlag")> _
+		Shared Function dx_SetUseKeyAccelFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseKeyAccelFlag")> _
+		Shared Function dx_SetUseKeyAccelFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetUseKeyAccelFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseKeyAccelFlag_x86(Flag)
+			Else
+				Return dx_SetUseKeyAccelFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_AddKeyAccel")> _
+		Shared Function dx_AddKeyAccel_x86(ItemName As String, ItemID As Integer, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_AddKeyAccel")> _
+		Shared Function dx_AddKeyAccel_x64(ItemName As String, ItemID As Integer, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
+		End Function
+		Public Shared Function AddKeyAccel(ItemName As String, ItemID As Integer, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_AddKeyAccel_x86(ItemName, ItemID, KeyCode, CtrlFlag, AltFlag, ShiftFlag)
+			Else
+				Return dx_AddKeyAccel_x64(ItemName, ItemID, KeyCode, CtrlFlag, AltFlag, ShiftFlag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_AddKeyAccel_Name")> _
+		Shared Function dx_AddKeyAccel_Name_x86(ItemName As String, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_AddKeyAccel_Name")> _
+		Shared Function dx_AddKeyAccel_Name_x64(ItemName As String, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
+		End Function
+		Public Shared Function AddKeyAccel_Name(ItemName As String, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_AddKeyAccel_Name_x86(ItemName, KeyCode, CtrlFlag, AltFlag, ShiftFlag)
+			Else
+				Return dx_AddKeyAccel_Name_x64(ItemName, KeyCode, CtrlFlag, AltFlag, ShiftFlag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_AddKeyAccel_ID")> _
+		Shared Function dx_AddKeyAccel_ID_x86(ItemID As Integer, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_AddKeyAccel_ID")> _
+		Shared Function dx_AddKeyAccel_ID_x64(ItemID As Integer, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
+		End Function
+		Public Shared Function AddKeyAccel_ID(ItemID As Integer, KeyCode As Integer, CtrlFlag As Integer, AltFlag As Integer, ShiftFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_AddKeyAccel_ID_x86(ItemID, KeyCode, CtrlFlag, AltFlag, ShiftFlag)
+			Else
+				Return dx_AddKeyAccel_ID_x64(ItemID, KeyCode, CtrlFlag, AltFlag, ShiftFlag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_ClearKeyAccel")> _
+		Shared Function dx_ClearKeyAccel_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_ClearKeyAccel")> _
+		Shared Function dx_ClearKeyAccel_x64() As Integer
+		End Function
+		Public Shared Function ClearKeyAccel() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_ClearKeyAccel_x86()
+			Else
+				Return dx_ClearKeyAccel_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_AddMenuItem")> _
+		Shared Function dx_AddMenuItem_x86(AddType As Integer, ItemName As String, ItemID As Integer, SeparatorFlag As Integer, NewItemName As String, NewItemID As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_AddMenuItem")> _
+		Shared Function dx_AddMenuItem_x64(AddType As Integer, ItemName As String, ItemID As Integer, SeparatorFlag As Integer, NewItemName As String, NewItemID As Integer) As Integer
+		End Function
+		Public Shared Function AddMenuItem(AddType As Integer, ItemName As String, ItemID As Integer, SeparatorFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_AddMenuItem_x86(AddType, ItemName, ItemID, SeparatorFlag, Nothing, -1)
+			Else
+				Return dx_AddMenuItem_x64(AddType, ItemName, ItemID, SeparatorFlag, Nothing, -1)
+			End If
+		End Function
+		Public Shared Function AddMenuItem(AddType As Integer, ItemName As String, ItemID As Integer, SeparatorFlag As Integer, NewItemName As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_AddMenuItem_x86(AddType, ItemName, ItemID, SeparatorFlag, NewItemName, -1)
+			Else
+				Return dx_AddMenuItem_x64(AddType, ItemName, ItemID, SeparatorFlag, NewItemName, -1)
+			End If
+		End Function
+		Public Shared Function AddMenuItem(AddType As Integer, ItemName As String, ItemID As Integer, SeparatorFlag As Integer, NewItemName As String, NewItemID As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_AddMenuItem_x86(AddType, ItemName, ItemID, SeparatorFlag, NewItemName, NewItemID)
+			Else
+				Return dx_AddMenuItem_x64(AddType, ItemName, ItemID, SeparatorFlag, NewItemName, NewItemID)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DeleteMenuItem")> _
+		Shared Function dx_DeleteMenuItem_x86(ItemName As String, ItemID As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DeleteMenuItem")> _
+		Shared Function dx_DeleteMenuItem_x64(ItemName As String, ItemID As Integer) As Integer
+		End Function
+		Public Shared Function DeleteMenuItem(ItemName As String, ItemID As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DeleteMenuItem_x86(ItemName, ItemID)
+			Else
+				Return dx_DeleteMenuItem_x64(ItemName, ItemID)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_CheckMenuItemSelect")> _
+		Shared Function dx_CheckMenuItemSelect_x86(ItemName As String, ItemID As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_CheckMenuItemSelect")> _
+		Shared Function dx_CheckMenuItemSelect_x64(ItemName As String, ItemID As Integer) As Integer
+		End Function
+		Public Shared Function CheckMenuItemSelect(ItemName As String, ItemID As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_CheckMenuItemSelect_x86(ItemName, ItemID)
+			Else
+				Return dx_CheckMenuItemSelect_x64(ItemName, ItemID)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMenuItemEnable")> _
+		Shared Function dx_SetMenuItemEnable_x86(ItemName As String, ItemID As Integer, EnableFlag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMenuItemEnable")> _
+		Shared Function dx_SetMenuItemEnable_x64(ItemName As String, ItemID As Integer, EnableFlag As Integer) As Integer
+		End Function
+		Public Shared Function SetMenuItemEnable(ItemName As String, ItemID As Integer, EnableFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetMenuItemEnable_x86(ItemName, ItemID, EnableFlag)
+			Else
+				Return dx_SetMenuItemEnable_x64(ItemName, ItemID, EnableFlag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMenuItemMark")> _
+		Shared Function dx_SetMenuItemMark_x86(ItemName As String, ItemID As Integer, Mark As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMenuItemMark")> _
+		Shared Function dx_SetMenuItemMark_x64(ItemName As String, ItemID As Integer, Mark As Integer) As Integer
+		End Function
+		Public Shared Function SetMenuItemMark(ItemName As String, ItemID As Integer, Mark As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetMenuItemMark_x86(ItemName, ItemID, Mark)
+			Else
+				Return dx_SetMenuItemMark_x64(ItemName, ItemID, Mark)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_CheckMenuItemSelectAll")> _
+		Shared Function dx_CheckMenuItemSelectAll_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_CheckMenuItemSelectAll")> _
+		Shared Function dx_CheckMenuItemSelectAll_x64() As Integer
+		End Function
+		Public Shared Function CheckMenuItemSelectAll() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_CheckMenuItemSelectAll_x86()
+			Else
+				Return dx_CheckMenuItemSelectAll_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_AddMenuItem_Name")> _
+		Shared Function dx_AddMenuItem_Name_x86(ParentItemName As String, NewItemName As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_AddMenuItem_Name")> _
+		Shared Function dx_AddMenuItem_Name_x64(ParentItemName As String, NewItemName As String) As Integer
+		End Function
+		Public Shared Function AddMenuItem_Name(ParentItemName As String, NewItemName As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_AddMenuItem_Name_x86(ParentItemName, NewItemName)
+			Else
+				Return dx_AddMenuItem_Name_x64(ParentItemName, NewItemName)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_AddMenuLine_Name")> _
+		Shared Function dx_AddMenuLine_Name_x86(ParentItemName As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_AddMenuLine_Name")> _
+		Shared Function dx_AddMenuLine_Name_x64(ParentItemName As String) As Integer
+		End Function
+		Public Shared Function AddMenuLine_Name(ParentItemName As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_AddMenuLine_Name_x86(ParentItemName)
+			Else
+				Return dx_AddMenuLine_Name_x64(ParentItemName)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_InsertMenuItem_Name")> _
+		Shared Function dx_InsertMenuItem_Name_x86(ItemName As String, NewItemName As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_InsertMenuItem_Name")> _
+		Shared Function dx_InsertMenuItem_Name_x64(ItemName As String, NewItemName As String) As Integer
+		End Function
+		Public Shared Function InsertMenuItem_Name(ItemName As String, NewItemName As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_InsertMenuItem_Name_x86(ItemName, NewItemName)
+			Else
+				Return dx_InsertMenuItem_Name_x64(ItemName, NewItemName)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_InsertMenuLine_Name")> _
+		Shared Function dx_InsertMenuLine_Name_x86(ItemName As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_InsertMenuLine_Name")> _
+		Shared Function dx_InsertMenuLine_Name_x64(ItemName As String) As Integer
+		End Function
+		Public Shared Function InsertMenuLine_Name(ItemName As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_InsertMenuLine_Name_x86(ItemName)
+			Else
+				Return dx_InsertMenuLine_Name_x64(ItemName)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DeleteMenuItem_Name")> _
+		Shared Function dx_DeleteMenuItem_Name_x86(ItemName As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DeleteMenuItem_Name")> _
+		Shared Function dx_DeleteMenuItem_Name_x64(ItemName As String) As Integer
+		End Function
+		Public Shared Function DeleteMenuItem_Name(ItemName As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DeleteMenuItem_Name_x86(ItemName)
+			Else
+				Return dx_DeleteMenuItem_Name_x64(ItemName)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_CheckMenuItemSelect_Name")> _
+		Shared Function dx_CheckMenuItemSelect_Name_x86(ItemName As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_CheckMenuItemSelect_Name")> _
+		Shared Function dx_CheckMenuItemSelect_Name_x64(ItemName As String) As Integer
+		End Function
+		Public Shared Function CheckMenuItemSelect_Name(ItemName As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_CheckMenuItemSelect_Name_x86(ItemName)
+			Else
+				Return dx_CheckMenuItemSelect_Name_x64(ItemName)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMenuItemEnable_Name")> _
+		Shared Function dx_SetMenuItemEnable_Name_x86(ItemName As String, EnableFlag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMenuItemEnable_Name")> _
+		Shared Function dx_SetMenuItemEnable_Name_x64(ItemName As String, EnableFlag As Integer) As Integer
+		End Function
+		Public Shared Function SetMenuItemEnable_Name(ItemName As String, EnableFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetMenuItemEnable_Name_x86(ItemName, EnableFlag)
+			Else
+				Return dx_SetMenuItemEnable_Name_x64(ItemName, EnableFlag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMenuItemMark_Name")> _
+		Shared Function dx_SetMenuItemMark_Name_x86(ItemName As String, Mark As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMenuItemMark_Name")> _
+		Shared Function dx_SetMenuItemMark_Name_x64(ItemName As String, Mark As Integer) As Integer
+		End Function
+		Public Shared Function SetMenuItemMark_Name(ItemName As String, Mark As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetMenuItemMark_Name_x86(ItemName, Mark)
+			Else
+				Return dx_SetMenuItemMark_Name_x64(ItemName, Mark)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_AddMenuItem_ID")> _
+		Shared Function dx_AddMenuItem_ID_x86(ParentItemID As Integer, NewItemName As String, NewItemID As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_AddMenuItem_ID")> _
+		Shared Function dx_AddMenuItem_ID_x64(ParentItemID As Integer, NewItemName As String, NewItemID As Integer) As Integer
+		End Function
+		Public Shared Function AddMenuItem_ID(ParentItemID As Integer, NewItemName As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_AddMenuItem_ID_x86(ParentItemID, NewItemName, -1)
+			Else
+				Return dx_AddMenuItem_ID_x64(ParentItemID, NewItemName, -1)
+			End If
+		End Function
+		Public Shared Function AddMenuItem_ID(ParentItemID As Integer, NewItemName As String, NewItemID As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_AddMenuItem_ID_x86(ParentItemID, NewItemName, NewItemID)
+			Else
+				Return dx_AddMenuItem_ID_x64(ParentItemID, NewItemName, NewItemID)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_AddMenuLine_ID")> _
+		Shared Function dx_AddMenuLine_ID_x86(ParentItemID As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_AddMenuLine_ID")> _
+		Shared Function dx_AddMenuLine_ID_x64(ParentItemID As Integer) As Integer
+		End Function
+		Public Shared Function AddMenuLine_ID(ParentItemID As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_AddMenuLine_ID_x86(ParentItemID)
+			Else
+				Return dx_AddMenuLine_ID_x64(ParentItemID)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_InsertMenuItem_ID")> _
+		Shared Function dx_InsertMenuItem_ID_x86(ItemID As Integer, NewItemID As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_InsertMenuItem_ID")> _
+		Shared Function dx_InsertMenuItem_ID_x64(ItemID As Integer, NewItemID As Integer) As Integer
+		End Function
+		Public Shared Function InsertMenuItem_ID(ItemID As Integer, NewItemID As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_InsertMenuItem_ID_x86(ItemID, NewItemID)
+			Else
+				Return dx_InsertMenuItem_ID_x64(ItemID, NewItemID)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_InsertMenuLine_ID")> _
+		Shared Function dx_InsertMenuLine_ID_x86(ItemID As Integer, NewItemID As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_InsertMenuLine_ID")> _
+		Shared Function dx_InsertMenuLine_ID_x64(ItemID As Integer, NewItemID As Integer) As Integer
+		End Function
+		Public Shared Function InsertMenuLine_ID(ItemID As Integer, NewItemID As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_InsertMenuLine_ID_x86(ItemID, NewItemID)
+			Else
+				Return dx_InsertMenuLine_ID_x64(ItemID, NewItemID)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DeleteMenuItem_ID")> _
+		Shared Function dx_DeleteMenuItem_ID_x86(ItemID As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DeleteMenuItem_ID")> _
+		Shared Function dx_DeleteMenuItem_ID_x64(ItemID As Integer) As Integer
+		End Function
+		Public Shared Function DeleteMenuItem_ID(ItemID As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DeleteMenuItem_ID_x86(ItemID)
+			Else
+				Return dx_DeleteMenuItem_ID_x64(ItemID)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_CheckMenuItemSelect_ID")> _
+		Shared Function dx_CheckMenuItemSelect_ID_x86(ItemID As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_CheckMenuItemSelect_ID")> _
+		Shared Function dx_CheckMenuItemSelect_ID_x64(ItemID As Integer) As Integer
+		End Function
+		Public Shared Function CheckMenuItemSelect_ID(ItemID As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_CheckMenuItemSelect_ID_x86(ItemID)
+			Else
+				Return dx_CheckMenuItemSelect_ID_x64(ItemID)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMenuItemEnable_ID")> _
+		Shared Function dx_SetMenuItemEnable_ID_x86(ItemID As Integer, EnableFlag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMenuItemEnable_ID")> _
+		Shared Function dx_SetMenuItemEnable_ID_x64(ItemID As Integer, EnableFlag As Integer) As Integer
+		End Function
+		Public Shared Function SetMenuItemEnable_ID(ItemID As Integer, EnableFlag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetMenuItemEnable_ID_x86(ItemID, EnableFlag)
+			Else
+				Return dx_SetMenuItemEnable_ID_x64(ItemID, EnableFlag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMenuItemMark_ID")> _
+		Shared Function dx_SetMenuItemMark_ID_x86(ItemID As Integer, Mark As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMenuItemMark_ID")> _
+		Shared Function dx_SetMenuItemMark_ID_x64(ItemID As Integer, Mark As Integer) As Integer
+		End Function
+		Public Shared Function SetMenuItemMark_ID(ItemID As Integer, Mark As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetMenuItemMark_ID_x86(ItemID, Mark)
+			Else
+				Return dx_SetMenuItemMark_ID_x64(ItemID, Mark)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_DeleteMenuItemAll")> _
+		Shared Function dx_DeleteMenuItemAll_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_DeleteMenuItemAll")> _
+		Shared Function dx_DeleteMenuItemAll_x64() As Integer
+		End Function
+		Public Shared Function DeleteMenuItemAll() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_DeleteMenuItemAll_x86()
+			Else
+				Return dx_DeleteMenuItemAll_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_ClearMenuItemSelect")> _
+		Shared Function dx_ClearMenuItemSelect_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_ClearMenuItemSelect")> _
+		Shared Function dx_ClearMenuItemSelect_x64() As Integer
+		End Function
+		Public Shared Function ClearMenuItemSelect() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_ClearMenuItemSelect_x86()
+			Else
+				Return dx_ClearMenuItemSelect_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetMenuItemID")> _
+		Shared Function dx_GetMenuItemID_x86(ItemName As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetMenuItemID")> _
+		Shared Function dx_GetMenuItemID_x64(ItemName As String) As Integer
+		End Function
+		Public Shared Function GetMenuItemID(ItemName As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetMenuItemID_x86(ItemName)
+			Else
+				Return dx_GetMenuItemID_x64(ItemName)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetMenuItemName")> _
+		Shared Function dx_GetMenuItemName_x86(ItemID As Integer, NameBuffer As System.Text.StringBuilder) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetMenuItemName")> _
+		Shared Function dx_GetMenuItemName_x64(ItemID As Integer, NameBuffer As System.Text.StringBuilder) As Integer
+		End Function
+		Public Shared Function GetMenuItemName(ItemID As Integer, NameBuffer As System.Text.StringBuilder) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetMenuItemName_x86(ItemID, NameBuffer)
+			Else
+				Return dx_GetMenuItemName_x64(ItemID, NameBuffer)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadMenuResource")> _
+		Shared Function dx_LoadMenuResource_x86(MenuResourceID As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadMenuResource")> _
+		Shared Function dx_LoadMenuResource_x64(MenuResourceID As Integer) As Integer
+		End Function
+		Public Shared Function LoadMenuResource(MenuResourceID As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_LoadMenuResource_x86(MenuResourceID)
+			Else
+				Return dx_LoadMenuResource_x64(MenuResourceID)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetDisplayMenuFlag")> _
+		Shared Function dx_SetDisplayMenuFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetDisplayMenuFlag")> _
+		Shared Function dx_SetDisplayMenuFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetDisplayMenuFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetDisplayMenuFlag_x86(Flag)
+			Else
+				Return dx_SetDisplayMenuFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDisplayMenuFlag")> _
+		Shared Function dx_GetDisplayMenuFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDisplayMenuFlag")> _
+		Shared Function dx_GetDisplayMenuFlag_x64() As Integer
+		End Function
+		Public Shared Function GetDisplayMenuFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetDisplayMenuFlag_x86()
+			Else
+				Return dx_GetDisplayMenuFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseMenuFlag")> _
+		Shared Function dx_GetUseMenuFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseMenuFlag")> _
+		Shared Function dx_GetUseMenuFlag_x64() As Integer
+		End Function
+		Public Shared Function GetUseMenuFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetUseMenuFlag_x86()
+			Else
+				Return dx_GetUseMenuFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetAutoMenuDisplayFlag")> _
+		Shared Function dx_SetAutoMenuDisplayFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetAutoMenuDisplayFlag")> _
+		Shared Function dx_SetAutoMenuDisplayFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetAutoMenuDisplayFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetAutoMenuDisplayFlag_x86(Flag)
+			Else
+				Return dx_SetAutoMenuDisplayFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetKeyExclusiveCooperativeLevelFlag")> _
+		Shared Function dx_SetKeyExclusiveCooperativeLevelFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetKeyExclusiveCooperativeLevelFlag")> _
+		Shared Function dx_SetKeyExclusiveCooperativeLevelFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetKeyExclusiveCooperativeLevelFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetKeyExclusiveCooperativeLevelFlag_x86(Flag)
+			Else
+				Return dx_SetKeyExclusiveCooperativeLevelFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetKeyboardNotDirectInputFlag")> _
+		Shared Function dx_SetKeyboardNotDirectInputFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetKeyboardNotDirectInputFlag")> _
+		Shared Function dx_SetKeyboardNotDirectInputFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetKeyboardNotDirectInputFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetKeyboardNotDirectInputFlag_x86(Flag)
+			Else
+				Return dx_SetKeyboardNotDirectInputFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseDirectInputFlag")> _
+		Shared Function dx_SetUseDirectInputFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseDirectInputFlag")> _
+		Shared Function dx_SetUseDirectInputFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetUseDirectInputFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseDirectInputFlag_x86(Flag)
+			Else
+				Return dx_SetUseDirectInputFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseXInputFlag")> _
+		Shared Function dx_SetUseXInputFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseXInputFlag")> _
+		Shared Function dx_SetUseXInputFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetUseXInputFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseXInputFlag_x86(Flag)
+			Else
+				Return dx_SetUseXInputFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetJoypadName")> _
+		Shared Function dx_GetJoypadName_x86(InputType As Integer, InstanceNameBuffer As System.Text.StringBuilder, ProductNameBuffer As System.Text.StringBuilder) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetJoypadName")> _
+		Shared Function dx_GetJoypadName_x64(InputType As Integer, InstanceNameBuffer As System.Text.StringBuilder, ProductNameBuffer As System.Text.StringBuilder) As Integer
+		End Function
+		Public Shared Function GetJoypadName(InputType As Integer, InstanceNameBuffer As System.Text.StringBuilder, ProductNameBuffer As System.Text.StringBuilder) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetJoypadName_x86(InputType, InstanceNameBuffer, ProductNameBuffer)
+			Else
+				Return dx_GetJoypadName_x64(InputType, InstanceNameBuffer, ProductNameBuffer)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_ConvertKeyCodeToVirtualKey")> _
+		Shared Function dx_ConvertKeyCodeToVirtualKey_x86(KeyCode As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_ConvertKeyCodeToVirtualKey")> _
+		Shared Function dx_ConvertKeyCodeToVirtualKey_x64(KeyCode As Integer) As Integer
+		End Function
+		Public Shared Function ConvertKeyCodeToVirtualKey(KeyCode As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_ConvertKeyCodeToVirtualKey_x86(KeyCode)
+			Else
+				Return dx_ConvertKeyCodeToVirtualKey_x64(KeyCode)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_ConvertVirtualKeyToKeyCode")> _
+		Shared Function dx_ConvertVirtualKeyToKeyCode_x86(VirtualKey As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_ConvertVirtualKeyToKeyCode")> _
+		Shared Function dx_ConvertVirtualKeyToKeyCode_x64(VirtualKey As Integer) As Integer
+		End Function
+		Public Shared Function ConvertVirtualKeyToKeyCode(VirtualKey As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_ConvertVirtualKeyToKeyCode_x86(VirtualKey)
+			Else
+				Return dx_ConvertVirtualKeyToKeyCode_x64(VirtualKey)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadDivGraphToResource")> _
+		Shared Function dx_LoadDivGraphToResource_x86(ResourceID As Integer, AllNum As Integer, XNum As Integer, YNum As Integer, XSize As Integer, YSize As Integer, _
+			ByRef HandleBuf As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadDivGraphToResource")> _
+		Shared Function dx_LoadDivGraphToResource_x64(ResourceID As Integer, AllNum As Integer, XNum As Integer, YNum As Integer, XSize As Integer, YSize As Integer, _
+			ByRef HandleBuf As Integer) As Integer
+		End Function
+		Public Shared Function LoadDivGraphToResource(ResourceID As Integer, AllNum As Integer, XNum As Integer, YNum As Integer, XSize As Integer, YSize As Integer, _
+			ByRef HandleBuf As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_LoadDivGraphToResource_x86(ResourceID, AllNum, XNum, YNum, XSize, YSize, _
+					HandleBuf)
+			Else
+				Return dx_LoadDivGraphToResource_x64(ResourceID, AllNum, XNum, YNum, XSize, YSize, _
+					HandleBuf)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadDivGraphToResource_2")> _
+		Shared Function dx_LoadDivGraphToResource_2_x86(ResourceName As String, ResourceType As String, AllNum As Integer, XNum As Integer, YNum As Integer, XSize As Integer, _
+			YSize As Integer, ByRef HandleBuf As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadDivGraphToResource_2")> _
+		Shared Function dx_LoadDivGraphToResource_2_x64(ResourceName As String, ResourceType As String, AllNum As Integer, XNum As Integer, YNum As Integer, XSize As Integer, _
+			YSize As Integer, ByRef HandleBuf As Integer) As Integer
+		End Function
+		Public Shared Function LoadDivGraphToResource(ResourceName As String, ResourceType As String, AllNum As Integer, XNum As Integer, YNum As Integer, XSize As Integer, _
+			YSize As Integer, ByRef HandleBuf As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_LoadDivGraphToResource_2_x86(ResourceName, ResourceType, AllNum, XNum, YNum, XSize, _
+					YSize, HandleBuf)
+			Else
+				Return dx_LoadDivGraphToResource_2_x64(ResourceName, ResourceType, AllNum, XNum, YNum, XSize, _
+					YSize, HandleBuf)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_BltBackScreenToWindow")> _
+		Shared Function dx_BltBackScreenToWindow_x86(Window As System.IntPtr, ClientX As Integer, ClientY As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_BltBackScreenToWindow")> _
+		Shared Function dx_BltBackScreenToWindow_x64(Window As System.IntPtr, ClientX As Integer, ClientY As Integer) As Integer
+		End Function
+		Public Shared Function BltBackScreenToWindow(Window As System.IntPtr, ClientX As Integer, ClientY As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_BltBackScreenToWindow_x86(Window, ClientX, ClientY)
+			Else
+				Return dx_BltBackScreenToWindow_x64(Window, ClientX, ClientY)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_BltRectBackScreenToWindow")> _
+		Shared Function dx_BltRectBackScreenToWindow_x86(Window As System.IntPtr, BackScreenRect As RECT, WindowClientRect As RECT) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_BltRectBackScreenToWindow")> _
+		Shared Function dx_BltRectBackScreenToWindow_x64(Window As System.IntPtr, BackScreenRect As RECT, WindowClientRect As RECT) As Integer
+		End Function
+		Public Shared Function BltRectBackScreenToWindow(Window As System.IntPtr, BackScreenRect As RECT, WindowClientRect As RECT) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_BltRectBackScreenToWindow_x86(Window, BackScreenRect, WindowClientRect)
+			Else
+				Return dx_BltRectBackScreenToWindow_x64(Window, BackScreenRect, WindowClientRect)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetScreenFlipTargetWindow")> _
+		Shared Function dx_SetScreenFlipTargetWindow_x86(TargetWindow As System.IntPtr) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetScreenFlipTargetWindow")> _
+		Shared Function dx_SetScreenFlipTargetWindow_x64(TargetWindow As System.IntPtr) As Integer
+		End Function
+		Public Shared Function SetScreenFlipTargetWindow(TargetWindow As System.IntPtr) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetScreenFlipTargetWindow_x86(TargetWindow)
+			Else
+				Return dx_SetScreenFlipTargetWindow_x64(TargetWindow)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetMultiThreadFlag")> _
+		Shared Function dx_SetMultiThreadFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetMultiThreadFlag")> _
+		Shared Function dx_SetMultiThreadFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetMultiThreadFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetMultiThreadFlag_x86(Flag)
+			Else
+				Return dx_SetMultiThreadFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseDirectDrawDeviceIndex")> _
+		Shared Function dx_SetUseDirectDrawDeviceIndex_x86(Index As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseDirectDrawDeviceIndex")> _
+		Shared Function dx_SetUseDirectDrawDeviceIndex_x64(Index As Integer) As Integer
+		End Function
+		Public Shared Function SetUseDirectDrawDeviceIndex(Index As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseDirectDrawDeviceIndex_x86(Index)
+			Else
+				Return dx_SetUseDirectDrawDeviceIndex_x64(Index)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetAeroDisableFlag")> _
+		Shared Function dx_SetAeroDisableFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetAeroDisableFlag")> _
+		Shared Function dx_SetAeroDisableFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetAeroDisableFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetAeroDisableFlag_x86(Flag)
+			Else
+				Return dx_SetAeroDisableFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseDirect3D9Ex")> _
+		Shared Function dx_SetUseDirect3D9Ex_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseDirect3D9Ex")> _
+		Shared Function dx_SetUseDirect3D9Ex_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetUseDirect3D9Ex(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseDirect3D9Ex_x86(Flag)
+			Else
+				Return dx_SetUseDirect3D9Ex_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseDirect3D11")> _
+		Shared Function dx_SetUseDirect3D11_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseDirect3D11")> _
+		Shared Function dx_SetUseDirect3D11_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetUseDirect3D11(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseDirect3D11_x86(Flag)
+			Else
+				Return dx_SetUseDirect3D11_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseDirect3D11MinFeatureLevel")> _
+		Shared Function dx_SetUseDirect3D11MinFeatureLevel_x86(Level As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseDirect3D11MinFeatureLevel")> _
+		Shared Function dx_SetUseDirect3D11MinFeatureLevel_x64(Level As Integer) As Integer
+		End Function
+		Public Shared Function SetUseDirect3D11MinFeatureLevel(Level As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseDirect3D11MinFeatureLevel_x86(Level)
+			Else
+				Return dx_SetUseDirect3D11MinFeatureLevel_x64(Level)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseDirect3DVersion")> _
+		Shared Function dx_SetUseDirect3DVersion_x86(Version As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseDirect3DVersion")> _
+		Shared Function dx_SetUseDirect3DVersion_x64(Version As Integer) As Integer
+		End Function
+		Public Shared Function SetUseDirect3DVersion(Version As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseDirect3DVersion_x86(Version)
+			Else
+				Return dx_SetUseDirect3DVersion_x64(Version)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseDirect3DVersion")> _
+		Shared Function dx_GetUseDirect3DVersion_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseDirect3DVersion")> _
+		Shared Function dx_GetUseDirect3DVersion_x64() As Integer
+		End Function
+		Public Shared Function GetUseDirect3DVersion() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetUseDirect3DVersion_x86()
+			Else
+				Return dx_GetUseDirect3DVersion_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseDirect3D11FeatureLevel")> _
+		Shared Function dx_GetUseDirect3D11FeatureLevel_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseDirect3D11FeatureLevel")> _
+		Shared Function dx_GetUseDirect3D11FeatureLevel_x64() As Integer
+		End Function
+		Public Shared Function GetUseDirect3D11FeatureLevel() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetUseDirect3D11FeatureLevel_x86()
+			Else
+				Return dx_GetUseDirect3D11FeatureLevel_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseDirectDrawFlag")> _
+		Shared Function dx_SetUseDirectDrawFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseDirectDrawFlag")> _
+		Shared Function dx_SetUseDirectDrawFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetUseDirectDrawFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseDirectDrawFlag_x86(Flag)
+			Else
+				Return dx_SetUseDirectDrawFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseGDIFlag")> _
+		Shared Function dx_SetUseGDIFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseGDIFlag")> _
+		Shared Function dx_SetUseGDIFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetUseGDIFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseGDIFlag_x86(Flag)
+			Else
+				Return dx_SetUseGDIFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseGDIFlag")> _
+		Shared Function dx_GetUseGDIFlag_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseGDIFlag")> _
+		Shared Function dx_GetUseGDIFlag_x64() As Integer
+		End Function
+		Public Shared Function GetUseGDIFlag() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetUseGDIFlag_x86()
+			Else
+				Return dx_GetUseGDIFlag_x64()
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDirectDrawDeviceDescription")> _
+		Shared Function dx_GetDirectDrawDeviceDescription_x86(Number As Integer, StringBuffer As System.Text.StringBuilder) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDirectDrawDeviceDescription")> _
+		Shared Function dx_GetDirectDrawDeviceDescription_x64(Number As Integer, StringBuffer As System.Text.StringBuilder) As Integer
+		End Function
+		Public Shared Function GetDirectDrawDeviceDescription(Number As Integer, StringBuffer As System.Text.StringBuilder) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetDirectDrawDeviceDescription_x86(Number, StringBuffer)
+			Else
+				Return dx_GetDirectDrawDeviceDescription_x64(Number, StringBuffer)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDirectDrawDeviceNum")> _
+		Shared Function dx_GetDirectDrawDeviceNum_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDirectDrawDeviceNum")> _
+		Shared Function dx_GetDirectDrawDeviceNum_x64() As Integer
+		End Function
+		Public Shared Function GetDirectDrawDeviceNum() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetDirectDrawDeviceNum_x86()
+			Else
+				Return dx_GetDirectDrawDeviceNum_x64()
+			End If
+		End Function
+
+		#if DX_USE_UNSAFE Then
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseDirect3DDevice9")> _
+		Shared Sub dx_GetUseDirect3DDevice9_x86()
+		End Sub
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseDirect3DDevice9")> _
+		Shared Sub dx_GetUseDirect3DDevice9_x64()
+		End Sub
+		Public Shared Sub GetUseDirect3DDevice9()
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetUseDirect3DDevice9_x86()
+			Else
+				Return dx_GetUseDirect3DDevice9_x64()
+			End If
+		End Sub
+		#End If
+
+		#if DX_USE_UNSAFE Then
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetUseDirect3D9BackBufferSurface")> _
+		Shared Sub dx_GetUseDirect3D9BackBufferSurface_x86()
+		End Sub
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetUseDirect3D9BackBufferSurface")> _
+		Shared Sub dx_GetUseDirect3D9BackBufferSurface_x64()
+		End Sub
+		Public Shared Sub GetUseDirect3D9BackBufferSurface()
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetUseDirect3D9BackBufferSurface_x86()
+			Else
+				Return dx_GetUseDirect3D9BackBufferSurface_x64()
+			End If
+		End Sub
+		#End If
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_RefreshDxLibDirect3DSetting")> _
+		Shared Function dx_RefreshDxLibDirect3DSetting_x86() As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_RefreshDxLibDirect3DSetting")> _
+		Shared Function dx_RefreshDxLibDirect3DSetting_x64() As Integer
+		End Function
+		Public Shared Function RefreshDxLibDirect3DSetting() As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_RefreshDxLibDirect3DSetting_x86()
+			Else
+				Return dx_RefreshDxLibDirect3DSetting_x64()
+			End If
+		End Function
+
+		#if DX_USE_UNSAFE Then
+		<DllImport(DX_DLL_32, EntryPoint := "dx_ColorKaiseki")> _
+		Shared Function dx_ColorKaiseki_x86(PixelData As System.Void*, ColorData As COLORDATA*) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_ColorKaiseki")> _
+		Shared Function dx_ColorKaiseki_x64(PixelData As System.Void*, ColorData As COLORDATA*) As Integer
+		End Function
+		Public Shared Function ColorKaiseki(PixelData As System.Void*, ColorData As COLORDATA*) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_ColorKaiseki_x86(PixelData, ColorData)
+			Else
+				Return dx_ColorKaiseki_x64(PixelData, ColorData)
+			End If
+		End Function
+		#End If
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_CreateFontDataFile")> _
+		Shared Function dx_CreateFontDataFile_x86(SaveFilePath As String, FontName As String, Size As Integer, BitDepth As Integer, Thick As Integer, Italic As Integer, _
+			CharSet As Integer, SaveCharaList As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_CreateFontDataFile")> _
+		Shared Function dx_CreateFontDataFile_x64(SaveFilePath As String, FontName As String, Size As Integer, BitDepth As Integer, Thick As Integer, Italic As Integer, _
+			CharSet As Integer, SaveCharaList As String) As Integer
+		End Function
+		Public Shared Function CreateFontDataFile(SaveFilePath As String, FontName As String, Size As Integer, BitDepth As Integer, Thick As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_CreateFontDataFile_x86(SaveFilePath, FontName, Size, BitDepth, Thick, [FALSE], _
+					-1, Nothing)
+			Else
+				Return dx_CreateFontDataFile_x64(SaveFilePath, FontName, Size, BitDepth, Thick, [FALSE], _
+					-1, Nothing)
+			End If
+		End Function
+		Public Shared Function CreateFontDataFile(SaveFilePath As String, FontName As String, Size As Integer, BitDepth As Integer, Thick As Integer, Italic As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_CreateFontDataFile_x86(SaveFilePath, FontName, Size, BitDepth, Thick, Italic, _
+					-1, Nothing)
+			Else
+				Return dx_CreateFontDataFile_x64(SaveFilePath, FontName, Size, BitDepth, Thick, Italic, _
+					-1, Nothing)
+			End If
+		End Function
+		Public Shared Function CreateFontDataFile(SaveFilePath As String, FontName As String, Size As Integer, BitDepth As Integer, Thick As Integer, Italic As Integer, _
+			CharSet As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_CreateFontDataFile_x86(SaveFilePath, FontName, Size, BitDepth, Thick, Italic, _
+					CharSet, Nothing)
+			Else
+				Return dx_CreateFontDataFile_x64(SaveFilePath, FontName, Size, BitDepth, Thick, Italic, _
+					CharSet, Nothing)
+			End If
+		End Function
+		Public Shared Function CreateFontDataFile(SaveFilePath As String, FontName As String, Size As Integer, BitDepth As Integer, Thick As Integer, Italic As Integer, _
+			CharSet As Integer, SaveCharaList As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_CreateFontDataFile_x86(SaveFilePath, FontName, Size, BitDepth, Thick, Italic, _
+					CharSet, SaveCharaList)
+			Else
+				Return dx_CreateFontDataFile_x64(SaveFilePath, FontName, Size, BitDepth, Thick, Italic, _
+					CharSet, SaveCharaList)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_UpdateLayerdWindowForSoftImage")> _
+		Shared Function dx_UpdateLayerdWindowForSoftImage_x86(SIHandle As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_UpdateLayerdWindowForSoftImage")> _
+		Shared Function dx_UpdateLayerdWindowForSoftImage_x64(SIHandle As Integer) As Integer
+		End Function
+		Public Shared Function UpdateLayerdWindowForSoftImage(SIHandle As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_UpdateLayerdWindowForSoftImage_x86(SIHandle)
+			Else
+				Return dx_UpdateLayerdWindowForSoftImage_x64(SIHandle)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_UpdateLayerdWindowForSoftImageRect")> _
+		Shared Function dx_UpdateLayerdWindowForSoftImageRect_x86(SIHandle As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_UpdateLayerdWindowForSoftImageRect")> _
+		Shared Function dx_UpdateLayerdWindowForSoftImageRect_x64(SIHandle As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer) As Integer
+		End Function
+		Public Shared Function UpdateLayerdWindowForSoftImageRect(SIHandle As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_UpdateLayerdWindowForSoftImageRect_x86(SIHandle, x1, y1, x2, y2)
+			Else
+				Return dx_UpdateLayerdWindowForSoftImageRect_x64(SIHandle, x1, y1, x2, y2)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_UpdateLayerdWindowForPremultipliedAlphaSoftImage")> _
+		Shared Function dx_UpdateLayerdWindowForPremultipliedAlphaSoftImage_x86(SIHandle As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_UpdateLayerdWindowForPremultipliedAlphaSoftImage")> _
+		Shared Function dx_UpdateLayerdWindowForPremultipliedAlphaSoftImage_x64(SIHandle As Integer) As Integer
+		End Function
+		Public Shared Function UpdateLayerdWindowForPremultipliedAlphaSoftImage(SIHandle As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_UpdateLayerdWindowForPremultipliedAlphaSoftImage_x86(SIHandle)
+			Else
+				Return dx_UpdateLayerdWindowForPremultipliedAlphaSoftImage_x64(SIHandle)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_UpdateLayerdWindowForPremultipliedAlphaSoftImageRect")> _
+		Shared Function dx_UpdateLayerdWindowForPremultipliedAlphaSoftImageRect_x86(SIHandle As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_UpdateLayerdWindowForPremultipliedAlphaSoftImageRect")> _
+		Shared Function dx_UpdateLayerdWindowForPremultipliedAlphaSoftImageRect_x64(SIHandle As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer) As Integer
+		End Function
+		Public Shared Function UpdateLayerdWindowForPremultipliedAlphaSoftImageRect(SIHandle As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_UpdateLayerdWindowForPremultipliedAlphaSoftImageRect_x86(SIHandle, x1, y1, x2, y2)
+			Else
+				Return dx_UpdateLayerdWindowForPremultipliedAlphaSoftImageRect_x64(SIHandle, x1, y1, x2, y2)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadSoundMemByResource")> _
+		Shared Function dx_LoadSoundMemByResource_x86(ResourceName As String, ResourceType As String, BufferNum As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadSoundMemByResource")> _
+		Shared Function dx_LoadSoundMemByResource_x64(ResourceName As String, ResourceType As String, BufferNum As Integer) As Integer
+		End Function
+		Public Shared Function LoadSoundMemByResource(ResourceName As String, ResourceType As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_LoadSoundMemByResource_x86(ResourceName, ResourceType, 1)
+			Else
+				Return dx_LoadSoundMemByResource_x64(ResourceName, ResourceType, 1)
+			End If
+		End Function
+		Public Shared Function LoadSoundMemByResource(ResourceName As String, ResourceType As String, BufferNum As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_LoadSoundMemByResource_x86(ResourceName, ResourceType, BufferNum)
+			Else
+				Return dx_LoadSoundMemByResource_x64(ResourceName, ResourceType, BufferNum)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetUseSoftwareMixingSoundFlag")> _
+		Shared Function dx_SetUseSoftwareMixingSoundFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetUseSoftwareMixingSoundFlag")> _
+		Shared Function dx_SetUseSoftwareMixingSoundFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetUseSoftwareMixingSoundFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetUseSoftwareMixingSoundFlag_x86(Flag)
+			Else
+				Return dx_SetUseSoftwareMixingSoundFlag_x64(Flag)
+			End If
+		End Function
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_SetEnableXAudioFlag")> _
+		Shared Function dx_SetEnableXAudioFlag_x86(Flag As Integer) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_SetEnableXAudioFlag")> _
+		Shared Function dx_SetEnableXAudioFlag_x64(Flag As Integer) As Integer
+		End Function
+		Public Shared Function SetEnableXAudioFlag(Flag As Integer) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_SetEnableXAudioFlag_x86(Flag)
+			Else
+				Return dx_SetEnableXAudioFlag_x64(Flag)
+			End If
+		End Function
+
+		#if DX_USE_UNSAFE Then
+		<DllImport(DX_DLL_32, EntryPoint := "dx_GetDSoundObj")> _
+		Shared Sub dx_GetDSoundObj_x86()
+		End Sub
+		<DllImport(DX_DLL_64, EntryPoint := "dx_GetDSoundObj")> _
+		Shared Sub dx_GetDSoundObj_x64()
+		End Sub
+		Public Shared Sub GetDSoundObj()
+			If System.IntPtr.Size = 4 Then
+				Return dx_GetDSoundObj_x86()
+			Else
+				Return dx_GetDSoundObj_x64()
+			End If
+		End Sub
+		#End If
+
+		<DllImport(DX_DLL_32, EntryPoint := "dx_LoadMusicMemByResource")> _
+		Shared Function dx_LoadMusicMemByResource_x86(ResourceName As String, ResourceType As String) As Integer
+		End Function
+		<DllImport(DX_DLL_64, EntryPoint := "dx_LoadMusicMemByResource")> _
+		Shared Function dx_LoadMusicMemByResource_x64(ResourceName As String, ResourceType As String) As Integer
+		End Function
+		Public Shared Function LoadMusicMemByResource(ResourceName As String, ResourceType As String) As Integer
+			If System.IntPtr.Size = 4 Then
+				Return dx_LoadMusicMemByResource_x86(ResourceName, ResourceType)
+			Else
+				Return dx_LoadMusicMemByResource_x64(ResourceName, ResourceType)
 			End If
 		End Function
 

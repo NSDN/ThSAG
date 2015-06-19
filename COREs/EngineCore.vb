@@ -1,4 +1,6 @@
-﻿Imports ThSAG.DxVBDLL
+﻿#Const _DEBUG_ = 0
+
+Imports ThSAG.DxVBDLL
 Imports ThSAG.EngineCore.Base
 
 Public Class EngineCore
@@ -276,6 +278,12 @@ Public Class EngineCore
         End Structure
 
         Public Class AniObject
+            Public Enum Type
+                Sin
+                Cos
+                Liner
+            End Enum
+
             Private ImgSrc As DxImage
             Private Counter As Long
             Private AniValue As Double
@@ -297,12 +305,20 @@ Public Class EngineCore
                 Return FadeIn(x, y, 1, NowTime)
             End Function
 
+            Public Function FadeIn(ByVal x As Single, ByVal y As Single, ByVal NowTime As Long, ByVal TotalTime As Integer) As Boolean
+                Return Trans(x, y, 1, 0, 0, x, y, 1, 0, 255, TotalTime, NowTime)
+            End Function
+
             Public Function FadeIn(ByVal x As Single, ByVal y As Single, ByVal Scale As Single, ByVal NowTime As Long) As Boolean
                 Return Trans(x, y, Scale, 0, 0, x, y, Scale, 0, 255, 128, NowTime)
             End Function
 
             Public Function FadeOut(ByVal x As Single, ByVal y As Single, ByVal NowTime As Long) As Boolean
                 Return FadeOut(x, y, 1, NowTime)
+            End Function
+
+            Public Function FadeOut(ByVal x As Single, ByVal y As Single, ByVal NowTime As Long, ByVal TotalTime As Integer) As Boolean
+                Return Trans(x, y, 1, 0, 255, x, y, 1, 0, 0, TotalTime, NowTime)
             End Function
 
             Public Function FadeOut(ByVal x As Single, ByVal y As Single, ByVal Scale As Single, ByVal NowTime As Long) As Boolean
@@ -321,7 +337,7 @@ Public Class EngineCore
                 If WithFade Then
                     Return Trans(x, y, 0, StaticAngle, 0, x, y, MaxScale, StaticAngle, 255, 50, NowTime)
                 Else
-                    Return Trans(x, y, 0, StaticAngle, 0, x, y, MaxScale, StaticAngle, 255, 50, NowTime)
+                    Return Trans(x, y, 0, StaticAngle, 255, x, y, MaxScale, StaticAngle, 255, 50, NowTime)
                 End If
             End Function
 
@@ -350,9 +366,28 @@ Public Class EngineCore
             End Sub
 
             Public Function Trans(ByVal sX As Single, ByVal sY As Single, ByVal sScale As Single, ByVal sAngle As Double, ByVal sFade As Single, _
-                                  ByVal tX As Single, ByVal tY As Single, ByVal tScale As Single, ByVal tAngle As Double, ByVal tFade As Single, ByVal TotalTime As Long, ByVal NowTime As Long) As Boolean
-                If NowTime - Counter <= TotalTime And NowTime - Counter >= 0 Then
-                    AniValue = Math.Sin((NowTime - Counter) / (2 * TotalTime) * Math.PI)
+                                  ByVal tX As Single, ByVal tY As Single, ByVal tScale As Single, ByVal tAngle As Double, ByVal tFade As Single, _
+                                  ByVal TotalTime As Long, ByVal NowTime As Long) As Boolean
+                Return Trans(sX, sY, sScale, sAngle, sFade, tX, tY, tScale, tAngle, tFade, TotalTime, NowTime, Type.Sin)
+            End Function
+
+            Public Function Trans(ByVal sX As Single, ByVal sY As Single, ByVal sScale As Single, ByVal sAngle As Double, ByVal sFade As Single, _
+                                  ByVal tX As Single, ByVal tY As Single, ByVal tScale As Single, ByVal tAngle As Double, ByVal tFade As Single, _
+                                  ByVal TotalTime As Long, ByVal NowTime As Long, ByVal Type As Type) As Boolean
+                If NowTime - Counter < 0 Then
+                    DxFade(CInt(sFade))
+                    Draw(sX, sY, sAngle, sScale)
+                    DxFade(255)
+                ElseIf NowTime - Counter <= TotalTime Then
+                    Select Case Type
+                        Case Type.Sin
+                            AniValue = Math.Sin((NowTime - Counter) / (2 * TotalTime) * Math.PI)
+                        Case Type.Cos
+                            AniValue = 1 - Math.Cos((NowTime - Counter) / (2 * TotalTime) * Math.PI)
+                        Case Type.Liner
+                            AniValue = (NowTime - Counter) / TotalTime
+                    End Select
+
                     DxFade(CInt(sFade + (tFade - sFade) * AniValue))
                     Draw(sX + (tX - sX) * AniValue, sY + (tY - sY) * AniValue, sAngle + (tAngle - sAngle) * AniValue, sScale + (tScale - sScale) * AniValue)
                     DxFade(255)
@@ -371,6 +406,7 @@ Public Class EngineCore
             ' 这里的全屏是一种比较友好的全屏
             ' 可以随时切换回桌面
 
+            DX.SetOutApplicationLogValidFlag(0)
             DX.SetWindowIconHandle(IconHandle)
 
             If IsFullScreen Then
@@ -384,7 +420,6 @@ Public Class EngineCore
             End If
 
             DX.SetGraphMode(1920, 1080, 32)
-            DX.SetOutApplicationLogValidFlag(0)
             'DX.SetUse3DFlag(1)
             'DX.SetWaitVSyncFlag(0)
             DX.SetAlwaysRunFlag(1)
@@ -392,6 +427,7 @@ Public Class EngineCore
             DX.SetFullSceneAntiAliasingMode(Samples, Quality) 'NOTICE: Only in 3D Scene
             DX.SetCreateDrawValidGraphMultiSample(Samples, Quality)
 
+            DX.SetUseDXArchiveFlag(1)
             DX.SetDXArchiveExtension("zip")
             DX.SetDXArchiveKeyString("zip")
 
@@ -463,7 +499,11 @@ Public Class EngineCore
             DX.PlaySoundFile(Path, DX.DX_PLAYTYPE_BACK)
         End Sub
 
-        Public Shared Sub PlayMusic(ByRef Music As AVG.Music)
+        Public Shared Sub VolSE(ByVal Volume As Integer)
+            DX.SetVolumeSoundFile(Volume)
+        End Sub
+
+        Public Shared Sub PlayMusic(ByVal Music As AVG.Music)
             If Not Music.Handle = -1 Then
                 DX.PlayMusicMem(Music.Handle, DX.DX_PLAYTYPE_LOOP)
             End If
@@ -515,11 +555,11 @@ Public Class EngineCore
             End If
         End Function
 
-        Public Shared Function LoadMuisc(ByRef Path As String) As Integer
+        Public Shared Function LoadMuisc(ByVal Path As String) As Integer
             Return DX.LoadMusicMem(Path)
         End Function
 
-        Public Shared Function LoadMuisc(ByRef Music As AVG.Music)
+        Public Shared Function LoadMuisc(ByVal Music As AVG.Music)
             Music.Handle = DX.LoadMusicMem(Music.Path)
             If Music.Handle = -1 Then
                 Return False
@@ -1024,6 +1064,7 @@ Public Class EngineCore
         End Structure
         Public Structure Config
             Public GameName As String
+            Public ScriptCount As Integer
             Public ScriptPath() As String
             Public SavePath As String
         End Structure
@@ -1058,6 +1099,13 @@ Public Class EngineCore
             Public WordType As WordType
             Public Choices() As Selection
             Public IsBuilt As Boolean
+
+            Private IsAniIn As Boolean
+            Private IsAniOut As Boolean
+            Private AniTime() As Integer
+            Private AniBG, AniCursor As DxVB.AniObject
+            Private AniCG() As DxVB.AniObject
+            Private AniChoice() As DxVB.AniObject
             Public Sub New()
                 IsBuilt = False
                 SceneIndex = -1
@@ -1070,7 +1118,218 @@ Public Class EngineCore
                 WordType = -1
                 ReDim CG(10)
                 ReDim Choices(100)
+
+                IsAniIn = True : IsAniOut = True
+                AniTime = {0, 0}
+                ReDim AniCG(10)
+                ReDim AniChoice(100)
             End Sub
+
+            Public Sub InitAnimation()
+                IsAniIn = True : IsAniOut = True
+                AniTime = {0, 0}
+                IsBuilt = False
+            End Sub
+
+            Public Function AnimateIn(ByRef FormScene As Scene) As Boolean
+                If Not Me Is Nothing Then
+                    If IsAniIn Then
+                        AniBG = New DxVB.AniObject(BG.Texture, 0)
+                        AniCursor = New DxVB.AniObject(AVGCore.Cursor, 16)
+                        For i = 0 To 10 Step 1
+                            AniCG(i) = New DxVB.AniObject(CG(i).IMG.Texture, 16)
+                        Next i
+                        For i = 0 To 100 Step 1
+                            AniChoice(i) = New DxVB.AniObject(Choices(i).Texture, 16)
+                        Next i
+                        IsAniIn = False
+                    End If
+
+                    If Not BG.Texture.Handle = -1 Then
+                        If BG.Path = FormScene.BG.Path Then
+                            DxVB.DrawPic(BG.Texture, 960, 540)
+                        Else
+                            AniBG.FadeIn(960, 540, AniTime(0), 16)
+                        End If
+                    End If
+                    For i = 0 To CG.GetUpperBound(0) Step 1
+                        If Not CG(i).IMG.Texture.Handle = -1 Then
+                            If CG(i).IMG.Path = FormScene.CG(i).IMG.Path And CG(i).Location = FormScene.CG(i).Location Then
+                                DxVB.DrawPic(CG(i).IMG.Texture, CG(i).Location, 800)
+                            Else
+                                AniCG(i).FadeIn(CG(i).Location, 800, AniTime(0), 16)
+                            End If
+                        End If
+                    Next i
+                    Select Case WordType
+                        Case WordType.Comment
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    If Choices(i).Context = FormScene.Choices(i).Context Then
+                                        DxVB.DrawPic(Choices(i).Texture, 960, 500 + i * 50)
+                                    Else
+                                        AniChoice(i).FadeIn(960, 500 + i * 50, AniTime(0), 16)
+                                    End If
+                                    AniCursor.FadeIn(120, 490 + AVGCore.AVGControl * 50, AniTime(0), 16)
+                                End If
+                            Next i
+                        Case WordType.GameRun
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    If Choices(i).Context = FormScene.Choices(i).Context Then
+                                        DxVB.DrawPic(Choices(i).Texture, 960, 400 + i * 100)
+                                    Else
+                                        AniChoice(i).FadeIn(960, 400 + i * 100, AniTime(0), 16)
+                                    End If
+                                End If
+                            Next i
+                        Case WordType.Loading
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    AniChoice(i).FadeIn(960, 100 + i * 50, AniTime(0), 16)
+                                    AniCursor.FadeIn(120, 90 + AVGCore.AVGControl * 50, AniTime(0), 16)
+                                End If
+                            Next i
+                        Case WordType.Saving
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    If Choices(i).Context = FormScene.Choices(i).Context Then
+                                        DxVB.DrawPic(Choices(i).Texture, 960, 100 + i * 100)
+                                    Else
+                                        AniChoice(i).FadeIn(960, 100 + i * 100, AniTime(0), 16)
+                                    End If
+                                    AniCursor.FadeIn(120, 90 + AVGCore.AVGControl * 100, AniTime(0), 16)
+                                End If
+                            Next i
+                        Case WordType.Script
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    If Choices(i).Context = FormScene.Choices(i).Context Then
+                                        DxVB.DrawPic(Choices(i).Texture, 960, 600 + i * 50)
+                                    Else
+                                        AniChoice(i).FadeIn(960, 600 + i * 50, AniTime(0), 16)
+                                    End If
+                                End If
+                            Next i
+                        Case WordType.Title
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    If Choices(i).Context = FormScene.Choices(i).Context Then
+                                        DxVB.DrawPic(Choices(i).Texture, 960, 100 + i * 100)
+                                    Else
+                                        AniChoice(i).FadeIn(960, 100 + i * 100, AniTime(0), 16)
+                                    End If
+                                    AniCursor.FadeIn(120, 90 + AVGCore.AVGControl * 100, AniTime(0), 16)
+                                End If
+                            Next i
+                    End Select
+
+                    AniTime(0) += 1
+                    If AniTime(0) > 32 Then Return True
+
+                End If
+                Return False
+            End Function
+
+            Public Function AnimateOut(ByRef NextScene As Scene) As Boolean
+                If Not Me Is Nothing Then
+                    If IsAniOut Then
+                        AniBG = New DxVB.AniObject(BG.Texture, 16)
+                        AniCursor = New DxVB.AniObject(AVGCore.Cursor, 0)
+                        For i = 0 To 10 Step 1
+                            AniCG(i) = New DxVB.AniObject(CG(i).IMG.Texture, 0)
+                        Next i
+                        For i = 0 To 100 Step 1
+                            AniChoice(i) = New DxVB.AniObject(Choices(i).Texture, 0)
+                        Next i
+                        IsAniOut = False
+                    End If
+
+                    If Not BG.Texture.Handle = -1 Then
+                        If BG.Path = NextScene.BG.Path Then
+                            DxVB.DrawPic(BG.Texture, 960, 540)
+                        Else
+                            AniBG.FadeOut(960, 540, AniTime(1), 16)
+                        End If
+                    End If
+                    For i = 0 To CG.GetUpperBound(0) Step 1
+                        If Not CG(i).IMG.Texture.Handle = -1 Then
+                            If CG(i).IMG.Path = NextScene.CG(i).IMG.Path And CG(i).Location = NextScene.CG(i).Location Then
+                                DxVB.DrawPic(CG(i).IMG.Texture, CG(i).Location, 800)
+                            Else
+                                AniCG(i).FadeOut(CG(i).Location, 800, AniTime(1), 16)
+                            End If
+                        End If
+                    Next i
+                    Select Case WordType
+                        Case WordType.Comment
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    If Choices(i).Context = NextScene.Choices(i).Context Then
+                                        DxVB.DrawPic(Choices(i).Texture, 960, 500 + i * 50)
+                                    Else
+                                        AniChoice(i).FadeOut(960, 500 + i * 50, AniTime(1), 16)
+                                    End If
+                                    AniCursor.FadeOut(120, 490 + AVGCore.AVGControl * 50, AniTime(1), 16)
+                                End If
+                            Next i
+                        Case WordType.GameRun
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    If Choices(i).Context = NextScene.Choices(i).Context Then
+                                        DxVB.DrawPic(Choices(i).Texture, 960, 400 + i * 100)
+                                    Else
+                                        AniChoice(i).FadeOut(960, 400 + i * 100, AniTime(1), 16)
+                                    End If
+                                End If
+                            Next i
+                        Case WordType.Loading
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    AniChoice(i).FadeOut(960, 100 + i * 50, AniTime(1), 16)
+                                    AniCursor.FadeOut(120, 90 + AVGCore.AVGControl * 50, AniTime(1), 16)
+                                End If
+                            Next i
+                        Case WordType.Saving
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    If Choices(i).Context = NextScene.Choices(i).Context Then
+                                        DxVB.DrawPic(Choices(i).Texture, 960, 100 + i * 100)
+                                    Else
+                                        AniChoice(i).FadeOut(960, 100 + i * 100, AniTime(1), 16)
+                                    End If
+                                    AniCursor.FadeOut(120, 90 + AVGCore.AVGControl * 100, AniTime(1), 16)
+                                End If
+                            Next i
+                        Case WordType.Script
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    If Choices(i).Context = NextScene.Choices(i).Context Then
+                                        DxVB.DrawPic(Choices(i).Texture, 960, 600 + i * 50)
+                                    Else
+                                        AniChoice(i).FadeOut(960, 600 + i * 50, AniTime(1), 16)
+                                    End If
+                                End If
+                            Next i
+                        Case WordType.Title
+                            For i = 0 To Choices.GetUpperBound(0) Step 1
+                                If Not Choices(i).Texture.Handle = -1 Then
+                                    If Choices(i).Context = NextScene.Choices(i).Context Then
+                                        DxVB.DrawPic(Choices(i).Texture, 960, 100 + i * 100)
+                                    Else
+                                        AniChoice(i).FadeOut(960, 100 + i * 100, AniTime(1), 16)
+                                    End If
+                                    AniCursor.FadeOut(120, 90 + AVGCore.AVGControl * 100, AniTime(1), 16)
+                                End If
+                            Next i
+                    End Select
+
+                    AniTime(1) += 1
+                    If AniTime(1) > 32 Then Return True
+
+                End If
+                Return False
+            End Function
 
             Public Sub Build()
                 If Not Me Is Nothing Then
@@ -1107,20 +1366,20 @@ Public Class EngineCore
                             For i = 0 To Choices.GetUpperBound(0) Step 1
                                 If Not Choices(i).Texture.Handle = -1 Then
                                     DxVB.DrawPic(Choices(i).Texture, 960, 100 + i * 100)
-                                    DxVB.DrawPic(AVGCore.Cursor, 120, 90 + AVGCore.AVGControl * 50)
+                                    DxVB.DrawPic(AVGCore.Cursor, 120, 90 + AVGCore.AVGControl * 100)
                                 End If
                             Next i
                         Case WordType.Script
                             For i = 0 To Choices.GetUpperBound(0) Step 1
-                                If Not Choices(i).Texture.Handle = -1 = Nothing Then
+                                If Not Choices(i).Texture.Handle = -1 Then
                                     DxVB.DrawPic(Choices(i).Texture, 960, 600 + i * 50)
                                 End If
                             Next i
                         Case WordType.Title
                             For i = 0 To Choices.GetUpperBound(0) Step 1
-                                If Not Choices(i).Texture.Handle = -1 = Nothing Then
+                                If Not Choices(i).Texture.Handle = -1 Then
                                     DxVB.DrawPic(Choices(i).Texture, 960, 100 + i * 100)
-                                    DxVB.DrawPic(AVGCore.Cursor, 120, 90 + AVGCore.AVGControl * 50)
+                                    DxVB.DrawPic(AVGCore.Cursor, 120, 90 + AVGCore.AVGControl * 100)
                                 End If
                             Next i
                     End Select
@@ -1140,17 +1399,26 @@ Public Class EngineCore
             ' 有些成员函数只能在AVG类
 
             Public Shared AVGControl As Integer
-            Private SceneStep As Integer
+            Private SceneStep, SceneStepTmp As Integer
             Public Shared Cursor As DxVB.DxImage
             Private Scenes() As Scene
+            Private IsKeyDown, IsKeyPress As Boolean
+            Private KeyPressTime As Integer
 
             Public Sub New(ByVal CursorPath As String)
                 Cursor = DxVB.LoadTexture(CursorPath)
-                AVGControl = SceneStep = 0
+                AVGControl = 0 : SceneStep = 0 : SceneStepTmp = 0
+                IsKeyDown = False : IsKeyPress = False : KeyPressTime = 0
             End Sub
 
             Public Sub LoadScenes(ByRef Scene() As Scene)
-                Scenes = Scene
+                If Scenes Is Nothing Then
+                    Scenes = Scene
+                Else
+                    For i = 0 To Scene.Length - 1 Step 1
+                        If Not Scene(i) Is Nothing Then Scenes(i) = Scene(i)
+                    Next i
+                End If
             End Sub
 
             Public Function ResourcesLoad() As Boolean
@@ -1166,6 +1434,12 @@ Public Class EngineCore
                                 If FlagTmp = False Then Return False
                             End If
                         Next j
+                    End If
+                Next i
+
+                For i = 0 To Scenes.GetUpperBound(0) Step 1
+                    If Not Scenes(i) Is Nothing Then
+                        Scenes(i).BGM.Handle = DxVB.LoadMuisc(Scenes(i).BGM.Path)
                     End If
                 Next i
                 LoadString()
@@ -1218,47 +1492,128 @@ Public Class EngineCore
             End Sub
 
             Public Sub Work()
-                Scenes(SceneStep).Build()
-                Control()
+                If SceneStepTmp = SceneStep Then
+                    Scenes(SceneStep).Build()
+                    Control()
+                Else
+                    If Scenes(SceneStep).IsBuilt Then Scenes(SceneStep).InitAnimation()
+                    If Scenes(SceneStepTmp).AnimateOut(Scenes(SceneStep)) Then
+                        AVGControl = 0
+                        If Scenes(SceneStep).AnimateIn(Scenes(SceneStepTmp)) Then
+                            SceneStepTmp = SceneStep
+                        End If
+                    End If
+                End If
+
+#If _DEBUG_ = 1 Then
+                DxVB.DrawString("SceneStep = " & SceneStep, 100, 100, 20)
+                DxVB.DrawString("AVGControl = " & AVGControl, 100, 120, 20)
+                DxVB.DrawString("IsKeyPress = " & IsKeyPress, 100, 140, 20)
+#End If
+
             End Sub
 
             Private Sub Control()
                 If Not Scenes(SceneStep) Is Nothing Then
                     If Scenes(SceneStep).WordType = AVG.WordType.Loading Or Scenes(SceneStep).WordType = AVG.WordType.Saving Or _
                         Scenes(SceneStep).WordType = AVG.WordType.Comment Or Scenes(SceneStep).WordType = AVG.WordType.Title Then
-                        If GetKey(Keys.KeyUP) Then
-                            AVGControl = AVGControl - 1
-                            DxVBDLL.DX.WaitTimer(200)
-                        End If
-                        If GetKey(Keys.KeyDOWN) Then
-                            AVGControl = AVGControl + 1
-                            DxVBDLL.DX.WaitTimer(200)
-                        End If
-                        If GetKey(Keys.KeyLEFT) Then
-                            AVGControl = AVGControl - 1
-                            DxVBDLL.DX.WaitTimer(200)
-                        End If
-                        If GetKey(Keys.KeyRIGHT) Then
-                            AVGControl = AVGControl + 1
-                            DxVBDLL.DX.WaitTimer(200)
-                        End If
 
-                        If AVGControl < 0 Then AVGControl = 0
                         Dim UpTmp As Integer = 0
                         Do
                             UpTmp = UpTmp + 1
                         Loop Until Scenes(SceneStep).Choices(UpTmp).Context = Nothing
                         UpTmp = UpTmp - 1
-                        If AVGControl > UpTmp Then AVGControl = UpTmp
+
+                        If GetKey(Keys.KeyUP) Then
+                            AVGControl = AVGControl - 1
+                            DxVB.PlaySE("DATAs\Audio\select.wav")
+                            DxVBDLL.DX.WaitTimer(100)
+                            'If IsKeyPress Then
+                            '    DxVBDLL.DX.WaitTimer(100)
+                            'Else
+                            '    If Not IsKeyDown Then
+                            '        KeyPressTime = System.Environment.TickCount
+                            '        IsKeyDown = True
+                            '    End If
+                            '    If System.Environment.TickCount - KeyPressTime > 100 Then
+                            '        IsKeyPress = True
+                            '        KeyPressTime = 0
+                            '        DxVBDLL.DX.WaitTimer(500)
+                            '    End If
+                            'End If
+                        ElseIf GetKey(Keys.KeyLEFT) Then
+                            AVGControl = AVGControl - 1
+                            DxVB.PlaySE("DATAs\Audio\select.wav")
+                            DxVBDLL.DX.WaitTimer(100)
+                            'If IsKeyPress Then
+                            '    DxVBDLL.DX.WaitTimer(100)
+                            'Else
+                            '    If Not IsKeyDown Then
+                            '        KeyPressTime = System.Environment.TickCount
+                            '        IsKeyDown = True
+                            '    End If
+                            '    If System.Environment.TickCount - KeyPressTime > 100 Then
+                            '        IsKeyPress = True
+                            '        KeyPressTime = 0
+                            '        DxVBDLL.DX.WaitTimer(500)
+                            '    End If
+                            'End If
+                        End If
+
+                        If GetKey(Keys.KeyDOWN) Then
+                            AVGControl = AVGControl + 1
+                            DxVB.PlaySE("DATAs\Audio\select.wav")
+                            DxVBDLL.DX.WaitTimer(100)
+                            'If IsKeyPress Then
+                            '    DxVBDLL.DX.WaitTimer(100)
+                            'Else
+                            '    If Not IsKeyDown Then
+                            '        KeyPressTime = System.Environment.TickCount
+                            '        IsKeyDown = True
+                            '    End If
+                            '    If System.Environment.TickCount - KeyPressTime > 100 Then
+                            '        IsKeyPress = True
+                            '        KeyPressTime = 0
+                            '        DxVBDLL.DX.WaitTimer(500)
+                            '    End If
+                            'End If
+                        ElseIf GetKey(Keys.KeyRIGHT) Then
+                            AVGControl = AVGControl + 1
+                            DxVB.PlaySE("DATAs\Audio\select.wav")
+                            DxVBDLL.DX.WaitTimer(100)
+                            'If IsKeyPress Then
+                            '    DxVBDLL.DX.WaitTimer(100)
+                            'Else
+                            '    If Not IsKeyDown Then
+                            '        KeyPressTime = System.Environment.TickCount
+                            '        IsKeyDown = True
+                            '    End If
+                            '    If System.Environment.TickCount - KeyPressTime > 100 Then
+                            '        IsKeyPress = True
+                            '        KeyPressTime = 0
+                            '        DxVBDLL.DX.WaitTimer(500)
+                            '    End If
+                            'End If
+                        End If
+
+                        'If Not (GetKey(Keys.KeyUP) Or GetKey(Keys.KeyDOWN) Or GetKey(Keys.KeyLEFT) Or GetKey(Keys.KeyRIGHT)) Then
+                        '    IsKeyDown = False : IsKeyPress = False
+                        'End If
+
+
+                        If AVGControl < 0 Then AVGControl = UpTmp
+                        If AVGControl > UpTmp Then AVGControl = 0
 
                         If GetKey(Keys.KeyZ) Then
                             SceneStep = Scenes(SceneStep).Choices(AVGControl).JumpSceneIndex
-                            DxVBDLL.DX.WaitTimer(200)
+                            DxVB.PlaySE("DATAs\Audio\ok.wav")
+                            DxVBDLL.DX.WaitTimer(100)
                         End If
                     Else
                         If GetKey(Keys.KeyZ) Then
                             SceneStep = SceneStep + 1
-                            DxVBDLL.DX.WaitTimer(200)
+                            DxVB.PlaySE("DATAs\Audio\ok.wav")
+                            DxVBDLL.DX.WaitTimer(100)
                         End If
                     End If
                 End If
@@ -1274,12 +1629,15 @@ Public Class EngineCore
         Public Shared Function LoadConfig(ByVal IsFullPath As Boolean, ByVal Path As String) As Config
             Dim TmpConfig As New Config
             Dim Reader As IO.StreamReader
-            Dim TmpString() As String : Dim TmpHead As Integer
+            Dim TmpString() As String : Dim TmpHead, ScriptCount As Integer
             If IsFullPath Then
                 Reader = New IO.StreamReader(Path)
             Else
                 Reader = New IO.StreamReader(Environment.CurrentDirectory & "\" & Path)
             End If
+
+            ReDim TmpConfig.ScriptPath(128)
+            ScriptCount = 0 : TmpConfig.ScriptCount = 0
 
             While Not Reader.EndOfStream
                 TmpString = Reader.ReadLine.Split({CChar(Space(1)), CChar(vbCr), CChar(vbTab)})
@@ -1293,7 +1651,7 @@ Public Class EngineCore
                 End Try
 
                 Select Case TmpString(TmpHead)
-                    Case "def.name"
+                    Case "def.name", "游戏名"
                         For i = TmpHead + 1 To TmpString.Length - 1
                             If i < TmpString.Length - 1 Then
                                 TmpConfig.GameName += TmpString(i) & " "
@@ -1301,7 +1659,7 @@ Public Class EngineCore
                                 TmpConfig.GameName += TmpString(i)
                             End If
                         Next i
-                    Case "def.save"
+                    Case "def.save", "存档"
                         For i = TmpHead + 1 To TmpString.Length - 1
                             If i < TmpString.Length - 1 Then
                                 TmpConfig.SavePath += TmpString(i) & " "
@@ -1309,6 +1667,17 @@ Public Class EngineCore
                                 TmpConfig.SavePath += TmpString(i)
                             End If
                         Next i
+                    Case "def.script", "脚本"
+                        TmpConfig.ScriptPath(ScriptCount) = ""
+                        For i = TmpHead + 1 To TmpString.Length - 1
+                            If i < TmpString.Length - 1 Then
+                                TmpConfig.ScriptPath(ScriptCount) += TmpString(i) & " "
+                            Else
+                                TmpConfig.ScriptPath(ScriptCount) += TmpString(i)
+                            End If
+                        Next i
+                        ScriptCount += 1
+                        TmpConfig.ScriptCount = ScriptCount
                 End Select
 Bottom:
             End While
@@ -1347,7 +1716,7 @@ Bottom:
                 Select Case TmpString(TmpHead)
                     Case "开始定义场景", "defsc", "def.scene"
                         SceneIndexTmp = CInt(TmpString(TmpHead + 1))
-                        Scenes(SceneIndexTmp) = New Scene
+                        Scenes(SceneIndexTmp) = New Scene()
                         Scenes(SceneIndexTmp).SceneIndex = SceneIndexTmp
                     Case "结束定义场景", "endsc", "end.scene"
                         SceneIndexTmp = -1
@@ -1400,6 +1769,10 @@ Bottom:
             End While
 
             Return Scenes
+        End Function
+
+        Public Shared Function SaveGame(ByVal SaveScene As Scene)
+
         End Function
 
         '        Public Shared Function LoadScript(ByVal IsFullPath As Boolean, ByVal ScriptPath As String) As Scene()

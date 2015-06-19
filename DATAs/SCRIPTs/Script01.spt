@@ -1,0 +1,14 @@
+﻿def.scene 2
+	set.back DATAs\Image\Back.png
+	#set.bgm [PATH HERE]
+	#def.cg 1
+		#set.path [PATH HERE]
+		#set.pos [POS HERE]
+	#end.cg
+	def.word type.comm
+		set.word Next
+		set.jump 1
+		set.word This
+		set.jump 2
+	end.word
+end.scene

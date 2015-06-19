@@ -22,7 +22,7 @@ ExitFlag:
     End Function
 
     Private Sub Launch_Click(sender As Object, e As RoutedEventArgs)
-        Config_Tmp = AVG.LoadConfig("DATAs\Config.txt")
+        Config_Tmp = AVG.LoadConfig("DATAs\Config.ini")
         MsgBox.MsgShow("Finsih", "Script load finished")
 
         Flag = 1
