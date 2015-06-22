@@ -13,16 +13,20 @@ Public Class Game
 
     Public Sub Initilize()
         DxVB.DxTitle(Config_Obj.GameName)
-        AVGGame = New AVG.AVGCore("DATAs\Image\Cursor.png")
-        MsgBox.MsgShow("Loading", "Loading resources...", False, False)
-        AVGGame.LoadScenes(AVG.LoadScript(Config_Obj.SavePath))
+        AVGGame = New AVG.AVGCore("DATAs\Image\Cursor.png", Config_Obj.FontName)
+        'MsgBox.MsgShow("Loading", "Loading resources...", False, False)
         If Config_Obj.ScriptCount > 0 Then
             For i = 0 To Config_Obj.ScriptCount - 1 Step 1
                 AVGGame.LoadScenes(AVG.LoadScript(Config_Obj.ScriptPath(i)))
             Next i
         End If
+        If CInt(Config_Obj.SaveStep) >= 0 Then
+            AVGGame.LoadGame(CInt(Config_Obj.SaveStep))
+        Else
+            AVGGame.LoadGame(0)
+        End If
         AVGGame.ResourcesLoad()
-        MsgBox.HideMe()
+        'MsgBox.HideMe()
     End Sub
 
     Public Sub Work()
@@ -42,7 +46,11 @@ Public Class Game
     End Sub
 
     Private Sub Control()
-        If Base.GetKey(Base.Keys.KeyESCAPE) Then ExitFlag = True
+        If Base.GetKey(Base.Keys.KeyESCAPE) Then
+            AVGGame.SaveGame(Config_Obj)
+            ExitFlag = True
+        End If
+
     End Sub
 
 End Class

@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <MyType>Custom</MyType>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
     <PublishUrl>发布\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -26,11 +27,10 @@
     <ProductName>ThSAG</ProductName>
     <PublisherName>the WDJ</PublisherName>
     <SuiteName>ThSAG</SuiteName>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>0.0.0.1</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -184,9 +184,9 @@
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
     </EmbeddedResource>
     <None Include="app.config" />
-    <Content Include="DATAs\SAVEs\Save.save">
+    <None Include="DATAs\SCRIPTs\Base.spt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
     <None Include="DATAs\SCRIPTs\Script01.spt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

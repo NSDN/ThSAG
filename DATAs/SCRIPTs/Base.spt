@@ -37,7 +37,7 @@ end.scene
 def.scene 3
 	set.back DATAs\Image\Back.png
 	
-	def.word type.save
+	def.word type.title
 		set.word         大型企划
 		set.jump 3
 		set.word     囧囧的奇妙历险 之

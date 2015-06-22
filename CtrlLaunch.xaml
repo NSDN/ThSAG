@@ -24,6 +24,7 @@
             <SolidColorBrush x:Key="PrimaryHueMidForegroundBrush" Color="{StaticResource Primary500Foreground}"/>
             <SolidColorBrush x:Key="PrimaryHueDarkBrush" Color="{StaticResource Primary700}"/>
             <SolidColorBrush x:Key="PrimaryHueDarkForegroundBrush" Color="{StaticResource Primary700Foreground}"/>
+            <DropShadowEffect x:Key="ShadowEffect" Color="{StaticResource Primary100}" RenderingBias="Quality" BlurRadius="9" ShadowDepth="0"/>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -36,7 +37,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Label Content="Choose Resolution" Margin="110,20,244,0" VerticalAlignment="Top" Height="30" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+            <Label Content="Choose resolution" Margin="110,20,244,0" VerticalAlignment="Top" Height="30" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
             <RadioButton x:Name="DMode8" Content="800 × 450" Height="25" Margin="187,145,168,0" VerticalAlignment="Top" Style="{StaticResource MaterialDesignRadioButton}" VerticalContentAlignment="Center" />
             <RadioButton x:Name="DMode7" Content="3840 × 2160" Height="25" Margin="187,115,168,0" VerticalAlignment="Top" Style="{StaticResource MaterialDesignRadioButton}" VerticalContentAlignment="Center" />
             <RadioButton x:Name="DMode6" Content="2160 × 1440" Height="25" Margin="187,85,168,0" VerticalAlignment="Top" Style="{StaticResource MaterialDesignRadioButton}" VerticalContentAlignment="Center" />
@@ -45,14 +46,16 @@
             <RadioButton x:Name="DMode3" Content="1600 × 900" Height="25" Margin="57,115,298,0" VerticalAlignment="Top" Style="{StaticResource MaterialDesignRadioButton}" VerticalContentAlignment="Center" />
             <RadioButton x:Name="DMode2" Content="1440 × 900" Height="25" Margin="57,85,298,0" VerticalAlignment="Top" Style="{StaticResource MaterialDesignRadioButton}" VerticalContentAlignment="Center" />
             <RadioButton x:Name="DMode1" Content="1280 × 720" Height="25" Margin="57,55,298,0" VerticalAlignment="Top" Style="{StaticResource MaterialDesignRadioButton}" IsChecked="True" VerticalContentAlignment="Center" />
-            <CheckBox x:Name="IsFullScreen" Content="FullScreen" Margin="128,175,250,0" VerticalAlignment="Top" Height="20" Style="{StaticResource MaterialDesignCheckBox}" VerticalContentAlignment="Center" />
+            <CheckBox x:Name="IsFullScreen" Content="Fullscreen" Margin="128,175,250,0" VerticalAlignment="Top" Height="20" Style="{StaticResource MaterialDesignCheckBox}" VerticalContentAlignment="Center" />
         </Grid>
-        <Button x:Name="BtnStart" Content="Start" Margin="0,0,10,10" Width="128" Style="{StaticResource MaterialDesignFloatingActionLightButton}" Height="128" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="Segoe UI Semibold" FontSize="22"
-                Background="{DynamicResource PrimaryHueMidBrush}" BorderBrush="{DynamicResource PrimaryHueMidBrush}" Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" Click="Launch_Click"/>
-        <Label Content="Set Volume" Margin="110,213,226,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="30" />
-        <Slider x:Name="CtrlVol" Margin="57,248,182,0" VerticalAlignment="Top" Height="30" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" LargeChange="10" Maximum="100" SmallChange="1"/>
-        <Button x:Name="BtnNewConfig" Content="New Config" Margin="351,30,19,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource PrimaryHueMidBrush}" Click="BtnNewConfig_Click"/>
-        <Button x:Name="BtnEditConfig" Content="Edit Config" Margin="351,67,19,0" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueMidBrush}" BorderBrush="{x:Null}" Background="{x:Null}"/>
-        <Button x:Name="BtnConfigHelp" Content="Config Help" Margin="351,104,19,0" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueMidBrush}" BorderBrush="{x:Null}" Background="{x:Null}"/>
+        <Button x:Name="BtnReset" Style="{StaticResource MaterialDesignFloatingActionLightButton}" Margin="0,0,120,80" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="64" Height="64" Content="Reset" Background="{DynamicResource PrimaryHueLightBrush}" 
+                BorderBrush="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" FontWeight="Bold" Click="Reset_Click" />
+        <Button x:Name="BtnStart" Content="START" Margin="0,0,10,10" Width="128" Style="{StaticResource MaterialDesignFloatingActionLightButton}" Height="128" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="Segoe UI Semibold" FontSize="22"
+        	Background="{DynamicResource PrimaryHueMidBrush}" BorderBrush="{DynamicResource PrimaryHueMidBrush}" Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" Click="Launch_Click" Effect="{DynamicResource ShadowEffect}" BorderThickness="2"/>
+        <Label Content="Set volume" Margin="110,213,226,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="30" />
+        <Slider x:Name="CtrlVol" Margin="57,248,182,0" VerticalAlignment="Top" Height="30" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" LargeChange="10" Maximum="100" SmallChange="1" Value="50"/>
+        <Button x:Name="BtnSaveHelp" Content="SAVE HELP" Margin="340,30,19,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource PrimaryHueMidBrush}" Click="BtnSaveHelp_Click" />
+        <Button x:Name="BtnScriptHelp" Content="SCRIPT HELP" Margin="340,67,19,0" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueMidBrush}" BorderBrush="{x:Null}" Background="{x:Null}" Click="BtnScriptHelp_Click" />
+        <Button x:Name="BtnConfigHelp" Content="CONFIG HELP" Margin="340,104,19,0" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueMidBrush}" BorderBrush="{x:Null}" Background="{x:Null}" Click="BtnConfigHelp_Click" />
     </Grid>
 </UserControl>

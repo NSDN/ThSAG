@@ -86,11 +86,7 @@ Class Launcher
     End Sub
 
     Private Sub BtnHelp_Click(sender As Object, e As RoutedEventArgs)
-        If MsgBox.MsgShow("About", "ThSAG ReBuild ver0.001" & Chr(13) & "Copyright the WDJ 2005 - 2015" & Chr(13) & "All rights reserved") Then
-            If Not MsgBox.MsgShow("Bingo!", "ThSAG ReBuild ver0.001" & Chr(13) & "Count: 1", True) Then
-                MsgBox.MsgShow("Bingo!", "ThSAG ReBuild ver0.001" & Chr(13) & "Count: 2")
-            End If
-        End If
+        MsgBox.MsgShow("About", "ThSAG ReBuild ver1.00" & Chr(13) & "Copyright the WDJ 2005 - 2015" & Chr(13) & "All rights reserved")
     End Sub
 
     Private Sub Switch_Click(sender As Object, e As RoutedEventArgs)

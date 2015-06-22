@@ -495,12 +495,13 @@ Public Class EngineCore
             DX.WaitTimer(msTime)
         End Sub
 
-        Public Shared Sub PlaySE(ByVal Path As String)
-            DX.PlaySoundFile(Path, DX.DX_PLAYTYPE_BACK)
+        Public Shared Sub DxVolume(ByVal Volume As Integer)
+            DX.SetVolumeMusic(Volume)
+            DX.SetVolumeSound(Volume)
         End Sub
 
-        Public Shared Sub VolSE(ByVal Volume As Integer)
-            DX.SetVolumeSoundFile(Volume)
+        Public Shared Sub PlaySE(ByVal Path As String)
+            DX.PlaySoundFile(Path, DX.DX_PLAYTYPE_BACK)
         End Sub
 
         Public Shared Sub PlayMusic(ByVal Music As AVG.Music)
@@ -617,6 +618,32 @@ Public Class EngineCore
             Dim Font As System.Drawing.Font = New System.Drawing.Font(FontFamily, Size, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel)
             GDI.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias
             GDI.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High
+            GDI.DrawString(Context, Font, Brush, 0, 0)
+            'Image.Save("String.dat", System.Drawing.Imaging.ImageFormat.Png)
+            Dim BpData As System.Drawing.Imaging.BitmapData
+            Dim Rect As System.Drawing.Rectangle = New System.Drawing.Rectangle(0, 0, Image.Width, Image.Height)
+            BpData = Image.LockBits(Rect, System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+
+            GDI.Dispose() : Image.Dispose() : Font.Dispose() : FontFamily.Dispose() : Image.UnlockBits(BpData)
+            Return LoadTexture("String.dat")
+        End Function
+
+        Public Shared Function LoadString(ByRef Context As String, ByRef Brush As System.Drawing.Brush, ByVal Size As Integer, ByVal FontName As String, Optional ByVal BorderWidth As Integer = 1, _
+                                                  Optional ByVal Width As Integer = 1600, Optional ByVal Height As Integer = 64) As DxImage
+            Dim Image As System.Drawing.Bitmap = New System.Drawing.Bitmap(Width, Height)
+            Dim GDI As System.Drawing.Graphics = System.Drawing.Graphics.FromImage(Image)
+            Dim FontFamily As System.Drawing.FontFamily = New System.Drawing.FontFamily(FontName)
+            Dim Font As System.Drawing.Font = New System.Drawing.Font(FontFamily, Size, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel)
+            GDI.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias
+            GDI.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High
+            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, 0, BorderWidth)
+            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, BorderWidth, BorderWidth)
+            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, BorderWidth, 0)
+            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, BorderWidth, -BorderWidth)
+            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, 0, -BorderWidth)
+            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, -BorderWidth, -BorderWidth)
+            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, -BorderWidth, 0)
+            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, -BorderWidth, BorderWidth)
             GDI.DrawString(Context, Font, Brush, 0, 0)
             Image.Save("String.dat", System.Drawing.Imaging.ImageFormat.Png)
             GDI.Dispose() : Image.Dispose() : Font.Dispose() : FontFamily.Dispose()
@@ -1066,7 +1093,8 @@ Public Class EngineCore
             Public GameName As String
             Public ScriptCount As Integer
             Public ScriptPath() As String
-            Public SavePath As String
+            Public SaveStep As String
+            Public FontName As String
         End Structure
         Public Enum WordType
             Comment
@@ -1100,8 +1128,10 @@ Public Class EngineCore
             Public Choices() As Selection
             Public IsBuilt As Boolean
 
+            Public IsAni As Boolean
             Private IsAniIn As Boolean
             Private IsAniOut As Boolean
+            Private IsCursorMove As Boolean
             Private AniTime() As Integer
             Private AniBG, AniCursor As DxVB.AniObject
             Private AniCG() As DxVB.AniObject
@@ -1119,16 +1149,19 @@ Public Class EngineCore
                 ReDim CG(10)
                 ReDim Choices(100)
 
+                IsAni = False
                 IsAniIn = True : IsAniOut = True
-                AniTime = {0, 0}
+                IsCursorMove = True
+                AniTime = {0, 0, 0}
                 ReDim AniCG(10)
                 ReDim AniChoice(100)
             End Sub
 
             Public Sub InitAnimation()
                 IsAniIn = True : IsAniOut = True
-                AniTime = {0, 0}
-                IsBuilt = False
+                IsCursorMove = True
+                AniTime = {0, 0, 0}
+                IsAni = False
             End Sub
 
             Public Function AnimateIn(ByRef FormScene As Scene) As Boolean
@@ -1346,7 +1379,6 @@ Public Class EngineCore
                             For i = 0 To Choices.GetUpperBound(0) Step 1
                                 If Not Choices(i).Texture.Handle = -1 Then
                                     DxVB.DrawPic(Choices(i).Texture, 960, 500 + i * 50)
-                                    DxVB.DrawPic(AVGCore.Cursor, 120, 490 + AVGCore.AVGControl * 50)
                                 End If
                             Next i
                         Case WordType.GameRun
@@ -1359,14 +1391,12 @@ Public Class EngineCore
                             For i = 0 To Choices.GetUpperBound(0) Step 1
                                 If Not Choices(i).Texture.Handle = -1 Then
                                     DxVB.DrawPic(Choices(i).Texture, 960, 100 + i * 50)
-                                    DxVB.DrawPic(AVGCore.Cursor, 120, 90 + AVGCore.AVGControl * 50)
                                 End If
                             Next i
                         Case WordType.Saving
                             For i = 0 To Choices.GetUpperBound(0) Step 1
                                 If Not Choices(i).Texture.Handle = -1 Then
                                     DxVB.DrawPic(Choices(i).Texture, 960, 100 + i * 100)
-                                    DxVB.DrawPic(AVGCore.Cursor, 120, 90 + AVGCore.AVGControl * 100)
                                 End If
                             Next i
                         Case WordType.Script
@@ -1379,7 +1409,6 @@ Public Class EngineCore
                             For i = 0 To Choices.GetUpperBound(0) Step 1
                                 If Not Choices(i).Texture.Handle = -1 Then
                                     DxVB.DrawPic(Choices(i).Texture, 960, 100 + i * 100)
-                                    DxVB.DrawPic(AVGCore.Cursor, 120, 90 + AVGCore.AVGControl * 100)
                                 End If
                             Next i
                     End Select
@@ -1392,22 +1421,59 @@ Public Class EngineCore
                 End If
             End Sub
 
+            Public Function CursorMove(ByVal PreviousControl As Integer) As Boolean
+                If IsCursorMove Then
+                    AniCursor = New DxVB.AniObject(AVGCore.Cursor, 0)
+                    IsCursorMove = False
+                End If
+                Select Case WordType
+                    Case WordType.Comment
+                        AniCursor.Trans(120, 490 + PreviousControl * 50, 1, 0, 255, 120, 490 + AVGCore.AVGControl * 50, 1, 0, 255, 16, AniTime(2))
+                    Case WordType.Loading
+                        AniCursor.Trans(120, 90 + PreviousControl * 50, 1, 0, 255, 120, 90 + AVGCore.AVGControl * 50, 1, 0, 255, 16, AniTime(2))
+                    Case WordType.Saving
+                        AniCursor.Trans(120, 90 + PreviousControl * 100, 1, 0, 255, 120, 90 + AVGCore.AVGControl * 100, 1, 0, 255, 16, AniTime(2))
+                    Case WordType.Title
+                        AniCursor.Trans(120, 90 + PreviousControl * 100, 1, 0, 255, 120, 90 + AVGCore.AVGControl * 100, 1, 0, 255, 16, AniTime(2))
+                End Select
+
+                AniTime(2) += 1
+                If AniTime(2) > 16 Then Return True
+
+                Return False
+            End Function
+
+            Public Sub CursorShow()
+                Select Case WordType
+                    Case WordType.Comment                  
+                        DxVB.DrawPic(AVGCore.Cursor, 120, 490 + AVGCore.AVGControl * 50)
+                    Case WordType.Loading
+                        DxVB.DrawPic(AVGCore.Cursor, 120, 90 + AVGCore.AVGControl * 50)
+                    Case WordType.Saving
+                        DxVB.DrawPic(AVGCore.Cursor, 120, 90 + AVGCore.AVGControl * 100)
+                    Case WordType.Title
+                        DxVB.DrawPic(AVGCore.Cursor, 120, 90 + AVGCore.AVGControl * 100)
+                End Select
+            End Sub
+
         End Class
 
         Public Class AVGCore
             ' AVG的核心类
             ' 有些成员函数只能在AVG类
 
-            Public Shared AVGControl As Integer
+            Public Shared AVGControl, AVGControlTmp As Integer
             Private SceneStep, SceneStepTmp As Integer
             Public Shared Cursor As DxVB.DxImage
+            Private FontName As String
             Private Scenes() As Scene
             Private IsKeyDown, IsKeyPress As Boolean
             Private KeyPressTime As Integer
 
-            Public Sub New(ByVal CursorPath As String)
+            Public Sub New(ByVal CursorPath As String, ByVal FontName As String)
                 Cursor = DxVB.LoadTexture(CursorPath)
-                AVGControl = 0 : SceneStep = 0 : SceneStepTmp = 0
+                Me.FontName = FontName
+                AVGControl = 0 : AVGControlTmp = 0 : SceneStep = 0 : SceneStepTmp = 0
                 IsKeyDown = False : IsKeyPress = False : KeyPressTime = 0
             End Sub
 
@@ -1453,37 +1519,37 @@ Public Class EngineCore
                             Case AVG.WordType.Comment
                                 For k = 0 To Scenes(i).Choices.GetUpperBound(0) Step 1
                                     If Not Scenes(i).Choices(k).Context = Nothing Then
-                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40)
+                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40, FontName, 5)
                                     End If
                                 Next k
                             Case AVG.WordType.GameRun
                                 For k = 0 To Scenes(i).Choices.GetUpperBound(0) Step 1
                                     If Not Scenes(i).Choices(k).Context = Nothing Then
-                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.Cyan, 40)
+                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.DarkCyan, 40, FontName, 5)
                                     End If
                                 Next k
                             Case AVG.WordType.Loading
                                 For k = 0 To Scenes(i).Choices.GetUpperBound(0) Step 1
                                     If Not Scenes(i).Choices(k).Context = Nothing Then
-                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40)
+                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40, FontName, 5)
                                     End If
                                 Next k
                             Case AVG.WordType.Saving
                                 For k = 0 To Scenes(i).Choices.GetUpperBound(0) Step 1
                                     If Not Scenes(i).Choices(k).Context = Nothing Then
-                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40)
+                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40, FontName, 5)
                                     End If
                                 Next k
                             Case AVG.WordType.Script
                                 For k = 0 To Scenes(i).Choices.GetUpperBound(0) Step 1
                                     If Not Scenes(i).Choices(k).Context = Nothing Then
-                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40)
+                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40, FontName, 5)
                                     End If
                                 Next k
                             Case AVG.WordType.Title
                                 For k = 0 To Scenes(i).Choices.GetUpperBound(0) Step 1
                                     If Not Scenes(i).Choices(k).Context = Nothing Then
-                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40)
+                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.White, 40, FontName, 5)
                                     End If
                                 Next k
                         End Select
@@ -1491,16 +1557,47 @@ Public Class EngineCore
                 Next i
             End Sub
 
+            Public Sub LoadGame(ByVal SaveStep As Integer)
+                SceneStep = SaveStep
+                SceneStepTmp = SaveStep
+            End Sub
+
+            Public Sub SaveGame(ByVal Config As Config)
+                Dim Writer As New IO.StreamWriter(Environment.CurrentDirectory & "\" & "DATAs\Config.ini")
+                With Writer
+                    .WriteLine("def.name" & " " & Config.GameName)
+                    .WriteLine("def.font" & " " & Config.FontName)
+                    .WriteLine("def.save" & " " & SceneStep.ToString())
+                    For i = 0 To Config.ScriptCount - 1 Step 1
+                        .WriteLine("def.script" & " " & Config.ScriptPath(i))
+                    Next i
+                    .Flush()
+                End With
+                Writer.Dispose()
+            End Sub
+
             Public Sub Work()
                 If SceneStepTmp = SceneStep Then
                     Scenes(SceneStep).Build()
-                    Control()
+
+                    If AVGControlTmp = AVGControl Then
+                        Scenes(SceneStep).CursorShow()
+                        Control()
+                    Else
+                        If Scenes(SceneStep).IsAni Then Scenes(SceneStep).InitAnimation()
+                        If Scenes(SceneStep).CursorMove(AVGControlTmp) Then
+                            AVGControlTmp = AVGControl
+                            Scenes(SceneStep).IsAni = True
+                        End If
+                    End If
+
                 Else
-                    If Scenes(SceneStep).IsBuilt Then Scenes(SceneStep).InitAnimation()
+                    If Scenes(SceneStep).IsAni Then Scenes(SceneStep).InitAnimation()
                     If Scenes(SceneStepTmp).AnimateOut(Scenes(SceneStep)) Then
-                        AVGControl = 0
+                        AVGControl = 0 : AVGControlTmp = 0 : Scenes(SceneStepTmp).IsBuilt = False
                         If Scenes(SceneStep).AnimateIn(Scenes(SceneStepTmp)) Then
                             SceneStepTmp = SceneStep
+                            Scenes(SceneStepTmp).IsAni = True
                         End If
                     End If
                 End If
@@ -1508,7 +1605,7 @@ Public Class EngineCore
 #If _DEBUG_ = 1 Then
                 DxVB.DrawString("SceneStep = " & SceneStep, 100, 100, 20)
                 DxVB.DrawString("AVGControl = " & AVGControl, 100, 120, 20)
-                DxVB.DrawString("IsKeyPress = " & IsKeyPress, 100, 140, 20)
+                DxVB.DrawString("AVGControlTmp = " & AVGControlTmp, 100, 140, 20)
 #End If
 
             End Sub
@@ -1524,96 +1621,36 @@ Public Class EngineCore
                         Loop Until Scenes(SceneStep).Choices(UpTmp).Context = Nothing
                         UpTmp = UpTmp - 1
 
-                        If GetKey(Keys.KeyUP) Then
+                        If GetKey(Keys.KeyUP) Or GetKey(Keys.KeyLEFT) Then
                             AVGControl = AVGControl - 1
                             DxVB.PlaySE("DATAs\Audio\select.wav")
-                            DxVBDLL.DX.WaitTimer(100)
-                            'If IsKeyPress Then
-                            '    DxVBDLL.DX.WaitTimer(100)
-                            'Else
-                            '    If Not IsKeyDown Then
-                            '        KeyPressTime = System.Environment.TickCount
-                            '        IsKeyDown = True
-                            '    End If
-                            '    If System.Environment.TickCount - KeyPressTime > 100 Then
-                            '        IsKeyPress = True
-                            '        KeyPressTime = 0
-                            '        DxVBDLL.DX.WaitTimer(500)
-                            '    End If
-                            'End If
-                        ElseIf GetKey(Keys.KeyLEFT) Then
-                            AVGControl = AVGControl - 1
-                            DxVB.PlaySE("DATAs\Audio\select.wav")
-                            DxVBDLL.DX.WaitTimer(100)
-                            'If IsKeyPress Then
-                            '    DxVBDLL.DX.WaitTimer(100)
-                            'Else
-                            '    If Not IsKeyDown Then
-                            '        KeyPressTime = System.Environment.TickCount
-                            '        IsKeyDown = True
-                            '    End If
-                            '    If System.Environment.TickCount - KeyPressTime > 100 Then
-                            '        IsKeyPress = True
-                            '        KeyPressTime = 0
-                            '        DxVBDLL.DX.WaitTimer(500)
-                            '    End If
-                            'End If
                         End If
 
-                        If GetKey(Keys.KeyDOWN) Then
+                        If GetKey(Keys.KeyDOWN) Or GetKey(Keys.KeyRIGHT) Then
                             AVGControl = AVGControl + 1
                             DxVB.PlaySE("DATAs\Audio\select.wav")
-                            DxVBDLL.DX.WaitTimer(100)
-                            'If IsKeyPress Then
-                            '    DxVBDLL.DX.WaitTimer(100)
-                            'Else
-                            '    If Not IsKeyDown Then
-                            '        KeyPressTime = System.Environment.TickCount
-                            '        IsKeyDown = True
-                            '    End If
-                            '    If System.Environment.TickCount - KeyPressTime > 100 Then
-                            '        IsKeyPress = True
-                            '        KeyPressTime = 0
-                            '        DxVBDLL.DX.WaitTimer(500)
-                            '    End If
-                            'End If
-                        ElseIf GetKey(Keys.KeyRIGHT) Then
-                            AVGControl = AVGControl + 1
-                            DxVB.PlaySE("DATAs\Audio\select.wav")
-                            DxVBDLL.DX.WaitTimer(100)
-                            'If IsKeyPress Then
-                            '    DxVBDLL.DX.WaitTimer(100)
-                            'Else
-                            '    If Not IsKeyDown Then
-                            '        KeyPressTime = System.Environment.TickCount
-                            '        IsKeyDown = True
-                            '    End If
-                            '    If System.Environment.TickCount - KeyPressTime > 100 Then
-                            '        IsKeyPress = True
-                            '        KeyPressTime = 0
-                            '        DxVBDLL.DX.WaitTimer(500)
-                            '    End If
-                            'End If
                         End If
 
-                        'If Not (GetKey(Keys.KeyUP) Or GetKey(Keys.KeyDOWN) Or GetKey(Keys.KeyLEFT) Or GetKey(Keys.KeyRIGHT)) Then
-                        '    IsKeyDown = False : IsKeyPress = False
-                        'End If
+                        If Not (GetKey(Keys.KeyUP) Or GetKey(Keys.KeyDOWN) Or GetKey(Keys.KeyLEFT) Or GetKey(Keys.KeyRIGHT)) Then
+                            IsKeyDown = False : IsKeyPress = False : KeyPressTime = 0
+                        End If
 
 
                         If AVGControl < 0 Then AVGControl = UpTmp
                         If AVGControl > UpTmp Then AVGControl = 0
 
                         If GetKey(Keys.KeyZ) Then
+                            If Not SceneStep = Scenes(SceneStep).Choices(AVGControl).JumpSceneIndex Then
+                                DxVB.PlaySE("DATAs\Audio\ok.wav")
+                            End If
                             SceneStep = Scenes(SceneStep).Choices(AVGControl).JumpSceneIndex
-                            DxVB.PlaySE("DATAs\Audio\ok.wav")
-                            DxVBDLL.DX.WaitTimer(100)
                         End If
                     Else
                         If GetKey(Keys.KeyZ) Then
+                            If Not SceneStep = Scenes(SceneStep).Choices(AVGControl).JumpSceneIndex Then
+                                DxVB.PlaySE("DATAs\Audio\ok.wav")
+                            End If
                             SceneStep = SceneStep + 1
-                            DxVB.PlaySE("DATAs\Audio\ok.wav")
-                            DxVBDLL.DX.WaitTimer(100)
                         End If
                     End If
                 End If
@@ -1659,12 +1696,20 @@ Public Class EngineCore
                                 TmpConfig.GameName += TmpString(i)
                             End If
                         Next i
+                    Case "def.font", "字体"
+                        For i = TmpHead + 1 To TmpString.Length - 1
+                            If i < TmpString.Length - 1 Then
+                                TmpConfig.FontName += TmpString(i) & " "
+                            Else
+                                TmpConfig.FontName += TmpString(i)
+                            End If
+                        Next i
                     Case "def.save", "存档"
                         For i = TmpHead + 1 To TmpString.Length - 1
                             If i < TmpString.Length - 1 Then
-                                TmpConfig.SavePath += TmpString(i) & " "
+                                TmpConfig.SaveStep += TmpString(i) & " "
                             Else
-                                TmpConfig.SavePath += TmpString(i)
+                                TmpConfig.SaveStep += TmpString(i)
                             End If
                         Next i
                     Case "def.script", "脚本"
@@ -1682,8 +1727,34 @@ Public Class EngineCore
 Bottom:
             End While
 
+            Reader.Dispose()
             Return TmpConfig
         End Function
+
+        Public Shared Sub ResetConfig(ByVal Path As String)
+            ResetConfig(False, Path)
+        End Sub
+
+        Public Shared Sub ResetConfig(ByVal IsFullPath As Boolean, ByVal Path As String)
+            Dim PathTmp As String = ""
+            If IsFullPath Then
+                PathTmp = Path
+            Else
+                PathTmp = Environment.CurrentDirectory & "\" & Path
+            End If
+            Dim Config As Config = LoadConfig(IsFullPath, Path)
+            Dim Writer As New IO.StreamWriter(PathTmp)
+            With Writer
+                .WriteLine("def.name" & " " & Config.GameName)
+                .WriteLine("def.font" & " " & Config.FontName)
+                .WriteLine("def.save" & " " & "0")
+                For i = 0 To Config.ScriptCount - 1 Step 1
+                    .WriteLine("def.script" & " " & Config.ScriptPath(i))
+                Next i
+                .Flush()
+            End With
+            Writer.Dispose()
+        End Sub
 
         Public Shared Function LoadScript(ByVal Path As String) As Scene()
             Dim Scenes() As Scene
@@ -1768,11 +1839,8 @@ Bottom:
 Bottom:
             End While
 
+            Reader.Dispose()
             Return Scenes
-        End Function
-
-        Public Shared Function SaveGame(ByVal SaveScene As Scene)
-
         End Function
 
         '        Public Shared Function LoadScript(ByVal IsFullPath As Boolean, ByVal ScriptPath As String) As Scene()
