@@ -610,41 +610,23 @@ Public Class EngineCore
             End If
         End Sub
 
-        Public Shared Function LoadString(ByRef Context As String, ByRef Brush As System.Drawing.Brush, ByVal Size As Integer, _
-                                                  Optional ByVal Width As Integer = 1600, Optional ByVal Height As Integer = 64) As DxImage
-            Dim Image As System.Drawing.Bitmap = New System.Drawing.Bitmap(Width, Height)
-            Dim GDI As System.Drawing.Graphics = System.Drawing.Graphics.FromImage(Image)
-            Dim FontFamily As System.Drawing.FontFamily = New System.Drawing.FontFamily("华文中宋")
-            Dim Font As System.Drawing.Font = New System.Drawing.Font(FontFamily, Size, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel)
-            GDI.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias
-            GDI.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High
-            GDI.DrawString(Context, Font, Brush, 0, 0)
-            'Image.Save("String.dat", System.Drawing.Imaging.ImageFormat.Png)
-            Dim BpData As System.Drawing.Imaging.BitmapData
-            Dim Rect As System.Drawing.Rectangle = New System.Drawing.Rectangle(0, 0, Image.Width, Image.Height)
-            BpData = Image.LockBits(Rect, System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb)
-
-            GDI.Dispose() : Image.Dispose() : Font.Dispose() : FontFamily.Dispose() : Image.UnlockBits(BpData)
-            Return LoadTexture("String.dat")
-        End Function
-
-        Public Shared Function LoadString(ByRef Context As String, ByRef Brush As System.Drawing.Brush, ByVal Size As Integer, ByVal FontName As String, Optional ByVal BorderWidth As Integer = 1, _
-                                                  Optional ByVal Width As Integer = 1600, Optional ByVal Height As Integer = 64) As DxImage
+        Public Shared Function LoadString(ByRef Context As String, ByRef Brush As System.Drawing.Brush, ByVal Size As Integer, ByVal FontName As String, _
+                                          Optional ByVal BorderWidth As Integer = 1, Optional ByVal Width As Integer = 1600, Optional ByVal Height As Integer = 64) As DxImage
             Dim Image As System.Drawing.Bitmap = New System.Drawing.Bitmap(Width, Height)
             Dim GDI As System.Drawing.Graphics = System.Drawing.Graphics.FromImage(Image)
             Dim FontFamily As System.Drawing.FontFamily = New System.Drawing.FontFamily(FontName)
             Dim Font As System.Drawing.Font = New System.Drawing.Font(FontFamily, Size, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel)
             GDI.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias
             GDI.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High
-            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, 0, BorderWidth)
-            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, BorderWidth, BorderWidth)
-            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, BorderWidth, 0)
-            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, BorderWidth, -BorderWidth)
-            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, 0, -BorderWidth)
-            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, -BorderWidth, -BorderWidth)
-            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, -BorderWidth, 0)
-            'GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, -BorderWidth, BorderWidth)
+
+            For o = 0 To Math.PI * 2 Step Math.PI / 16
+                For i = 1 To BorderWidth Step 1
+                    GDI.DrawString(Context, Font, System.Drawing.Brushes.Black, i * Math.Cos(o), i * Math.Sin(o))
+                Next i
+            Next o
+
             GDI.DrawString(Context, Font, Brush, 0, 0)
+
             Image.Save("String.dat", System.Drawing.Imaging.ImageFormat.Png)
             GDI.Dispose() : Image.Dispose() : Font.Dispose() : FontFamily.Dispose()
             Return LoadTexture("String.dat")
