@@ -25,7 +25,7 @@ Class Launcher
     End Sub
 
     Private Sub ThSAG_Loaded(sender As Object, e As RoutedEventArgs)
-        Switch.IsEnabled = False
+        'Switch.IsEnabled = False
     End Sub
 
     Private Sub BtnExit_Click(sender As Object, e As RoutedEventArgs)

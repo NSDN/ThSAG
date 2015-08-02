@@ -1507,7 +1507,7 @@ Public Class EngineCore
                             Case AVG.WordType.GameRun
                                 For k = 0 To Scenes(i).Choices.GetUpperBound(0) Step 1
                                     If Not Scenes(i).Choices(k).Context = Nothing Then
-                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.DarkCyan, 40, FontName, 5)
+                                        Scenes(i).Choices(k).Texture = DxVB.LoadString(Scenes(i).Choices(k).Context, System.Drawing.Brushes.LightCyan, 40, FontName, 5)
                                     End If
                                 Next k
                             Case AVG.WordType.Loading

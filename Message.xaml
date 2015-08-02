@@ -16,7 +16,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ListBox.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.RadioButton.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/MaterialDesignColor.Teal.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/MaterialDesignColor.Cyan.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <SolidColorBrush x:Key="PrimaryHueLightBrush" Color="{StaticResource Primary100}"/>
             <SolidColorBrush x:Key="PrimaryHueLightForegroundBrush" Color="{StaticResource Primary100Foreground}"/>
@@ -33,8 +33,8 @@
                FontWeight="SemiBold" VerticalContentAlignment="Center" MouseMove="Me_MouseMove"/>
         <Label x:Name="Context" Content="Label" Margin="10,51,10,42" FontFamily="Segoe UI"/>
         <Button x:Name="BtnOK" Content="OK" Margin="0,0,10,10" Style="{StaticResource MaterialDesignRaisedLightButton}" Height="32" VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                Width="75" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF00695C" FontFamily="Segoe UI Semibold" FontWeight="Bold" FontSize="14" Click="BtnOK_Click"/>
+                Width="75" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource PrimaryHueDarkBrush}" FontFamily="Segoe UI Semibold" FontWeight="Bold" FontSize="14" Click="BtnOK_Click"/>
         <Button x:Name="BtnCancel" Content="Cancel" Margin="0,0,90,10" Style="{StaticResource MaterialDesignRaisedLightButton}" Height="32" VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                Width="75" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF00695C" FontFamily="Segoe UI Semibold" FontWeight="Bold" FontSize="14" Click="BtnCancel_Click"/>
+                Width="75" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="{DynamicResource PrimaryHueDarkBrush}" FontFamily="Segoe UI Semibold" FontWeight="Bold" FontSize="14" Click="BtnCancel_Click"/>
     </Grid>
 </Window>

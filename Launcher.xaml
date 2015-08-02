@@ -16,7 +16,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ListBox.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.RadioButton.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/MaterialDesignColor.Teal.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/MaterialDesignColor.Cyan.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <SolidColorBrush x:Key="PrimaryHueLightBrush" Color="{StaticResource Primary100}"/>
             <SolidColorBrush x:Key="PrimaryHueLightForegroundBrush" Color="{StaticResource Primary100Foreground}"/>
@@ -37,7 +37,7 @@
         <Button x:Name="BtnMin_Copy" Content="?" Style="{StaticResource MaterialDesignFloatingActionLightButton}" Margin="0,5,107,0" Width="46" Height="46" Click="BtnHelp_Click" 
         	FontFamily="Century Gothic" FontWeight="Bold" FontSize="24" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}" VerticalAlignment="Top" HorizontalAlignment="Right"/>
         <Label Content="ThSAG" Margin="57,5,0,0" VerticalAlignment="Top" Height="46" Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}" FontFamily="Segoe UI Semibold" FontSize="22" HorizontalAlignment="Left" VerticalContentAlignment="Center" MouseMove="Me_MouseMove"/>
-        <ToggleButton x:Name="Switch" Style="{StaticResource MaterialDesignHamburgerToggleButton}" Margin="10,10,0,0" Width="36" Height="36" Click="Switch_Click" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+        <ToggleButton x:Name="Switch" Style="{StaticResource MaterialDesignHamburgerToggleButton}" Margin="10,10,0,0" Width="36" Height="36" Click="Switch_Click" Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}" VerticalAlignment="Top" HorizontalAlignment="Left"/>
 
         <ThSAG:CtrlLaunch x:Name="LaunchCtrl" Visibility="Visible" Margin="0,57,0,0"/>
         <ThSAG:CtrlEdit x:Name="EditCtrl" Margin="0,57,0,0" Visibility="Hidden"/>
