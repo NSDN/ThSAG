@@ -1053,6 +1053,16 @@ Public Class EngineCore
         ' 关于对话相关都在这里了
         ' 其实主要是字符的绘制
 
+        Public Structure Point
+            Public x As Single
+            Public y As Single
+
+            Public Sub New(ByVal Str As String)
+                x = CSng(Str.Split(",")(0))
+                y = CSng(Str.Split(",")(1))
+            End Sub
+        End Structure
+
         Public Structure Image
             Public Texture As DxVB.DxImage
             Public Path As String
@@ -1063,7 +1073,7 @@ Public Class EngineCore
             Public Handle As Integer
         End Structure
         Public Structure PicObj
-            Public Location As Single     'Can use Enum
+            Public Location As Point     'Can use Enum
             Public IMG As Image
         End Structure
         Public Structure Selection
@@ -1169,10 +1179,10 @@ Public Class EngineCore
                     End If
                     For i = 0 To CG.GetUpperBound(0) Step 1
                         If Not CG(i).IMG.Texture.Handle = -1 Then
-                            If CG(i).IMG.Path = FormScene.CG(i).IMG.Path And CG(i).Location = FormScene.CG(i).Location Then
-                                DxVB.DrawPic(CG(i).IMG.Texture, CG(i).Location, 800)
+                            If CG(i).IMG.Path = FormScene.CG(i).IMG.Path And CG(i).Location.Equals(FormScene.CG(i).Location) Then
+                                DxVB.DrawPic(CG(i).IMG.Texture, CG(i).Location.x, CG(i).Location.y)
                             Else
-                                AniCG(i).FadeIn(CG(i).Location, 800, AniTime(0), 16)
+                                AniCG(i).FadeIn(CG(i).Location.x, CG(i).Location.y, AniTime(0), 16)
                             End If
                         End If
                     Next i
@@ -1269,10 +1279,10 @@ Public Class EngineCore
                     End If
                     For i = 0 To CG.GetUpperBound(0) Step 1
                         If Not CG(i).IMG.Texture.Handle = -1 Then
-                            If CG(i).IMG.Path = NextScene.CG(i).IMG.Path And CG(i).Location = NextScene.CG(i).Location Then
-                                DxVB.DrawPic(CG(i).IMG.Texture, CG(i).Location, 800)
+                            If CG(i).IMG.Path = NextScene.CG(i).IMG.Path And CG(i).Location.Equals(NextScene.CG(i).Location) Then
+                                DxVB.DrawPic(CG(i).IMG.Texture, CG(i).Location.x, CG(i).Location.y)
                             Else
-                                AniCG(i).FadeOut(CG(i).Location, 800, AniTime(1), 16)
+                                AniCG(i).FadeOut(CG(i).Location.x, CG(i).Location.y, AniTime(1), 16)
                             End If
                         End If
                     Next i
@@ -1353,7 +1363,7 @@ Public Class EngineCore
                     End If
                     For i = 0 To CG.GetUpperBound(0) Step 1
                         If Not CG(i).IMG.Texture.Handle = -1 Then
-                            DxVB.DrawPic(CG(i).IMG.Texture, CG(i).Location, 800)
+                            DxVB.DrawPic(CG(i).IMG.Texture, CG(i).Location.x, CG(i).Location.y)
                         End If
                     Next i
                     Select Case WordType
@@ -1786,7 +1796,7 @@ Bottom:
                     Case "立绘地址", "cgloc", "set.path"
                         Scenes(SceneIndexTmp).CG(CGIndexTmp).IMG.Path = TmpString(TmpHead + 1)
                     Case "立绘位置", "cgpos", "set.pos"
-                        Scenes(SceneIndexTmp).CG(CGIndexTmp).Location = CSng(TmpString(TmpHead + 1))
+                        Scenes(SceneIndexTmp).CG(CGIndexTmp).Location = New Point(TmpString(TmpHead + 1))
                     Case "开始定义文字", "defwd", "def.word"
                         ChoiceAutoIndexTmp = 0
                         Select Case TmpString(TmpHead + 1)
