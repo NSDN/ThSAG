@@ -2,7 +2,7 @@
 	set.back DATAs\Image\Back.png
 	def.cg 1
 		set.path DATAs\Image\Logo.png
-		set.pos 960
+		set.pos 960,800
 	end.cg
 	def.word type.start
 		set.word 
@@ -24,7 +24,7 @@ def.scene 1
 	set.back DATAs\Image\Back.png
 	def.cg 1
 		set.path DATAs\Image\Logo.png
-		set.pos 1200
+		set.pos 1200,800
 	end.cg
 	def.word type.title
 		set.word Game Start
@@ -38,19 +38,11 @@ def.scene 3
 	set.back DATAs\Image\Back.png
 	
 	def.word type.title
-		set.word         大型企划
+		set.word         ThSAG
 		set.jump 3
-		set.word     囧囧的奇妙历险 之
+		set.word        ver1.01
 		set.jump 3
-		set.word        厄运日本行
-		set.jump 3
-		set.word     ---->
-		set.jump 3
-		set.word             原作：囧仙，京都人形，gogo13，氧气
-		set.jump 3
-		set.word             制作：喵玉殿技术部（NSDN）
-		set.jump 3
-		set.word                         Back
+		set.word -> Back
 		set.jump 1
 	end.word
 end.scene

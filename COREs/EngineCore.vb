@@ -275,6 +275,12 @@ Public Class EngineCore
             Public Handle As Integer
             Public Width As Integer
             Public Height As Integer
+
+            Public Sub New(ByVal Handle As Integer, ByVal Width As Integer, ByVal Height As Integer)
+                Me.Handle = Handle
+                Me.Width = Width
+                Me.Height = Height
+            End Sub
         End Structure
 
         Public Class AniObject
@@ -627,9 +633,22 @@ Public Class EngineCore
 
             GDI.DrawString(Context, Font, Brush, 0, 0)
 
-            Image.Save("String.dat", System.Drawing.Imaging.ImageFormat.Png)
+            Dim SoftHandle As Integer = DX.MakeARGB8ColorSoftImage(Image.Width, Image.Height)
+            Dim TmpColor As New System.Drawing.Color()
+            For i = 0 To Image.Width - 1 Step 1
+                For j = 0 To Image.Height - 1 Step 1
+                    TmpColor = Image.GetPixel(i, j)
+                    DX.DrawPixelSoftImage(SoftHandle, i, j, TmpColor.R, TmpColor.G, TmpColor.B, TmpColor.A)
+                Next j
+            Next i
+
+            'Dim Data As System.Drawing.Imaging.BitmapData = New System.Drawing.Imaging.BitmapData()
+            'Data = Image.LockBits(New System.Drawing.Rectangle(0, 0, Image.Width, Image.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+            Dim TmpImage As DxImage = New DxImage(DX.CreateGraphFromSoftImage(SoftHandle), Image.Width, Image.Height)
+            'Image.UnlockBits(Data)
+            DX.DeleteSoftImage(SoftHandle)
             GDI.Dispose() : Image.Dispose() : Font.Dispose() : FontFamily.Dispose()
-            Return LoadTexture("String.dat")
+            Return TmpImage
         End Function
 
         Public Shared Sub DrawString(ByRef Context As String, ByVal x As Single, ByVal y As Single)
@@ -1753,6 +1772,7 @@ Bottom:
             Dim SceneIndexTmp, CGIndexTmp, ChoiceAutoIndexTmp As Integer
             Dim FullPath As String = Environment.CurrentDirectory & "\" & Path
             Dim Reader As IO.StreamReader
+            'Dim Buffer As IO.MemoryStream
             Try
                 Reader = New IO.StreamReader(FullPath)
             Catch ex As Exception
@@ -1765,6 +1785,34 @@ Bottom:
             Dim TmpString() As String : Dim TmpHead As Integer
             ReDim Scenes(4096)
 
+            'Buffer = New IO.MemoryStream(Text.Encoding.UTF8.GetBytes(Reader.ReadToEnd()))
+            'Reader = New IO.StreamReader(Buffer)
+
+            'While Not Reader.EndOfStream
+            '    TmpString = Reader.ReadLine.Split({CChar(Space(1)), CChar(vbCr), CChar(vbTab)})
+            '    TmpHead = 0
+
+            '    Try
+            '        While TmpString(TmpHead) = ""
+            '            TmpHead += 1
+            '        End While
+            '    Catch ex As Exception
+            '        Continue While
+            '    End Try
+
+            '    If TmpString(TmpHead) = "def.scene" Or TmpString(TmpHead) = "defsc" Or TmpString(TmpHead) = "开始定义场景" Then
+            '        Reader = New IO.StreamReader(Buffer)
+            '        Exit While
+            '    End If
+
+            '    If TmpString(TmpHead).Contains("$") Then
+            '        Reader = New IO.StreamReader(Buffer)
+            '        Reader = New IO.StreamReader(New IO.MemoryStream(Text.Encoding.UTF8.GetBytes(Reader.ReadToEnd().Replace(TmpString(TmpHead).Replace("$", ""), TmpString(TmpHead + 1)))))
+            '        Buffer = New IO.MemoryStream(Text.Encoding.UTF8.GetBytes(Reader.ReadToEnd()))
+            '        Reader = New IO.StreamReader(Buffer)
+            '    End If
+            'End While
+
             While Not Reader.EndOfStream
                 TmpString = Reader.ReadLine.Split({CChar(Space(1)), CChar(vbCr), CChar(vbTab)})
                 TmpHead = 0
@@ -1773,7 +1821,7 @@ Bottom:
                         TmpHead += 1
                     End While
                 Catch ex As Exception
-                    GoTo Bottom
+                    Continue While
                 End Try
 
                 Select Case TmpString(TmpHead)
@@ -1828,7 +1876,6 @@ Bottom:
                         ChoiceAutoIndexTmp = -1
                 End Select
 
-Bottom:
             End While
 
             Reader.Dispose()

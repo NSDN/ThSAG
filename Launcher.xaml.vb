@@ -86,7 +86,7 @@ Class Launcher
     End Sub
 
     Private Sub BtnHelp_Click(sender As Object, e As RoutedEventArgs)
-        MsgBox.MsgShow("About", "ThSAG ReBuild ver1.00" & Chr(13) & "Copyright the WDJ 2005 - 2015" & Chr(13) & "All rights reserved")
+        MsgBox.MsgShow("About", My.Resources.GameName & " " & My.Resources.GameVersion & Chr(13) & "Copyright the WDJ 2005 - 2016" & Chr(13) & "All rights reserved")
     End Sub
 
     Private Sub Switch_Click(sender As Object, e As RoutedEventArgs)

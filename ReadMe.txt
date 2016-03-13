@@ -2,16 +2,16 @@
 ○ ThSAG　～ Touhou Shooting And Adventure Game Engine.
 
  ReadMe
-							 the WDJ
+							 the  WDJ
 							   NSDN
 							 Dr.zzm32
-							   2015
+							   2016
 ------------------------------------------------------------------------
 
 
 ■１．说明
 	这是一个AVG+STG的简易游戏引擎，基于VB .NET和DxLib。
-	目前BGM部分仍然未完工，存档仍未完工。
+	目前STG部分脚本系统仍在设计中。
 	在根目录下：
 		DLLs为核心的DLL文件目录
 		DATAs为资源目录
@@ -24,15 +24,18 @@
 
 ■２．安装方式
 	借用神主的一句话，「既然是微软不支持的东西我们也不能支持」
-	因此我用了.NET Framework 4.5
+	因此我用了 .NET Framework 4
 	——————————————————————————————————
 	因为重制版更换了GUI因此这是必要的，遗憾的是无法对XP支持了
-	请自行安装下.NET Framework 4.5
+	请自行安装下 .NET Framework 4
+
+	本体是免安装的，复制到任意文件夹里就行。
+	（Windows 7 以后的系统应该都是安装了 .NET Framework 4 的）
    
 
 ■３．卸载方式
 	本体删除就好。
-	.NET Framework 4.5
+	.NET Framework 4
 	可以留着，用处很大。
   
 
@@ -61,3 +64,4 @@
 	Jun. 19th, 2015 RB   ver20150619 重制版第四版，完善过渡动画
 	Jun. 20th, 2015 RB   ver20150620 重制版第五版，完善按键，完善存档机制。几乎完成。
 	Jun. 22th, 2015 RB   ver1.00     重制版正式版。
+	Mar. 13rd, 2016 RB   ver1.01     重置正式版后第一次更新，改进CG坐标和文字加载

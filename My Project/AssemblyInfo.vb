@@ -14,8 +14,8 @@ Imports System.Windows
 <Assembly: AssemblyTitle("ThSAG")> 
 <Assembly: AssemblyDescription("ThSAG Core")> 
 <Assembly: AssemblyCompany("the WDJ")> 
-<Assembly: AssemblyProduct("ThSAG")> 
-<Assembly: AssemblyCopyright("Copyright © the WDJ 2005 - 2015")> 
+<Assembly: AssemblyProduct("ThSAG")>
+<Assembly: AssemblyCopyright("Copyright © the WDJ 2005 - 2016")>
 <Assembly: AssemblyTrademark("ThSAG")> 
 <Assembly: ComVisible(false)>
 
@@ -42,7 +42,7 @@ Imports System.Windows
 
 
 '如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-<Assembly: Guid("1c458a6f-94a1-490f-a228-60afb01c1410")> 
+<Assembly: Guid("1c458a6f-94a1-490f-a228-60afb01c1410")>
 
 ' 程序集的版本信息由下面四个值组成: 
 '
@@ -55,5 +55,5 @@ Imports System.Windows
 ' 方法是按如下所示使用“*”: 
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.0.0.0")> 
-<Assembly: AssemblyFileVersion("1.0.0.0")> 
+<Assembly: AssemblyVersion("1.0.1.0")>
+<Assembly: AssemblyFileVersion("1.0.1.0")>
